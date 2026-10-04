@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+venv/
+.venv/
+*.egg-info/
+
+# Rebuildable vector database (recreate with: python scripts/ingest.py --rebuild)
+vector_db/*
+!vector_db/.gitkeep
+
+# Processed intermediate files (rebuildable)
+data/processed/*
+!data/processed/.gitkeep
+
+# Raw PPS curriculum files: may be large/copyrighted. Team can remove these
+# lines if you decide to commit the PDFs.
+data/raw/pps/*
+!data/raw/pps/.gitkeep
+!data/raw/pps/curriculum_map.json
+
+# Editors / OS
+.vscode/
+.DS_Store
+Thumbs.db
