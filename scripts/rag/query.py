@@ -10,10 +10,10 @@ import argparse
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / 'src'))
 
-from src import config  # noqa: E402
-from src.rag_interface import PPSCurriculumRAG  # noqa: E402
+from eduadapt.rag import config  # noqa: E402
+from eduadapt.rag.rag_interface import PPSCurriculumRAG  # noqa: E402
 
 
 def main() -> None:

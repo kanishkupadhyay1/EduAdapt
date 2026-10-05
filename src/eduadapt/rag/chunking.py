@@ -31,8 +31,8 @@ import logging
 import re
 from typing import Any
 
-from src import config
-from src.preprocessing import classify_lines, detect_heading
+from eduadapt.rag import config
+from eduadapt.rag.preprocessing import classify_lines, detect_heading
 
 logger = logging.getLogger(__name__)
 

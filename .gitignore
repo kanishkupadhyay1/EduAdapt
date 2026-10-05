@@ -1,26 +1,75 @@
 # Python
 __pycache__/
-*.pyc
-.pytest_cache/
-venv/
-.venv/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
 *.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
 
-# Rebuildable vector database (recreate with: python scripts/ingest.py --rebuild)
+# Virtual Environments
+venv/
+env/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+
+# Environment Variables & Secrets
+.env
+*.env
+!.env.example
+.env.local
+
+# IDEs & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Logs & Models
+*.log
+models/
+checkpoints/
+weights/
+*.pt
+*.bin
+*.safetensors
+
+# Vector Store & RAG Storage (Rebuildable via python scripts/rag/ingest.py)
 vector_db/*
 !vector_db/.gitkeep
 
-# Processed intermediate files (rebuildable)
+# Processed intermediate curriculum files (Rebuildable)
 data/processed/*
 !data/processed/.gitkeep
 
-# Raw PPS curriculum files: may be large/copyrighted. Team can remove these
-# lines if you decide to commit the PDFs.
+# Raw PPS curriculum data files (Preserve directory structure and curriculum map)
 data/raw/pps/*
 !data/raw/pps/.gitkeep
 !data/raw/pps/curriculum_map.json
-
-# Editors / OS
-.vscode/
-.DS_Store
-Thumbs.db

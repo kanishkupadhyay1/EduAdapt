@@ -34,7 +34,7 @@ from typing import Any
 
 from pypdf import PdfReader
 
-from src import config
+from eduadapt.rag import config
 
 logger = logging.getLogger(__name__)
 

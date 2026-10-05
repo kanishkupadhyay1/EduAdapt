@@ -1,10 +1,15 @@
-# Member 2 - PPS Curriculum RAG
-# Python 3.11.0 is the team's required version. Do not change it.
-#
-# sentence-transformers is ALREADY in the team environment (5.7.0, with
-# torch 2.11.0+cu128). The line below only states the minimum we rely on;
-# pip will NOT upgrade or replace what you already have.
+# EduAdapt Core Dependencies (Member 1 - GenAI Module)
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+ollama>=0.4.0
+
+# PPS Curriculum RAG Dependencies (Member 2 - RAG Module)
+# Python 3.11.0 is the team's required reference version.
 sentence-transformers>=3.0
 qdrant-client>=1.10
 pypdf>=4.0
-pytest>=7.0
+
+# Testing
+pytest>=7.4.0

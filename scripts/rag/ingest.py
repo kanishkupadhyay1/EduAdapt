@@ -19,14 +19,14 @@ import sys
 from pathlib import Path
 
 # Make "import src..." work when running `python scripts/ingest.py`
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / 'src'))
 
-from src import config  # noqa: E402
-from src.chunking import chunk_pages  # noqa: E402
-from src.document_loader import load_documents  # noqa: E402
-from src.embeddings import Embedder, EmbedderProtocol  # noqa: E402
-from src.preprocessing import preprocess_pages  # noqa: E402
-from src.vector_store import VectorStore  # noqa: E402
+from eduadapt.rag import config  # noqa: E402
+from eduadapt.rag.chunking import chunk_pages  # noqa: E402
+from eduadapt.rag.document_loader import load_documents  # noqa: E402
+from eduadapt.rag.embeddings import Embedder, EmbedderProtocol  # noqa: E402
+from eduadapt.rag.preprocessing import preprocess_pages  # noqa: E402
+from eduadapt.rag.vector_store import VectorStore  # noqa: E402
 
 logger = logging.getLogger("ingest")
 

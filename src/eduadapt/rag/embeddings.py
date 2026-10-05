@@ -30,7 +30,7 @@ import logging
 from collections import OrderedDict
 from typing import Protocol
 
-from src import config
+from eduadapt.rag import config
 
 logger = logging.getLogger(__name__)
 

@@ -23,7 +23,7 @@ import re
 from collections import Counter
 from typing import Any
 
-from src import config
+from eduadapt.rag import config
 
 logger = logging.getLogger(__name__)
 

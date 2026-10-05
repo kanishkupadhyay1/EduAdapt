@@ -13,9 +13,9 @@ the model and the material, so check real scores on real PPS queries.
 import logging
 from typing import Any
 
-from src import config
-from src.embeddings import EmbedderProtocol
-from src.vector_store import VectorStore
+from eduadapt.rag import config
+from eduadapt.rag.embeddings import EmbedderProtocol
+from eduadapt.rag.vector_store import VectorStore
 
 logger = logging.getLogger(__name__)
 

@@ -11,16 +11,16 @@ import logging
 from pathlib import Path
 
 import pytest
-from helpers import make_pdf
+from tests.helpers import make_pdf
 
-from src import config
-from src.document_loader import (
+from eduadapt.rag import config
+from eduadapt.rag.document_loader import (
     DocumentLoadError,
     detect_module,
     load_document,
     load_documents,
 )
-from src.preprocessing import (
+from eduadapt.rag.preprocessing import (
     clean_text,
     detect_heading,
     is_code_line,
@@ -53,7 +53,7 @@ def test_python_version_guard_rejects_other_versions():
 
 
 def test_python_version_guard_warns_on_other_311_patch(caplog):
-    with caplog.at_level(logging.WARNING, logger="src.config"):
+    with caplog.at_level(logging.WARNING, logger="eduadapt.rag.config"):
         config.check_python_version((3, 11, 9))
     assert "3.11.0" in caplog.text
 
@@ -62,7 +62,7 @@ def test_source_files_use_only_python_311_syntax():
     """Parse every src/ and scripts/ file as Python 3.11 code. Newer-only
     syntax (e.g. 3.12 'type X = ...' statements) would fail here."""
     root = Path(config.MODULE_ROOT)
-    files = list((root / "src").glob("*.py")) + list((root / "scripts").glob("*.py"))
+    files = list((root / "src").rglob("*.py")) + list((root / "scripts").rglob("*.py"))
     assert files
     for file in files:
         ast.parse(file.read_text(encoding="utf-8"), filename=str(file), feature_version=(3, 11))
