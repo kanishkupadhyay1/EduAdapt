@@ -1,0 +1,896 @@
+[
+  {
+    "id": "pps_01",
+    "topic": "Variables and data types",
+    "difficulty": "Beginner",
+    "student_mastery_level": 0.25,
+    "student_profile": {
+      "student_id": "std_var_beg",
+      "mastery_levels": {
+        "Variables and data types": 0.25
+      },
+      "performance_history": "First week of C programming; confused about why different data types need distinct amounts of memory.",
+      "common_misconceptions": [
+        "Assuming data type byte sizes are identical across all hardware architectures",
+        "Thinking float and double can represent all decimal numbers with infinite exact precision"
+      ],
+      "preferred_response_format": "Step-by-step conceptual explanation with memory size table and standard C code demonstration",
+      "preferred_pace": "slow"
+    },
+    "question": "Explain the fundamental integer and floating-point data types in C (int, float, double), their typical storage sizes under C99/C11 implementations, and why declaring a variable with the correct type is necessary for memory allocation and arithmetic.",
+    "expected_key_concepts": [
+      "int, float, and double purpose",
+      "Memory allocation and byte sizes determined by data type",
+      "Implementation-defined sizes with minimum standard ranges in limits.h and float.h",
+      "Type declaration informs compiler of binary representation and arithmetic operations"
+    ],
+    "concept_coverage_keywords": [
+      "int",
+      "float",
+      "double",
+      "sizeof",
+      "memory",
+      "bytes",
+      "implementation-defined"
+    ],
+    "reference_answer": "In C, variables are named memory locations holding typed values. The type declaration tells the compiler how much memory to allocate and which CPU instructions to generate for arithmetic. Under ISO C, the exact byte sizes of fundamental types are implementation-defined, though the standard specifies minimum representable ranges in <limits.h> and <float.h>. On typical 32-bit and 64-bit systems: `int` occupies 4 bytes (representing integers from -2,147,483,648 to 2,147,483,647); `float` occupies 4 bytes (IEEE-754 single precision, ~6-7 decimal digits); and `double` occupies 8 bytes (IEEE-754 double precision, ~15-17 decimal digits). Using the appropriate type prevents unintended truncation and optimizes memory usage.",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    printf(\"int: %zu bytes\\n\", sizeof(int));\n    printf(\"float: %zu bytes\\n\", sizeof(float));\n    printf(\"double: %zu bytes\\n\", sizeof(double));\n    return 0;\n}\n",
+    "expected_program_output": "int: 4 bytes\nfloat: 4 bytes\ndouble: 8 bytes\n",
+    "common_misconceptions": [
+      "Assuming data type byte sizes are identical across all hardware architectures",
+      "Thinking float and double can represent all decimal numbers with infinite exact precision"
+    ],
+    "c_standard_assumptions": "ISO C99/C11 standard; 32-bit/64-bit x86/x64 target where sizeof(int)=4, sizeof(float)=4, sizeof(double)=8."
+  },
+  {
+    "id": "pps_02",
+    "topic": "Variables and data types",
+    "difficulty": "Intermediate",
+    "student_mastery_level": 0.55,
+    "student_profile": {
+      "student_id": "std_var_int",
+      "mastery_levels": {
+        "Variables and data types": 0.55
+      },
+      "performance_history": "Familiar with int and float; confused when treating char as a number or doing arithmetic with characters.",
+      "common_misconceptions": [
+        "Believing ISO C guarantees ASCII encoding on all platforms",
+        "Thinking char is a separate non-numeric type unable to participate in integer arithmetic"
+      ],
+      "preferred_response_format": "Concise technical explanation highlighting C standard guarantees and character digit conversion code",
+      "preferred_pace": "moderate"
+    },
+    "question": "Explain character representation in C using char and int. Explain how characters map to numerical code values, what the C standard guarantees regarding character values (e.g. '0'-'9' contiguity), and clarify that character encoding schemes (such as ASCII) are implementation-defined rather than mandated as ASCII by the ISO C standard.",
+    "expected_key_concepts": [
+      "char is an integer type (usually 1 byte)",
+      "Character literals (e.g. 'A') evaluate to integer code points",
+      "ISO C standard guarantees that digits '0' through '9' have contiguous numerical values",
+      "Specific character encoding (such as ASCII or EBCDIC) is implementation-defined",
+      "Converting character digit to integer using expression 'ch - '0''"
+    ],
+    "concept_coverage_keywords": [
+      "char",
+      "integer",
+      "contiguous",
+      "encoding",
+      "implementation-defined",
+      "digit",
+      "ASCII"
+    ],
+    "reference_answer": "In C, `char` is an integer type representing character codes, occupying 1 byte (`sizeof(char) == 1` by definition). When a character constant like '5' is written, it represents the integer value of that character in the target execution character set. Crucially, the ISO C standard does NOT mandate ASCII; character encoding is implementation-defined. However, ISO C specifically guarantees that the decimal digits '0' through '9' are strictly contiguous and increasing. Therefore, subtracting '0' from any digit character `ch` (`ch - '0'`) is portable and guaranteed by the C standard to produce the correct numeric integer value (0 through 9). Letters 'a'-'z' are contiguous in ASCII, but not in all encodings (e.g., EBCDIC).",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    char digit_char = '7';\n    int numeric_value = digit_char - '0';\n    printf(\"Character: %c, Numeric value: %d\\n\", digit_char, numeric_value);\n    return 0;\n}\n",
+    "expected_program_output": "Character: 7, Numeric value: 7\n",
+    "common_misconceptions": [
+      "Believing ISO C guarantees ASCII encoding on all platforms",
+      "Thinking char is a separate non-numeric type unable to participate in integer arithmetic"
+    ],
+    "c_standard_assumptions": "ISO C99/C11 clause 5.2.1 guaranteeing contiguous numerical values for decimal digits 0 through 9."
+  },
+  {
+    "id": "pps_03",
+    "topic": "Variables and data types",
+    "difficulty": "Advanced",
+    "student_mastery_level": 0.85,
+    "student_profile": {
+      "student_id": "std_var_adv",
+      "mastery_levels": {
+        "Variables and data types": 0.85,
+        "Operators and expressions": 0.80
+      },
+      "performance_history": "Advanced learner; writing system-level code; inquired about integer overflow safety.",
+      "common_misconceptions": [
+        "Assuming signed integer overflow wraps around predictably like unsigned integers",
+        "Assuming the compiler is obligated to produce two's complement wrap-around on signed overflow"
+      ],
+      "preferred_response_format": "Rigorous standards-grounded explanation comparing unsigned modulo arithmetic with signed overflow undefined behavior",
+      "preferred_pace": "fast"
+    },
+    "question": "Explain type conversion (implicit coercion vs explicit casting) in C expressions, integer promotion rules, and the crucial distinction between unsigned integer wrap-around (well-defined modulo arithmetic) and signed integer overflow (which is Undefined Behavior in the ISO C standard).",
+    "expected_key_concepts": [
+      "Integer promotion rules before operations",
+      "Explicit casting vs implicit arithmetic conversion",
+      "Unsigned integers never overflow: arithmetic is defined modulo 2^N",
+      "Signed integer overflow is Undefined Behavior (UB) in ISO C",
+      "Compilers may optimize away code assuming signed overflow never occurs"
+    ],
+    "concept_coverage_keywords": [
+      "unsigned",
+      "modulo",
+      "signed",
+      "overflow",
+      "undefined behavior",
+      "promotion",
+      "casting"
+    ],
+    "reference_answer": "In C, operations on integer types smaller than `int` (such as `char` and `short`) undergo integer promotion to `int` or `unsigned int`. In mixed-type binary expressions, usual arithmetic conversions promote the smaller rank type to match the higher rank. A vital standards distinction exists regarding overflow: under ISO C, unsigned integer arithmetic is strictly defined modulo 2^N (where N is the number of value bits), so unsigned numbers wrap around deterministically without overflow. Conversely, signed integer overflow is Undefined Behavior (UB). Modern optimizing compilers take advantage of this UB assumption and may optimize away sanity checks that rely on signed overflow wrapping.",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    unsigned int u = 4294967295U; /* UINT_MAX on 32-bit */\n    unsigned int wrapped = u + 1U; /* Defined modulo 2^32 */\n    printf(\"Unsigned wrap-around: %u\\n\", wrapped);\n    return 0;\n}\n",
+    "expected_program_output": "Unsigned wrap-around: 0\n",
+    "common_misconceptions": [
+      "Assuming signed integer overflow wraps around predictably like unsigned integers",
+      "Assuming the compiler is obligated to produce two's complement wrap-around on signed overflow"
+    ],
+    "c_standard_assumptions": "ISO C99/C11 6.2.5p9 (unsigned arithmetic is modulo 2^N) and 6.5p5 (signed overflow produces undefined behavior)."
+  },
+  {
+    "id": "pps_04",
+    "topic": "Operators and expressions",
+    "difficulty": "Beginner",
+    "student_mastery_level": 0.30,
+    "student_profile": {
+      "student_id": "std_op_beg",
+      "mastery_levels": {
+        "Operators and expressions": 0.30,
+        "Variables and data types": 0.60
+      },
+      "performance_history": "Calculated averages in practice problem; got 2.0 instead of 2.5 and asked why.",
+      "common_misconceptions": [
+        "Believing the destination variable type on the LHS changes the division operation on the RHS",
+        "Thinking integer division rounds to the nearest integer"
+      ],
+      "preferred_response_format": "Intuitive step-by-step explanation with annotated C code comparing integer vs float division",
+      "preferred_pace": "slow"
+    },
+    "question": "Explain the difference between integer division and floating-point division in C. In an expression like `int a = 5, b = 2; float result = a / b;`, why is `result` evaluated to 2.0f instead of 2.5f, and how can explicit casting be used to obtain the floating-point quotient?",
+    "expected_key_concepts": [
+      "Division operator `/` behaves according to operand types, not the destination variable",
+      "Integer division truncates fractional part toward zero (C99)",
+      "`a / b` yields integer 2 before assignment to float",
+      "Explicit cast `(float)a / b` converts `a` to float, triggering floating-point division"
+    ],
+    "concept_coverage_keywords": [
+      "integer division",
+      "truncation",
+      "cast",
+      "float",
+      "operands",
+      "quotient"
+    ],
+    "reference_answer": "In C, operators are evaluated based on the types of their operands, completely independently of the variable receiving the final result. In `int a = 5, b = 2; float result = a / b;`, both `a` and `b` are integers, so integer division is performed. Under C99, integer division truncates toward zero, discarding the fractional part and yielding the integer `2`. That integer `2` is subsequently converted to `2.0f` when assigned to `float result`. To obtain `2.5f`, at least one operand must be converted to a floating-point type: `(float)a / b`. The cast operator `(float)` has higher precedence than division, producing `5.0f / 2`, which promotes `2` to `2.0f` and produces `2.5f`.",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    int a = 5, b = 2;\n    float int_div = a / b;\n    float float_div = (float)a / b;\n    printf(\"Integer division: %.1f, Float division: %.1f\\n\", int_div, float_div);\n    return 0;\n}\n",
+    "expected_program_output": "Integer division: 2.0, Float division: 2.5\n",
+    "common_misconceptions": [
+      "Believing the destination variable type on the LHS changes the division operation on the RHS",
+      "Thinking integer division rounds to the nearest integer"
+    ],
+    "c_standard_assumptions": "ISO C99 6.5.5p6: the result of the / operator is the algebraic quotient with any fractional part discarded (truncation toward zero)."
+  },
+  {
+    "id": "pps_05",
+    "topic": "Operators and expressions",
+    "difficulty": "Intermediate",
+    "student_mastery_level": 0.60,
+    "student_profile": {
+      "student_id": "std_op_int",
+      "mastery_levels": {
+        "Operators and expressions": 0.60
+      },
+      "performance_history": "Attempted to use `i = i++` in an assignment and observed inconsistent results across compilers.",
+      "common_misconceptions": [
+        "Believing operator precedence defines evaluation order or sequence points",
+        "Trying to calculate outcomes of unsequenced expressions like `i = i++` instead of recognizing them as Undefined Behavior"
+      ],
+      "preferred_response_format": "Technical comparison between prefix and postfix semantics and explicit warning against unsequenced modifications",
+      "preferred_pace": "moderate"
+    },
+    "question": "Explain the semantics of prefix increment (`++i`) versus postfix increment (`i++`) in C. Clarify their evaluation order and result in simple expressions, and explain why expressions that modify a variable multiple times without a sequence point (such as `i = i++` or `printf(\"%d %d\", i++, i++)`) produce unsequenced side effects leading to Undefined Behavior in ISO C.",
+    "expected_key_concepts": [
+      "Prefix increment `++i` increments value and returns the new incremented value",
+      "Postfix increment `i++` returns the original value and schedules increment side effect",
+      "Sequence points / sequenced-before relationships dictate when side effects take effect",
+      "Modifying a scalar object multiple times without sequencing is Undefined Behavior (UB)",
+      "Expressions like `i = i++` must never be used"
+    ],
+    "concept_coverage_keywords": [
+      "prefix",
+      "postfix",
+      "increment",
+      "side effect",
+      "sequence point",
+      "undefined behavior",
+      "unsequenced"
+    ],
+    "reference_answer": "In C, prefix increment `++i` increments the operand and evaluates to the new incremented value. Postfix increment `i++` evaluates to the current value of `i`, and the increment side effect takes place before the next sequence point. When used as standalone statements (`i++;` or `++i;`), both increment `i` by 1. However, ISO C (C99 6.5p2 / C11 6.5p2) states that between two sequence points, a scalar object shall have its stored value modified at most once by the evaluation of an expression. In expressions like `i = i++`, the variable `i` is modified by both the assignment and the postfix side effect without sequencing. This is Undefined Behavior (UB); compilers are not required to behave predictably, and code must keep increments strictly separated.",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    int x = 5;\n    int pre = ++x;  /* x becomes 6, pre is 6 */\n    int y = 5;\n    int post = y++; /* post is 5, y becomes 6 */\n    printf(\"Prefix result: %d (x=%d), Postfix result: %d (y=%d)\\n\", pre, x, post, y);\n    return 0;\n}\n",
+    "expected_program_output": "Prefix result: 6 (x=6), Postfix result: 5 (y=6)\n",
+    "common_misconceptions": [
+      "Believing operator precedence defines evaluation order or sequence points",
+      "Trying to calculate outcomes of unsequenced expressions like `i = i++` instead of recognizing them as Undefined Behavior"
+    ],
+    "c_standard_assumptions": "ISO C99 6.5p2 and C11 6.5p2 on sequence points and unsequenced side effects."
+  },
+  {
+    "id": "pps_06",
+    "topic": "Operators and expressions",
+    "difficulty": "Advanced",
+    "student_mastery_level": 0.80,
+    "student_profile": {
+      "student_id": "std_op_adv",
+      "mastery_levels": {
+        "Operators and expressions": 0.80,
+        "Conditionals": 0.75
+      },
+      "performance_history": "Comfortable with boolean logic; asked about safety guards and side effects in conditions.",
+      "common_misconceptions": [
+        "Confusing short-circuit logical operators (&&, ||) with bitwise operators (&, |)",
+        "Placing side effects in right-hand expressions of short-circuit operators assuming they always execute"
+      ],
+      "preferred_response_format": "Rigorous explanation of sequence points and short-circuit evaluation order with defensive programming examples",
+      "preferred_pace": "fast"
+    },
+    "question": "Explain short-circuit evaluation in C logical operators (`&&` and `||`). Explain how the left-to-right evaluation order and sequence point guarantees protect against invalid operations (e.g. guard against division by zero or NULL pointer dereference), and why placing expressions with side effects in the right-hand operand can cause subtle bugs.",
+    "expected_key_concepts": [
+      "Logical AND (`&&`) evaluates left operand first; skips right operand if left is 0 (false)",
+      "Logical OR (`||`) evaluates left operand first; skips right operand if left is non-zero (true)",
+      "Guaranteed sequence point between left and right operand evaluations",
+      "Used as defensive guard (e.g., checking `ptr != NULL` before dereference)",
+      "Side effects in skipped right operands never execute, causing unexpected bugs"
+    ],
+    "concept_coverage_keywords": [
+      "short-circuit",
+      "logical AND",
+      "logical OR",
+      "sequence point",
+      "guard",
+      "side effect",
+      "evaluation order"
+    ],
+    "reference_answer": "In C, the logical operators `&&` and `||` guarantee left-to-right evaluation and introduce a sequence point after the evaluation of the left-hand operand. If the left operand of `&&` evaluates to zero (false), the entire expression must be false, so the right-hand operand is never evaluated. Similarly, if the left operand of `||` evaluates to non-zero (true), the entire expression is true, and the right operand is bypassed. This short-circuit property is essential for defensive programming: it allows guarding hazardous operations, such as `if (b != 0 && a / b > 1)` or `if (ptr != NULL && *ptr == 10)`. However, programmers must never place required side effects (like `i++`) in the right operand, because they will not execute if short-circuited.",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    int divisor = 0;\n    int evaluated_safe = 0;\n    if (divisor != 0 && (10 / divisor) > 1) {\n        evaluated_safe = 1;\n    }\n    printf(\"Short circuit prevented division by zero: evaluated_safe=%d\\n\", evaluated_safe);\n    return 0;\n}\n",
+    "expected_program_output": "Short circuit prevented division by zero: evaluated_safe=0\n",
+    "common_misconceptions": [
+      "Confusing short-circuit logical operators (&&, ||) with bitwise operators (&, |)",
+      "Placing side effects in right-hand expressions of short-circuit operators assuming they always execute"
+    ],
+    "c_standard_assumptions": "ISO C99 6.5.13 and 6.5.14 defining sequence points and conditional evaluation of logical AND and OR operators."
+  },
+  {
+    "id": "pps_07",
+    "topic": "Conditionals",
+    "difficulty": "Beginner",
+    "student_mastery_level": 0.25,
+    "student_profile": {
+      "student_id": "std_cond_beg",
+      "mastery_levels": {
+        "Conditionals": 0.25,
+        "Variables and data types": 0.50
+      },
+      "performance_history": "Wrote `if (x = 0)` and was surprised that the `else` branch always executed.",
+      "common_misconceptions": [
+        "Confusing assignment `=` with relational equality `==`",
+        "Believing C compilers will reject `if (x = 5)` with a compilation error"
+      ],
+      "preferred_response_format": "Clear contrast between assignment and equality with step-by-step condition evaluation trace",
+      "preferred_pace": "slow"
+    },
+    "question": "Explain the difference between the assignment operator (`=`) and the relational equality operator (`==`) in C conditional statements. Explain why `if (x = 5)` is syntactically valid in C, what it evaluates to, and how this common student bug alters program execution.",
+    "expected_key_concepts": [
+      "`=` is an assignment operator that stores a value and yields the assigned value",
+      "`==` is a relational operator that compares two values and yields 1 (true) or 0 (false)",
+      "In C, any non-zero value in a conditional expression is treated as true; 0 is false",
+      "`if (x = 5)` assigns 5 to `x` and evaluates to 5 (true), always entering the if-branch",
+      "`if (x = 0)` assigns 0 to `x` and evaluates to 0 (false), never entering the if-branch"
+    ],
+    "concept_coverage_keywords": [
+      "assignment",
+      "equality",
+      "relational",
+      "truth value",
+      "non-zero",
+      "operator"
+    ],
+    "reference_answer": "In C, `=` and `==` serve entirely different purposes. The equality operator `==` compares two operands and evaluates to the integer `1` if equal, and `0` if not equal. In contrast, `=` is an assignment operator: it copies the right-hand value into the left-hand variable and evaluates to that assigned value. In C conditional statements (`if`, `while`), any non-zero integer is treated as true, while zero is false. When a programmer accidentally writes `if (x = 5)`, C executes the assignment, storing 5 in `x`, and the expression evaluates to 5. Since 5 is non-zero (true), the if-block executes unconditionally, overwriting the original value of `x`. Modern compilers emit warnings (`-Wall`) for assignment in conditionals.",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    int score = 100;\n    if (score == 100) {\n        printf(\"Correct check with ==: Perfect score\\n\");\n    }\n    return 0;\n}\n",
+    "expected_program_output": "Correct check with ==: Perfect score\n",
+    "common_misconceptions": [
+      "Confusing assignment `=` with relational equality `==`",
+      "Believing C compilers will reject `if (x = 5)` with a compilation error"
+    ],
+    "c_standard_assumptions": "ISO C99 6.5.9 (equality operators) and 6.5.16 (assignment operators)."
+  },
+  {
+    "id": "pps_08",
+    "topic": "Conditionals",
+    "difficulty": "Intermediate",
+    "student_mastery_level": 0.50,
+    "student_profile": {
+      "student_id": "std_cond_int",
+      "mastery_levels": {
+        "Conditionals": 0.50
+      },
+      "performance_history": "Encountered a logic bug where code formatted with indentation did not execute the branch expected.",
+      "common_misconceptions": [
+        "Assuming indentation determines code block association in C (like Python)",
+        "Believing an else binds to the first if in a nested statement without braces"
+      ],
+      "preferred_response_format": "Clear structural code walk-through explaining grammar rules and the necessity of explicit curly braces",
+      "preferred_pace": "moderate"
+    },
+    "question": "Explain nested if-else statements and the classic 'dangling else' ambiguity in C. Explain which `if` an `else` binds to according to C language syntax rules, and demonstrate how using explicit compound blocks with braces `{}` prevents logical bugs.",
+    "expected_key_concepts": [
+      "Dangling else problem in nested conditionals without braces",
+      "Grammar rule: an `else` binds to the nearest preceding unmatched `if` at the same block level",
+      "Indentation has no semantic meaning in C; it does not alter grammar binding",
+      "Using explicit compound statement braces `{}` resolves ambiguity and guarantees intended logic"
+    ],
+    "concept_coverage_keywords": [
+      "dangling else",
+      "nested",
+      "braces",
+      "nearest",
+      "indentation",
+      "block",
+      "compound statement"
+    ],
+    "reference_answer": "In C, nested conditionals without braces can lead to the 'dangling else' ambiguity. When an `else` follows nested `if` statements without braces, a question arises regarding which `if` the `else` belongs to. C grammar resolves this unambiguously: an `else` is always associated with the closest preceding unmatched `if` within the same block scope. Visual indentation in C is ignored by the compiler. If a programmer indents the `else` under the outer `if`, the compiler still attaches it to the inner `if`. To prevent severe logic bugs and ensure code clarity, best practice dictates always enclosing conditional bodies in explicit compound blocks using braces `{}`.",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    int a = 1, b = 0;\n    /* Using explicit braces to avoid dangling else ambiguity */\n    if (a > 0) {\n        if (b > 0) {\n            printf(\"Both positive\\n\");\n        } else {\n            printf(\"a is positive, b is not\\n\");\n        }\n    }\n    return 0;\n}\n",
+    "expected_program_output": "a is positive, b is not\n",
+    "common_misconceptions": [
+      "Assuming indentation determines code block association in C (like Python)",
+      "Believing an else binds to the first if in a nested statement without braces"
+    ],
+    "c_standard_assumptions": "ISO C99 6.8.4.1p2 defining else binding to the nearest preceding if."
+  },
+  {
+    "id": "pps_09",
+    "topic": "Conditionals",
+    "difficulty": "Advanced",
+    "student_mastery_level": 0.75,
+    "student_profile": {
+      "student_id": "std_cond_adv",
+      "mastery_levels": {
+        "Conditionals": 0.75,
+        "Operators and expressions": 0.75
+      },
+      "performance_history": "Building menu systems; missed a break in a switch-case statement causing fallthrough.",
+      "common_misconceptions": [
+        "Thinking switch cases automatically break at the end of each case block",
+        "Assuming floating-point numbers or strings can be used as switch condition expressions in C"
+      ],
+      "preferred_response_format": "In-depth explanation of switch jump table mechanics, case labels, intentional fallthrough, and break statements",
+      "preferred_pace": "fast"
+    },
+    "question": "Explain the mechanics of the `switch` statement in C. Detail the requirement for integral/enumeration controlling expressions, the role of `case` labels as jump targets, intentional vs unintentional fall-through, the purpose of `break`, and the function of the `default` label.",
+    "expected_key_concepts": [
+      "Controlling expression must evaluate to an integral or enumeration type (not float or string)",
+      "Case labels must be integer constant expressions known at compile-time",
+      "Execution jumps to matching case and continues sequentially through subsequent cases (fall-through) unless terminated by `break`",
+      "`break` exits the switch statement body",
+      "`default` label catches cases where no case constant matches"
+    ],
+    "concept_coverage_keywords": [
+      "switch",
+      "case",
+      "break",
+      "fall-through",
+      "integral",
+      "default",
+      "constant"
+    ],
+    "reference_answer": "In C, a `switch` statement provides multi-way branching based on an integral value. The controlling expression must evaluate to an integer or enumeration type (floating-point numbers and strings are prohibited). Each `case` label must be an integer compile-time constant expression. When executed, control jumps directly to the matching case label (often implemented via a jump table). Crucially, case labels act merely as entry points: execution continues sequentially downward into subsequent cases—a behavior known as fall-through. To exit the switch block after executing a case, an explicit `break` statement must be used. The optional `default` label executes when none of the case constants match the controlling expression.",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    int code = 2;\n    switch (code) {\n        case 1:\n            printf(\"Code 1\\n\");\n            break;\n        case 2:\n            printf(\"Code 2: Verified\\n\");\n            break;\n        default:\n            printf(\"Unknown code\\n\");\n            break;\n    }\n    return 0;\n}\n",
+    "expected_program_output": "Code 2: Verified\n",
+    "common_misconceptions": [
+      "Thinking switch cases automatically break at the end of each case block",
+      "Assuming floating-point numbers or strings can be used as switch condition expressions in C"
+    ],
+    "c_standard_assumptions": "ISO C99 6.8.4.2 defining switch statement constraints and execution semantics."
+  },
+  {
+    "id": "pps_10",
+    "topic": "For and while loops",
+    "difficulty": "Beginner",
+    "student_mastery_level": 0.20,
+    "student_profile": {
+      "student_id": "std_loop_beg1",
+      "mastery_levels": {
+        "For and while loops": 0.20,
+        "Variables and data types": 0.60
+      },
+      "performance_history": "First encounter with loops; repeatedly confused about when the update expression executes.",
+      "common_misconceptions": [
+        "Thinking the update expression (e.g. i++) runs before the loop body",
+        "Thinking the loop initialization expression executes on every iteration"
+      ],
+      "preferred_response_format": "Step-by-step execution trace table with annotated small C code showing exact variable states",
+      "preferred_pace": "slow"
+    },
+    "question": "Explain the four-part lifecycle of a C `for` loop: initialization, condition check, loop body execution, and iteration/update expression. Provide a step-by-step execution trace for `for (int i = 0; i < 3; i++)` highlighting the exact value of `i` at each step and when the loop terminates.",
+    "expected_key_concepts": [
+      "1. Initialization runs exactly once before any iteration",
+      "2. Condition expression evaluated before each iteration; if false (0), loop terminates immediately",
+      "3. Loop body executes only after condition evaluates to true (non-zero)",
+      "4. Update expression (e.g. `i++`) runs after each loop body completion, then loops back to condition",
+      "For `for (int i = 0; i < 3; i++)`, loop executes for i=0, 1, 2; terminates when i reaches 3 because 3 < 3 is false"
+    ],
+    "concept_coverage_keywords": [
+      "initialization",
+      "condition",
+      "body",
+      "update",
+      "iteration",
+      "terminates",
+      "lifecycle"
+    ],
+    "reference_answer": "In C, a `for` loop executes in four distinct phases: 1) Initialization: evaluated exactly once at the beginning (e.g., `int i = 0`). 2) Condition check: evaluated before every iteration. If true (non-zero), execution proceeds; if false (0), the loop terminates immediately without executing the body. 3) Body execution: statements inside the loop execute. 4) Update expression: evaluated strictly AFTER the loop body executes (e.g., `i++`). Control then returns directly to step 2 (condition check). For `for (int i = 0; i < 3; i++)`: Start: i=0; 0<3 is true -> body executes. Next: i becomes 1; 1<3 is true -> body executes. Next: i becomes 2; 2<3 is true -> body executes. Next: i becomes 3; 3<3 is false -> loop terminates. Total iterations: 3.",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    for (int i = 0; i < 3; i++) {\n        printf(\"Iteration i=%d\\n\", i);\n    }\n    return 0;\n}\n",
+    "expected_program_output": "Iteration i=0\nIteration i=1\nIteration i=2\n",
+    "common_misconceptions": [
+      "Thinking the update expression (e.g. i++) runs before the loop body",
+      "Thinking the loop initialization expression executes on every iteration"
+    ],
+    "c_standard_assumptions": "ISO C99 6.8.5.3 defining the execution sequence of the for statement."
+  },
+  {
+    "id": "pps_11",
+    "topic": "For and while loops",
+    "difficulty": "Beginner",
+    "student_mastery_level": 0.35,
+    "student_profile": {
+      "student_id": "std_loop_beg2",
+      "mastery_levels": {
+        "For and while loops": 0.35
+      },
+      "performance_history": "Struggles with off-by-one errors and termination conditions in while loops.",
+      "common_misconceptions": [
+        "The known misconception: stating that 'the loop continues until i is greater than n+1'",
+        "Confusing the loop termination condition with the continuation condition"
+      ],
+      "preferred_response_format": "Precise mathematical and logical trace of loop continuation condition vs termination point",
+      "preferred_pace": "slow"
+    },
+    "question": "Explain the execution flow and termination condition of a `while` loop in C calculating the sum of the first N natural numbers using `int i = 1; while (i <= n) { sum += i; i++; }`. Specifically explain the exact condition under which the loop continues, the exact value of `i` that causes the loop to terminate, and why the loop terminates when `i` reaches `n + 1` (because `i <= n` evaluates to false).",
+    "expected_key_concepts": [
+      "Loop continuation condition is `i <= n`: loop continues while this condition evaluates to true",
+      "Inside the body, `sum += i` accumulates and `i++` increments the counter",
+      "The loop terminates when `i` reaches `n + 1`, because `(n + 1) <= n` evaluates to false (0)",
+      "It is incorrect to claim the loop 'continues until i is greater than n+1'",
+      "Final value of `i` after loop termination is `n + 1`"
+    ],
+    "concept_coverage_keywords": [
+      "while",
+      "terminates",
+      "n + 1",
+      "false",
+      "condition",
+      "sum",
+      "continuation"
+    ],
+    "reference_answer": "In C, a `while` loop evaluates its controlling condition before each iteration. In `int i = 1; while (i <= n) { sum += i; i++; }`, the continuation condition is `i <= n`. As long as `i` is less than or equal to `n`, the loop body executes, adding `i` to `sum` and incrementing `i`. On the final valid iteration where `i == n`, `n <= n` is true, so `n` is added to `sum` and `i` increments to `n + 1`. In the subsequent check, the condition `(n + 1) <= n` evaluates to false (0). Therefore, the loop terminates precisely when `i` reaches `n + 1`. It is an educational error to say the loop continues until `i` is greater than `n + 1`; it stops the instant `i` reaches `n + 1`.",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    int n = 5, sum = 0, i = 1;\n    while (i <= n) {\n        sum += i;\n        i++;\n    }\n    printf(\"Sum of first %d numbers: %d, final i: %d\\n\", n, sum, i);\n    return 0;\n}\n",
+    "expected_program_output": "Sum of first 5 numbers: 15, final i: 6\n",
+    "common_misconceptions": [
+      "The known misconception: stating that 'the loop continues until i is greater than n+1'",
+      "Confusing the loop termination condition with the continuation condition"
+    ],
+    "c_standard_assumptions": "ISO C99 6.8.5.1: evaluation of while loop controlling expression before each execution of loop body."
+  },
+  {
+    "id": "pps_12",
+    "topic": "For and while loops",
+    "difficulty": "Intermediate",
+    "student_mastery_level": 0.60,
+    "student_profile": {
+      "student_id": "std_loop_int",
+      "mastery_levels": {
+        "For and while loops": 0.60
+      },
+      "performance_history": "Needs clarification on when to choose while vs do-while for interactive CLI programs.",
+      "common_misconceptions": [
+        "Assuming do-while can be skipped if condition is false initially",
+        "Omitting the required terminating semicolon after while(condition) in do-while"
+      ],
+      "preferred_response_format": "Comparison table with syntax rules and practical input validation code example",
+      "preferred_pace": "moderate"
+    },
+    "question": "Compare the `while` loop and the `do-while` loop in C. Explain the fundamental difference in when the loop condition is evaluated, guarantee of at least one execution in `do-while`, and identify practical scenarios where `do-while` is preferred (such as user input validation).",
+    "expected_key_concepts": [
+      "`while` loop is pre-tested: condition evaluated before body (can execute 0 times)",
+      "`do-while` loop is post-tested: condition evaluated after body (guaranteed to execute at least 1 time)",
+      "Syntax difference: `do-while` requires a trailing semicolon: `do { ... } while (cond);`",
+      "Ideal application: input validation and menu prompting where input must be gathered before validation"
+    ],
+    "concept_coverage_keywords": [
+      "while",
+      "do-while",
+      "pre-test",
+      "post-test",
+      "at least once",
+      "semicolon",
+      "validation"
+    ],
+    "reference_answer": "In C, the distinction between `while` and `do-while` lies in the timing of condition evaluation. A `while` loop is pre-tested: the condition is checked prior to entering the loop body. If the condition is false initially, the body executes zero times. Conversely, a `do-while` loop is post-tested: the body executes first, and the condition is evaluated at the end of each iteration. Consequently, a `do-while` loop is guaranteed to execute at least once, regardless of whether the condition is true or false initially. Notice also the syntax requirement: `do-while` must conclude with a semicolon after the closing parenthesis (`while (condition);`). A classic use case is input validation or menu displays.",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    int count = 0;\n    /* Condition is false initially, but executes once */\n    do {\n        count++;\n    } while (count < 1);\n    printf(\"do-while executed count=%d time\\n\", count);\n    return 0;\n}\n",
+    "expected_program_output": "do-while executed count=1 time\n",
+    "common_misconceptions": [
+      "Assuming do-while can be skipped if condition is false initially",
+      "Omitting the required terminating semicolon after while(condition) in do-while"
+    ],
+    "c_standard_assumptions": "ISO C99 6.8.5.2 defining do-while statement execution order."
+  },
+  {
+    "id": "pps_13",
+    "topic": "Nested loops",
+    "difficulty": "Intermediate",
+    "student_mastery_level": 0.45,
+    "student_profile": {
+      "student_id": "std_nest_int",
+      "mastery_levels": {
+        "Nested loops": 0.45,
+        "For and while loops": 0.70
+      },
+      "performance_history": "Solved 1D iteration; struggles with nested loop variable dependencies in pattern printing.",
+      "common_misconceptions": [
+        "Believing outer and inner loops step in parallel lockstep rather than inner completing full cycle per outer step",
+        "Accidentally reinitializing or modifying the outer loop variable inside the inner loop"
+      ],
+      "preferred_response_format": "Visual trace diagram and iteration breakdown of rows and columns for a triangle pattern",
+      "preferred_pace": "moderate"
+    },
+    "question": "Explain how nested loops operate in C by walking through a nested loop structure generating a right-angled triangle pattern of asterisks. Detail the relationship between the outer loop control variable (representing rows) and the inner loop control variable (representing columns), and calculate total loop iterations.",
+    "expected_key_concepts": [
+      "Outer loop controls row progression",
+      "Inner loop completely resets and executes all iterations for each single step of the outer loop",
+      "Inner loop bound depends on outer loop variable (e.g. `col <= row`)",
+      "Total inner iterations is the sum of an arithmetic progression: 1 + 2 + ... + N = N*(N+1)/2"
+    ],
+    "concept_coverage_keywords": [
+      "nested loops",
+      "outer loop",
+      "inner loop",
+      "rows",
+      "columns",
+      "iterations",
+      "pattern"
+    ],
+    "reference_answer": "In C, nested loops occur when one loop is placed entirely inside the body of another. The outer loop manages macro-level iteration (such as rows), while the inner loop manages micro-level iteration (such as columns). For each single iteration of the outer loop, the inner loop initializes, runs through its entire execution cycle until its condition becomes false, and terminates. In pattern printing, the inner loop's termination condition frequently depends on the outer loop counter (e.g., `for (int j = 1; j <= i; j++)`). For a triangle of N=3 rows, the inner loop runs 1 time for row 1, 2 times for row 2, and 3 times for row 3, totaling N(N+1)/2 = 6 iterations.",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    int rows = 3;\n    for (int i = 1; i <= rows; i++) {\n        for (int j = 1; j <= i; j++) {\n            printf(\"*\");\n        }\n        printf(\"\\n\");\n    }\n    return 0;\n}\n",
+    "expected_program_output": "*\n**\n***\n",
+    "common_misconceptions": [
+      "Believing outer and inner loops step in parallel lockstep rather than inner completing full cycle per outer step",
+      "Accidentally reinitializing or modifying the outer loop variable inside the inner loop"
+    ],
+    "c_standard_assumptions": "ISO C99 nested iteration control constructs."
+  },
+  {
+    "id": "pps_14",
+    "topic": "Nested loops",
+    "difficulty": "Advanced",
+    "student_mastery_level": 0.70,
+    "student_profile": {
+      "student_id": "std_nest_adv1",
+      "mastery_levels": {
+        "Nested loops": 0.70,
+        "Arrays": 0.65
+      },
+      "performance_history": "Working with 2D matrices; interested in memory layout and traversal efficiency.",
+      "common_misconceptions": [
+        "Thinking 2D arrays in C are arrays of scattered pointers rather than a contiguous memory block",
+        "Assuming row-major and column-major traversals exhibit identical performance on modern CPU caches"
+      ],
+      "preferred_response_format": "Technical analysis of row-major contiguous memory indexing, cache locality, and asymptotic complexity",
+      "preferred_pace": "fast"
+    },
+    "question": "Explain how nested loops are used to traverse a 2D array in C in row-major order. Explain C's contiguous memory layout for multi-dimensional arrays, why row-major traversal (outer loop over rows, inner loop over columns) yields optimal cache locality compared to column-major traversal, and express the asymptotic time complexity.",
+    "expected_key_concepts": [
+      "2D arrays in C are allocated as a single contiguous block of memory in row-major order",
+      "Element `matrix[i][j]` maps linearly to offset `(i * COLS) + j`",
+      "Row-major traversal accesses adjacent memory locations in sequence, maximizing CPU cache line hits",
+      "Column-major traversal strides across memory by `COLS * sizeof(element)`, causing potential cache misses",
+      "Asymptotic time complexity is O(ROWS * COLS)"
+    ],
+    "concept_coverage_keywords": [
+      "row-major",
+      "contiguous",
+      "cache locality",
+      "matrix",
+      "stride",
+      "complexity",
+      "offset"
+    ],
+    "reference_answer": "In C, multi-dimensional arrays are stored contiguously in memory in 'row-major order'. In a 2D array `int matrix[R][C]`, row 0 is stored first in continuous memory, followed immediately by row 1, and so on. The element `matrix[i][j]` maps to linear byte offset `(i * C + j) * sizeof(int)`. Traversal using nested loops where the outer loop iterates over rows (`i`) and the inner loop iterates over columns (`j`) accesses memory sequentially with stride 1. This sequential access maximizes spatial cache locality, loading entire CPU cache lines that satisfy subsequent iterations. Swapping loops into column-major order introduces large memory strides that may cause cache misses on large matrices. Time complexity is O(R * C).",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    int matrix[2][3] = {{1, 2, 3}, {4, 5, 6}};\n    int sum = 0;\n    for (int i = 0; i < 2; i++) {\n        for (int j = 0; j < 3; j++) {\n            sum += matrix[i][j];\n        }\n    }\n    printf(\"Matrix sum: %d\\n\", sum);\n    return 0;\n}\n",
+    "expected_program_output": "Matrix sum: 21\n",
+    "common_misconceptions": [
+      "Thinking 2D arrays in C are arrays of scattered pointers rather than a contiguous memory block",
+      "Assuming row-major and column-major traversals exhibit identical performance on modern CPU caches"
+    ],
+    "c_standard_assumptions": "ISO C99 6.5.2.1 multi-dimensional array memory layout (contiguous row-major)."
+  },
+  {
+    "id": "pps_15",
+    "topic": "Nested loops",
+    "difficulty": "Advanced",
+    "student_mastery_level": 0.85,
+    "student_profile": {
+      "student_id": "std_nest_adv2",
+      "mastery_levels": {
+        "Nested loops": 0.85,
+        "Conditionals": 0.85
+      },
+      "performance_history": "Searching for targets in 2D arrays; tried using a single break to exit both nested loops.",
+      "common_misconceptions": [
+        "Expecting a single break statement to exit all enclosing nested loops",
+        "Resorting to unstructured goto without understanding structured flag/return alternatives"
+      ],
+      "preferred_response_format": "Rigorous explanation of break statement scoping with structured multi-loop termination idioms",
+      "preferred_pace": "fast"
+    },
+    "question": "Explain the scope and behavior of the `break` and `continue` statements within nested loops in C. Clarify that `break` terminates only the innermost enclosing loop, and explain standard idiomatic patterns (such as flag variables or returning from a function) used to break out of multiple nested loops without unstructured goto.",
+    "expected_key_concepts": [
+      "`break` statement terminates only the immediately enclosing loop (innermost loop)",
+      "`continue` skips the remainder of the innermost loop's body and jumps to its update step",
+      "An inner `break` returns execution control to the outer loop",
+      "Exiting multiple nested loops requires structured techniques: boolean flag variable or function return"
+    ],
+    "concept_coverage_keywords": [
+      "break",
+      "continue",
+      "innermost",
+      "nested",
+      "scope",
+      "flag",
+      "return"
+    ],
+    "reference_answer": "In C, the `break` and `continue` statements operate strictly on the innermost enclosing loop. When `break` executes inside an inner loop, it terminates only that inner loop; control transfers immediately to the statement following the inner loop, within the outer loop's body. The outer loop continues its remaining iterations unaffected. Similarly, `continue` skips the remainder of the innermost loop body and jumps to that inner loop's update step. A common misconception among students is expecting `break` to exit both loops. To terminate multi-level nested loops cleanly, standard idiomatic solutions include using a boolean flag variable checked by the outer loop, or factoring the search into a dedicated function and executing `return`.",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    int found = 0;\n    for (int i = 0; i < 3 && !found; i++) {\n        for (int j = 0; j < 3; j++) {\n            if (i == 1 && j == 1) {\n                found = 1;\n                break; /* Exits inner loop */\n            }\n        }\n    }\n    printf(\"Search completed with flag: found=%d\\n\", found);\n    return 0;\n}\n",
+    "expected_program_output": "Search completed with flag: found=1\n",
+    "common_misconceptions": [
+      "Expecting a single break statement to exit all enclosing nested loops",
+      "Resorting to unstructured goto without understanding structured flag/return alternatives"
+    ],
+    "c_standard_assumptions": "ISO C99 6.8.6.2 (continue) and 6.8.6.3 (break) defining lexical loop scoping."
+  },
+  {
+    "id": "pps_16",
+    "topic": "Arrays",
+    "difficulty": "Beginner",
+    "student_mastery_level": 0.25,
+    "student_profile": {
+      "student_id": "std_arr_beg",
+      "mastery_levels": {
+        "Arrays": 0.25,
+        "Variables and data types": 0.60
+      },
+      "performance_history": "Wrote `for (int i = 0; i <= N; i++) arr[i] = 0;` and experienced program crashes.",
+      "common_misconceptions": [
+        "Believing an array of size N has valid indices from 1 to N",
+        "Believing C automatically performs array bounds checking and throws exceptions",
+        "Thinking out-of-bounds access safely returns zero"
+      ],
+      "preferred_response_format": "Careful breakdown of 0-based indexing with explicit explanation of Undefined Behavior and memory safety",
+      "preferred_pace": "slow"
+    },
+    "question": "Explain 1D array declaration, 0-based indexing, and valid index ranges in C for an array of size N (`0` to `N - 1`). Explicitly explain what happens when code accesses an element at index `N` or negative indices: why does the C standard classify out-of-bounds access as Undefined Behavior (UB), and why does C not perform automatic bounds checking?",
+    "expected_key_concepts": [
+      "Arrays in C use 0-based indexing; valid indices for size N are strictly `0` to `N - 1`",
+      "Accessing `arr[N]` is an off-by-one error (accesses N+1th element outside allocated bounds)",
+      "Standard C does not perform automatic runtime bounds checking for maximum execution speed",
+      "Out-of-bounds array access constitutes Undefined Behavior (UB) under ISO C",
+      "Consequences of UB: silent data corruption, segmentation fault/crash, or security exploits (buffer overflow)"
+    ],
+    "concept_coverage_keywords": [
+      "0-based indexing",
+      "bounds",
+      "undefined behavior",
+      "N - 1",
+      "buffer overflow",
+      "corruption",
+      "off-by-one"
+    ],
+    "reference_answer": "In C, an array is a fixed-size sequence of elements stored in contiguous memory. C uses 0-based indexing: for an array declared as `int arr[N]`, valid indices are strictly `0` through `N - 1`. Crucially, standard C performs NO automatic runtime bounds checking. When code accesses `arr[N]`, it calculates memory address `arr + N` and attempts to read or write memory outside the array's allocation. The ISO C standard classifies any out-of-bounds access as Undefined Behavior (UB). The program might crash with a segmentation fault, overwrite adjacent stack variables, read stale garbage, or appear to run normally while creating dangerous security vulnerabilities.",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    int arr[3] = {10, 20, 30};\n    /* Strictly valid indices are 0, 1, 2 */\n    int sum = 0;\n    for (int i = 0; i < 3; i++) {\n        sum += arr[i];\n    }\n    printf(\"Valid array sum: %d\\n\", sum);\n    return 0;\n}\n",
+    "expected_program_output": "Valid array sum: 60\n",
+    "common_misconceptions": [
+      "Believing an array of size N has valid indices from 1 to N",
+      "Believing C automatically performs array bounds checking and throws exceptions",
+      "Thinking out-of-bounds access safely returns zero"
+    ],
+    "c_standard_assumptions": "ISO C99 6.5.6p8 defining pointer arithmetic bounds and undefined behavior outside array limits."
+  },
+  {
+    "id": "pps_17",
+    "topic": "Arrays",
+    "difficulty": "Intermediate",
+    "student_mastery_level": 0.55,
+    "student_profile": {
+      "student_id": "std_arr_int",
+      "mastery_levels": {
+        "Arrays": 0.55,
+        "Functions": 0.40
+      },
+      "performance_history": "Passed an array to a function and tried `sizeof(arr)/sizeof(arr[0])` inside the function, receiving 1 or 2 instead of array length.",
+      "common_misconceptions": [
+        "Believing `sizeof` inside a function returns the total byte size of a passed array",
+        "Thinking array arguments are passed by value with a full copy of all elements",
+        "Thinking partially initialized arrays leave uninitialized elements with indeterminate garbage"
+      ],
+      "preferred_response_format": "Technical explanation comparing array declaration scope with function parameter decay and code demonstration",
+      "preferred_pace": "moderate"
+    },
+    "question": "Explain array initialization in C (full initialization, partial initialization with zero-fill, and implicit sizing). Explain the behavior of the `sizeof` operator on arrays in the scope of declaration, versus what occurs when an array is passed to a function (array decay to pointer).",
+    "expected_key_concepts": [
+      "Partial initialization (e.g. `int a[5] = {1, 2};`) automatically zero-initializes all remaining elements",
+      "In declaration scope, `sizeof(arr)` evaluates to total bytes allocated",
+      "When passed to a function or used in most expressions, array decays to a pointer to its first element (`int *`)",
+      "Inside function parameter list, `void fn(int arr[])` is syntax sugar for `void fn(int *arr)`",
+      "`sizeof` inside function gives pointer size, requiring array size to be passed as a separate argument"
+    ],
+    "concept_coverage_keywords": [
+      "decay",
+      "pointer",
+      "sizeof",
+      "initialization",
+      "zero-fill",
+      "parameter",
+      "scope"
+    ],
+    "reference_answer": "In C, arrays can be fully initialized (`int a[3] = {1, 2, 3};`), implicitly sized (`int a[] = {1, 2};`), or partially initialized (`int a[5] = {1, 2};`). Under ISO C, if an array has an initializer list with fewer elements than its declared size, all remaining elements are guaranteed to be initialized to zero (or null pointer). Regarding `sizeof`: in the scope where the array is declared, `sizeof(arr)` evaluates to the total bytes allocated for the array. However, when an array is passed to a function, it 'decays' to a pointer to its first element (`int *`). Inside the function, `sizeof(arr)` returns the size of the pointer (4 or 8 bytes), NOT the array size. Hence, C functions must accept array length as a separate parameter.",
+    "trusted_reference_code": "#include <stdio.h>\n\nvoid print_first(const int *ptr) {\n    printf(\"First element via pointer: %d\\n\", *ptr);\n}\n\nint main(void) {\n    int arr[5] = {10, 20}; /* Remaining 3 elements guaranteed to be 0 */\n    size_t total_bytes = sizeof(arr);\n    size_t count = sizeof(arr) / sizeof(arr[0]);\n    printf(\"Array elements: %zu, Total bytes: %zu, Element 2: %d\\n\", count, total_bytes, arr[2]);\n    print_first(arr);\n    return 0;\n}\n",
+    "expected_program_output": "Array elements: 5, Total bytes: 20, Element 2: 0\nFirst element via pointer: 10\n",
+    "common_misconceptions": [
+      "Believing `sizeof` inside a function returns the total byte size of a passed array",
+      "Thinking array arguments are passed by value with a full copy of all elements",
+      "Thinking partially initialized arrays leave uninitialized elements with indeterminate garbage"
+    ],
+    "c_standard_assumptions": "ISO C99 6.7.8p21 (zero-filling remaining elements) and 6.3.2.1p3 (array-to-pointer decay)."
+  },
+  {
+    "id": "pps_18",
+    "topic": "Arrays",
+    "difficulty": "Advanced",
+    "student_mastery_level": 0.75,
+    "student_profile": {
+      "student_id": "std_arr_adv",
+      "mastery_levels": {
+        "Arrays": 0.75,
+        "For and while loops": 0.85
+      },
+      "performance_history": "Solved basic array problems; tried reversing an array by looping from 0 to N and ended up with original array.",
+      "common_misconceptions": [
+        "Iterating all the way to N instead of N/2, resulting in swapping elements back to their original spots",
+        "Using an auxiliary array when an in-place O(1) space swap is required"
+      ],
+      "preferred_response_format": "Algorithmic walk-through of two-pointer swap with loop boundary invariant proof",
+      "preferred_pace": "fast"
+    },
+    "question": "Demonstrate and explain an algorithm to reverse a 1D array of integers in-place in C using two-pointer/index swapping. Detail the loop termination condition (`left < right`), explain why the loop runs floor(N/2) iterations, and verify that elements are not swapped back to their original positions.",
+    "expected_key_concepts": [
+      "Two-index technique: `left = 0`, `right = N - 1`",
+      "Swap elements using temporary variable: `temp = arr[left]; arr[left] = arr[right]; arr[right] = temp;`",
+      "Loop continues while `left < right` and stops when indices meet or cross",
+      "Number of iterations is strictly floor(N/2)",
+      "Looping up to N would double-swap elements, restoring the original array order",
+      "O(N) time complexity and O(1) auxiliary space"
+    ],
+    "concept_coverage_keywords": [
+      "reverse",
+      "in-place",
+      "swap",
+      "left < right",
+      "temporary variable",
+      "iterations",
+      "N/2"
+    ],
+    "reference_answer": "Reversing an array in-place requires swapping symmetric pairs from the outside inward. Two indices are initialized: `left = 0` and `right = N - 1`. On each iteration, a temporary variable holds `arr[left]`, `arr[left]` is assigned `arr[right]`, and `arr[right]` receives the temporary value. Then `left++` and `right--`. The loop continuation condition is strictly `left < right`. When `left` meets or crosses `right`, all symmetric pairs have been swapped. This executes exactly floor(N/2) swaps. A common student error is running the loop from 0 to `N - 1`: doing so swaps the elements twice, returning the array to its original unreversed state. The algorithm operates in O(N) time and O(1) space.",
+    "trusted_reference_code": "#include <stdio.h>\n\nint main(void) {\n    int arr[5] = {1, 2, 3, 4, 5};\n    int n = 5;\n    int left = 0, right = n - 1;\n    while (left < right) {\n        int temp = arr[left];\n        arr[left] = arr[right];\n        arr[right] = temp;\n        left++;\n        right--;\n    }\n    printf(\"Reversed: %d %d %d %d %d\\n\", arr[0], arr[1], arr[2], arr[3], arr[4]);\n    return 0;\n}\n",
+    "expected_program_output": "Reversed: 5 4 3 2 1\n",
+    "common_misconceptions": [
+      "Iterating all the way to N instead of N/2, resulting in swapping elements back to their original spots",
+      "Using an auxiliary array when an in-place O(1) space swap is required"
+    ],
+    "c_standard_assumptions": "ISO C99 standard array manipulation with bounded integer indices."
+  },
+  {
+    "id": "pps_19",
+    "topic": "Functions",
+    "difficulty": "Beginner",
+    "student_mastery_level": 0.30,
+    "student_profile": {
+      "student_id": "std_fn_beg",
+      "mastery_levels": {
+        "Functions": 0.30,
+        "Variables and data types": 0.60
+      },
+      "performance_history": "Tried writing `void swap(int a, int b) { int t = a; a = b; b = t; }` and wondered why variables didn't swap in main.",
+      "common_misconceptions": [
+        "Believing C passes arguments by reference by default",
+        "Confusing formal parameters inside a function with actual arguments in the caller",
+        "Assuming assigning to a parameter modifies caller memory"
+      ],
+      "preferred_response_format": "Memory stack frame diagram and step-by-step trace showing caller vs callee variable copies",
+      "preferred_pace": "slow"
+    },
+    "question": "Explain function declaration (prototypes), definition, and the fundamental call-by-value parameter passing mechanism in C. Using an attempt to swap two integers `void swap(int a, int b)`, explain why the caller's arguments remain unchanged after the function executes, and how stack frames isolate local parameter copies.",
+    "expected_key_concepts": [
+      "Function prototype informs compiler of signature before use",
+      "All arguments in C are passed strictly call-by-value",
+      "Calley creates new local parameter variables on its stack frame and copies values from arguments",
+      "Modifications to parameters `a` and `b` inside `swap` affect only local stack copies",
+      "When function returns, callee stack frame is popped; caller's variables remain completely unchanged"
+    ],
+    "concept_coverage_keywords": [
+      "call-by-value",
+      "prototype",
+      "stack frame",
+      "copies",
+      "isolate",
+      "caller",
+      "callee"
+    ],
+    "reference_answer": "In C, all function arguments are passed strictly by value. When a function is called, the CPU allocates a new stack frame for that function call. The formal parameters (e.g. `int a, int b`) are local variables allocated on this new stack frame, initialized with copies of the caller's argument values. In a naive swap `void swap(int a, int b) { int t = a; a = b; b = t; }`, the operations swap the local copies stored on `swap`'s stack frame. When `swap` finishes and returns, its stack frame is discarded. The caller's variables in `main` were never accessed or modified, and remain unchanged. To allow a function to modify caller variables, the caller must pass memory addresses (pointers).",
+    "trusted_reference_code": "#include <stdio.h>\n\nvoid attempt_swap(int a, int b) {\n    int temp = a;\n    a = b;\n    b = temp;\n}\n\nint main(void) {\n    int x = 10, y = 20;\n    attempt_swap(x, y);\n    printf(\"After call-by-value attempt: x=%d, y=%d\\n\", x, y);\n    return 0;\n}\n",
+    "expected_program_output": "After call-by-value attempt: x=10, y=20\n",
+    "common_misconceptions": [
+      "Believing C passes arguments by reference by default",
+      "Confusing formal parameters inside a function with actual arguments in the caller",
+      "Assuming assigning to a parameter modifies caller memory"
+    ],
+    "c_standard_assumptions": "ISO C99 6.5.2.2p4 defining argument evaluation and pass-by-value semantics."
+  },
+  {
+    "id": "pps_20",
+    "topic": "Functions",
+    "difficulty": "Intermediate",
+    "student_mastery_level": 0.65,
+    "student_profile": {
+      "student_id": "std_fn_int",
+      "mastery_levels": {
+        "Functions": 0.65,
+        "Variables and data types": 0.75
+      },
+      "performance_history": "Learned pointers conceptually; now applying them to functions for simulated pass-by-reference.",
+      "common_misconceptions": [
+        "Thinking C has a native pass-by-reference keyword like C++ or Pascal",
+        "Returning a pointer to an automatic local stack variable, causing dangling pointer undefined behavior"
+      ],
+      "preferred_response_format": "Precise technical breakdown of address passing, dereference mechanics, and stack variable lifetime warnings",
+      "preferred_pace": "moderate"
+    },
+    "question": "Explain how to achieve 'call-by-reference' effects in C using pointers as function parameters. Provide a correct implementation of `void swap(int *a, int *b)`, explain the address-of operator (`&`) and dereference operator (`*`), and explain the storage duration and lifetime of local variables versus pointer targets (warning against returning pointers to local automatic stack variables).",
+    "expected_key_concepts": [
+      "C achieves call-by-reference effects by passing memory addresses (pointers) by value",
+      "Address-of operator `&x` extracts the memory address of caller variable",
+      "Dereference operator `*a` accesses and modifies the memory location pointed to",
+      "Local automatic stack variables cease to exist when the function returns",
+      "Returning a pointer to a local stack variable causes Undefined Behavior (dangling pointer)"
+    ],
+    "concept_coverage_keywords": [
+      "pointer",
+      "address-of",
+      "dereference",
+      "call-by-reference",
+      "stack",
+      "lifetime",
+      "dangling pointer",
+      "undefined behavior"
+    ],
+    "reference_answer": "While C does not have native reference types, it achieves call-by-reference semantics by passing pointers (memory addresses) by value. In `void swap(int *a, int *b)`, parameters `a` and `b` receive the memory addresses of the caller's variables via the address-of operator (`&x, &y`). Inside `swap`, the dereference operator `*a` accesses and updates the actual memory location belonging to the caller. This enables permanent modifications across function boundaries. Regarding lifetime: automatic variables declared inside a function have block scope and automatic storage duration; their memory is deallocated when the function returns. Therefore, returning a pointer to a local stack variable produces a dangling pointer, and dereferencing it is severe Undefined Behavior (UB).",
+    "trusted_reference_code": "#include <stdio.h>\n\nvoid swap(int *a, int *b) {\n    int temp = *a;\n    *a = *b;\n    *b = temp;\n}\n\nint main(void) {\n    int x = 10, y = 20;\n    swap(&x, &y);\n    printf(\"After pointer swap: x=%d, y=%d\\n\", x, y);\n    return 0;\n}\n",
+    "expected_program_output": "After pointer swap: x=20, y=10\n",
+    "common_misconceptions": [
+      "Thinking C has a native pass-by-reference keyword like C++ or Pascal",
+      "Returning a pointer to an automatic local stack variable, causing dangling pointer undefined behavior"
+    ],
+    "c_standard_assumptions": "ISO C99 6.2.4 (storage duration of objects) and 6.5.3.2 (address and indirection operators)."
+  }
+]

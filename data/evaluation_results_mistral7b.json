@@ -1,0 +1,1125 @@
+{
+  "model_name": "mistral:7b",
+  "inference_provider": "OllamaLLMClient",
+  "timestamp": "2026-09-27T07:43:11.741374+00:00",
+  "total_questions": 20,
+  "successful_inferences": 20,
+  "failed_inferences": 0,
+  "mean_latency_seconds": 26.932,
+  "total_prompt_tokens": 6652,
+  "total_completion_tokens": 12581,
+  "mean_concept_coverage_ratio": 0.849,
+  "compiler_detected": "C:\\MinGW\\bin\\gcc.exe",
+  "trusted_reference_runs": 20,
+  "trusted_reference_passed": 20,
+  "while_loop_regressions_detected": 0,
+  "results": [
+    {
+      "benchmark_id": "pps_01",
+      "topic": "Variables and data types",
+      "difficulty": "Beginner",
+      "student_mastery_level": 0.25,
+      "question": "Explain the fundamental integer and floating-point data types in C (int, float, double), their typical storage sizes under C99/C11 implementations, and why declaring a variable with the correct type is necessary for memory allocation and arithmetic.",
+      "generated_content": " Welcome to C Programming for Problem Solving! Let's dive into the fascinating world of variables and data types, starting with integers and floating-point numbers.\n\nIn C, we use different data types to store and manipulate various kinds of data. You might be wondering why we need distinct data types if they all consume memory. Let's break it down:\n\n1. **Integers (int):**\n   - An integer is a whole number, either positive, negative, or zero.\n   - In C, integers are stored in memory using the 'int' data type.\n   - On a typical 32-bit/64-bit x86/x64 system, an 'int' occupies 4 bytes (sizeof(int)=4) of memory.\n   - Here's a simple example of an integer variable declaration and assignment:\n\n```c\nint myInteger = 10;\n```\n\n2. **Floating-point numbers (float and double):**\n   - Floating-point numbers represent real numbers, with or without a fractional part.\n   - In C, we have two floating-point data types: 'float' and 'double'.\n   - A 'float' typically occupies 4 bytes (sizeof(float)=4) of memory, while a 'double' occupies 8 bytes (sizeof(double)=8).\n   - The 'double' data type is capable of storing more precise decimal numbers compared to 'float'.\n   - Here's an example of floating-point variable declarations and assignments:\n\n```c\nfloat myFloat = 3.14;\ndouble myDouble = 2.71828;\n```\n\nIt's essential to declare variables with the correct data type for several reasons:\n\n- **Memory Allocation:** By declaring the correct data type, you ensure the variable is allocated the appropriate amount of memory, which can affect the performance of your program.\n- **Arithmetic Precision:** Using the correct data type ensures that your calculations are as precise as possible, as different data types can handle different ranges and precision of values.\n\nNow, let's clarify a couple of common misconceptions:\n\n- Data type sizes can vary across different hardware architectures, but in the context of the C99/C11 standard, we've provided typical sizes for x86/x64 systems.\n- Both 'float' and 'double' store decimal numbers, but they do not provide infinite exact precision. They are approximations of real numbers and can only store a finite number of significant digits.\n\nHope this helps you better understand the fundamental data types in C! Keep practicing, and you'll be a C programming whiz in no time. Good luck with your journey!",
+      "latency_seconds": 26.257,
+      "prompt_tokens": 327,
+      "completion_tokens": 614,
+      "total_tokens": 941,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "int",
+            "float",
+            "double",
+            "sizeof",
+            "memory",
+            "bytes"
+          ],
+          "missing_keywords": [
+            "implementation-defined"
+          ],
+          "coverage_ratio": 0.857
+        },
+        "extracted_c_code": "int myInteger = 10;\n\nfloat myFloat = 3.14;\ndouble myDouble = 2.71828;",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    printf(\"int: %zu bytes\\n\", sizeof(int));\n    printf(\"float: %zu bytes\\n\", sizeof(float));\n    printf(\"double: %zu bytes\\n\", sizeof(double));\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "int: 4 bytes\nfloat: 4 bytes\ndouble: 8 bytes\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1069,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_02",
+      "topic": "Variables and data types",
+      "difficulty": "Intermediate",
+      "student_mastery_level": 0.55,
+      "question": "Explain character representation in C using char and int. Explain how characters map to numerical code values, what the C standard guarantees regarding character values (e.g. '0'-'9' contiguity), and clarify that character encoding schemes (such as ASCII) are implementation-defined rather than mandated as ASCII by the ISO C standard.",
+      "generated_content": " In C, a `char` is a data type that represents a single character. However, it's essential to understand that characters in C are internally represented as numerical codes, known as ASCII (American Standard Code for Information Interchange) codes on many systems, but the C standard does not mandate ASCII encoding. Instead, it guarantees that decimal digits from '0' to '9' will have contiguous numerical values (ISO C99/C11, clause 5.2.1).\n\nHere's a practical example to demonstrate character representation and conversion between `char` and `int`:\n\n```c\n#include <stdio.h>\n\nint main() {\n    char digit = '0'; // Initialize a char variable with a digit\n    int digit_int = digit - '0'; // Convert char to int by subtracting ASCII value of '0'\n\n    printf(\"The digit represented by the char is: %d\\n\", digit_int);\n\n    // You can perform arithmetic operations with char variables, but the result may not be intuitive:\n    char char_sum = digit + 5; // Here '5' is treated as ASCII '5'\n    printf(\"The sum of the char and 5 is: %c\\n\", char_sum);\n\n    // To perform integer arithmetic with characters, convert them to int first:\n    char char_a = 'A';\n    char char_b = 'B';\n    int char_a_int = char_a - 'A' + 10; // Convert char to int, add 10 for integer arithmetic, then convert back to char\n    int char_b_int = char_b - 'A' + 10;\n    int sum = char_a_int + char_b_int - 20; // Perform integer arithmetic\n    char result = sum + 'A' - 10; // Convert integer back to char\n\n    printf(\"The sum of ASCII values of 'A' and 'B' is: %c\\n\", result);\n\n    return 0;\n}\n```\n\nIn summary, characters in C are internally represented as numerical codes. While ASCII is commonly used, the C standard does not mandate ASCII encoding. To perform arithmetic with characters, it's recommended to convert them to integers first. Keep in mind that the ISO C standard only guarantees contiguous numerical values for decimal digits 0 through 9.",
+      "latency_seconds": 25.063,
+      "prompt_tokens": 333,
+      "completion_tokens": 569,
+      "total_tokens": 902,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "char",
+            "integer",
+            "contiguous",
+            "encoding",
+            "digit",
+            "ASCII"
+          ],
+          "missing_keywords": [
+            "implementation-defined"
+          ],
+          "coverage_ratio": 0.857
+        },
+        "extracted_c_code": "#include <stdio.h>\n\nint main() {\n    char digit = '0'; // Initialize a char variable with a digit\n    int digit_int = digit - '0'; // Convert char to int by subtracting ASCII value of '0'\n\n    printf(\"The digit represented by the char is: %d\\n\", digit_int);\n\n    // You can perform arithmetic operations with char variables, but the result may not be intuitive:\n    char char_sum = digit + 5; // Here '5' is treated as ASCII '5'\n    printf(\"The sum of the char and 5 is: %c\\n\", char_sum);\n\n    // To perform integer arithmetic with characters, convert them to int first:\n    char char_a = 'A';\n    char char_b = 'B';\n    int char_a_int = char_a - 'A' + 10; // Convert char to int, add 10 for integer arithmetic, then convert back to char\n    int char_b_int = char_b - 'A' + 10;\n    int sum = char_a_int + char_b_int - 20; // Perform integer arithmetic\n    char result = sum + 'A' - 10; // Convert integer back to char\n\n    printf(\"The sum of ASCII values of 'A' and 'B' is: %c\\n\", result);\n\n    return 0;\n}",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    char digit_char = '7';\n    int numeric_value = digit_char - '0';\n    printf(\"Character: %c, Numeric value: %d\\n\", digit_char, numeric_value);\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "Character: 7, Numeric value: 7\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1591,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_03",
+      "topic": "Variables and data types",
+      "difficulty": "Advanced",
+      "student_mastery_level": 0.85,
+      "question": "Explain type conversion (implicit coercion vs explicit casting) in C expressions, integer promotion rules, and the crucial distinction between unsigned integer wrap-around (well-defined modulo arithmetic) and signed integer overflow (which is Undefined Behavior in the ISO C standard).",
+      "generated_content": " In the context of C programming, it's essential to understand the nuances of variables, data types, type conversion, and their behavior during arithmetic operations. To address your specific question, let's dive into implicit coercion, explicit casting, integer promotion rules, and the difference between unsigned integer wrap-around and signed integer overflow.\n\n1. Implicit Coercion (or Type Promotion) and Explicit Casting:\n   Implicit coercion, also known as type promotion, happens automatically when incompatible types are used in an expression. For example, in the expression `a = 42.0 + b;`, where `b` is an integer, the integer `42` is automatically promoted to a `double` before the addition operation.\n\n   On the other hand, explicit casting forces a type conversion using a cast operator. For example, `(int)42.0` converts the `double` value `42.0` to an `int`.\n\n2. Integer Promotion Rules:\n   The C standard defines rules for promoting smaller integer types to larger ones when they appear in expressions. For example, in the expression `a = 42 + b;`, if `b` is a char, it will be promoted to an int, and both `42` and `b` will be promoted to ints as well.\n\n3. Unsigned Integer Wrap-around vs Signed Integer Overflow:\n   Unsigned integer arithmetic performs modulo arithmetic when an operation overflows, i.e., it wraps around. For example:\n\n   ```c\n   unsigned int a = UINT_MAX + 1;\n   printf(\"%u\\n\", a); // prints 1, showing the wrap-around behavior\n   ```\n\n   Signed integer arithmetic is more complex because it is undefined behavior in the ISO C standard to perform arithmetic that results in signed integer overflow or underflow. This means that the behavior of the program may vary depending on the implementation and compiler optimizations. It is generally a good practice to avoid signed integer overflow by using appropriate data types or by checking the bounds of your variables.\n\n4. Practical Example:\n   To illustrate the difference between signed and unsigned overflow, consider the following code snippet:\n\n   ```c\n   unsigned int a = UINT_MAX;\n   signed int b = INT_MIN;\n\n   a = a + 1;\n   b = b - 1;\n\n   printf(\"a: %u\\n\", a); // prints 0, showing the wrap-around behavior\n   printf(\"b: %d\\n\", b); // prints -2147483648 (which is INT_MIN), showing the undefined behavior for signed integers\n   ```\n\nIn summary, understanding type conversion, integer promotion rules, and the distinction between unsigned integer wrap-around and signed integer overflow is crucial for writing efficient and well-behaved C code. Always be mindful of these nuances when programming and ensure your code adheres to the ISO C standard to avoid undefined behavior.",
+      "latency_seconds": 29.077,
+      "prompt_tokens": 335,
+      "completion_tokens": 676,
+      "total_tokens": 1011,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "unsigned",
+            "modulo",
+            "signed",
+            "overflow",
+            "undefined behavior",
+            "promotion",
+            "casting"
+          ],
+          "missing_keywords": [],
+          "coverage_ratio": 1.0
+        },
+        "extracted_c_code": "unsigned int a = UINT_MAX + 1;\n   printf(\"%u\\n\", a); // prints 1, showing the wrap-around behavior\n\nunsigned int a = UINT_MAX;\n   signed int b = INT_MIN;\n\n   a = a + 1;\n   b = b - 1;\n\n   printf(\"a: %u\\n\", a); // prints 0, showing the wrap-around behavior\n   printf(\"b: %d\\n\", b); // prints -2147483648 (which is INT_MIN), showing the undefined behavior for signed integers",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    unsigned int u = 4294967295U; /* UINT_MAX on 32-bit */\n    unsigned int wrapped = u + 1U; /* Defined modulo 2^32 */\n    printf(\"Unsigned wrap-around: %u\\n\", wrapped);\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "Unsigned wrap-around: 0\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1301,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_04",
+      "topic": "Operators and expressions",
+      "difficulty": "Beginner",
+      "student_mastery_level": 0.3,
+      "question": "Explain the difference between integer division and floating-point division in C. In an expression like `int a = 5, b = 2; float result = a / b;`, why is `result` evaluated to 2.0f instead of 2.5f, and how can explicit casting be used to obtain the floating-point quotient?",
+      "generated_content": " Hello there! Let's dive into the difference between integer division and floating-point division in C, which seems to be a key concept for your programming journey.\n\nIn the expression `int a = 5, b = 2; float result = a / b;`, the variable `result` is evaluated to `2.0f` instead of `2.5f` because of the way integer division works in C.\n\nWhen you perform integer division between two integers, the result is the quotient with any fractional part discarded, as per ISO C99 6.5.5p6. This means that the result of `5 / 2` will always be `2` and not `2.5`, because the fractional part (0.5) is being discarded (truncated).\n\nHowever, if you want to obtain a floating-point quotient, you can use floating-point variables for both the numerator and denominator, or you can explicitly cast one of the operands to a float or double. Here's an example:\n\n```c\nint a = 5;\nint b = 2;\nfloat result = (float)a / b; // Explicitly casting 'a' to float\n\nprintf(\"%f\\n\", result); // Output: 2.500000\n```\n\nIn this example, by casting `a` to a float before the division operation, we ensure that the quotient will be a floating-point number, rather than an integer.\n\nIt's also important to note that when working with floating-point numbers, C performs rounding to the nearest representable value, not truncation. So if you have a fraction like `0.6`, C will represent it as `0.6f` instead of `0`.\n\nI hope this helps clarify the difference between integer and floating-point division in C. Keep practicing and don't forget to use explicit casting when you need a floating-point quotient! If you have any more questions, feel free to ask. Happy coding!",
+      "latency_seconds": 20.237,
+      "prompt_tokens": 347,
+      "completion_tokens": 450,
+      "total_tokens": 797,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 6,
+          "matched_keywords": [
+            "integer division",
+            "truncation",
+            "cast",
+            "float",
+            "operands",
+            "quotient"
+          ],
+          "missing_keywords": [],
+          "coverage_ratio": 1.0
+        },
+        "extracted_c_code": "int a = 5;\nint b = 2;\nfloat result = (float)a / b; // Explicitly casting 'a' to float\n\nprintf(\"%f\\n\", result); // Output: 2.500000",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    int a = 5, b = 2;\n    float int_div = a / b;\n    float float_div = (float)a / b;\n    printf(\"Integer division: %.1f, Float division: %.1f\\n\", int_div, float_div);\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "Integer division: 2.0, Float division: 2.5\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1522,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_05",
+      "topic": "Operators and expressions",
+      "difficulty": "Intermediate",
+      "student_mastery_level": 0.6,
+      "question": "Explain the semantics of prefix increment (`++i`) versus postfix increment (`i++`) in C. Clarify their evaluation order and result in simple expressions, and explain why expressions that modify a variable multiple times without a sequence point (such as `i = i++` or `printf(\"%d %d\", i++, i++)`) produce unsequenced side effects leading to Undefined Behavior in ISO C.",
+      "generated_content": " In C programming, both prefix increment `++i` and postfix increment `i++` are used to increment a variable, but they have different semantics and evaluation order. Let's discuss them:\n\n1. Prefix Increment (`++i`):\n   - The increment operator `++` is placed before the variable being incremented.\n   - In prefix form, the variable is incremented first, and then the new value is used in the expression.\n   - The prefix increment operator has higher precedence than other arithmetic operators.\n   - Example: `int i = 5; i = ++i; // i now equals 6`\n\n2. Postfix Increment (`i++`):\n   - The increment operator `++` is placed after the variable being incremented.\n   - In postfix form, the current value of the variable is used in the expression, and then the variable is incremented.\n   - Example: `int i = 5; i = i++; // i now equals 6, but the value used in the expression was 5`\n\nIt's essential to understand that the order of evaluation between prefix and postfix increments can lead to different results. However, there's a specific rule in C that ensures the order of side effects for both forms:\n\n- For both prefix and postfix increments, a sequence point is inserted after the operation. The sequence point ensures that side effects are complete before any subsequent operation is evaluated.\n\nNow, let's address the common misconception about the evaluation order of unsequenced expressions:\n\nIn expressions like `i = i++` or `printf(\"%d %d\", i++, i++)`, the variables are modified multiple times without a sequence point. This leads to unsequenced side effects, and the behavior of such expressions is undefined according to ISO C99 6.5p2 and C11 6.5p2.\n\nIn other words, these expressions can produce inconsistent results across different compilers or even within the same compiler in different execution contexts. To avoid unsequenced side effects and ensure predictable behavior, it's recommended to use either prefix or postfix increment operators but not mix them in the same expression.\n\nHere's an example to illustrate the difference between prefix and postfix increments in C:\n\n```c\n#include <stdio.h>\n\nint main() {\n    int i = 5;\n\n    printf(\"Prefix Increment: %d\\n\", ++i); // Output: 6\n    printf(\"Postfix Increment: %d\\n\", i++); // Output: 6, but the value printed is 5\n    printf(\"Postfix Increment: %d\\n\", i); // Output: 6\n\n    return 0;\n}\n```",
+      "latency_seconds": 26.564,
+      "prompt_tokens": 352,
+      "completion_tokens": 619,
+      "total_tokens": 971,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "prefix",
+            "postfix",
+            "increment",
+            "side effect",
+            "sequence point",
+            "unsequenced"
+          ],
+          "missing_keywords": [
+            "undefined behavior"
+          ],
+          "coverage_ratio": 0.857
+        },
+        "extracted_c_code": "#include <stdio.h>\n\nint main() {\n    int i = 5;\n\n    printf(\"Prefix Increment: %d\\n\", ++i); // Output: 6\n    printf(\"Postfix Increment: %d\\n\", i++); // Output: 6, but the value printed is 5\n    printf(\"Postfix Increment: %d\\n\", i); // Output: 6\n\n    return 0;\n}",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    int x = 5;\n    int pre = ++x;  /* x becomes 6, pre is 6 */\n    int y = 5;\n    int post = y++; /* post is 5, y becomes 6 */\n    printf(\"Prefix result: %d (x=%d), Postfix result: %d (y=%d)\\n\", pre, x, post, y);\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "Prefix result: 6 (x=6), Postfix result: 5 (y=6)\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1668,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_06",
+      "topic": "Operators and expressions",
+      "difficulty": "Advanced",
+      "student_mastery_level": 0.8,
+      "question": "Explain short-circuit evaluation in C logical operators (`&&` and `||`). Explain how the left-to-right evaluation order and sequence point guarantees protect against invalid operations (e.g. guard against division by zero or NULL pointer dereference), and why placing expressions with side effects in the right-hand operand can cause subtle bugs.",
+      "generated_content": " In C programming, the logical operators `&&` (logical AND) and `||` (logical OR) are essential for creating conditional statements. However, it's crucial to understand their behavior, particularly when it comes to short-circuit evaluation and sequence points.\n\nShort-circuit evaluation is a feature of the logical operators in C that prevents unnecessary computations. This means that the left-hand operand is evaluated only if the outcome of the entire expression is undetermined based on the evaluated left-hand operand.\n\n- For the `&&` operator, if the left-hand operand evaluates to false, the right-hand operand is not evaluated because a true result is impossible.\n- For the `||` operator, if the left-hand operand evaluates to true, the right-hand operand is not evaluated because a false result is impossible.\n\nThis behavior is defined in ISO C99 6.5.13 and 6.5.14. Sequence points are guaranteed by the C standard at certain points in the evaluation of expressions to ensure the proper execution of the program. In the context of short-circuit evaluation, sequence points occur:\n\n- just before the operands of the `&&` and `||` operators are evaluated;\n- after the evaluation of the left operand for the `&&` operator if the left operand evaluates to true;\n- after the evaluation of the left operand for the `||` operator if the left operand evaluates to false or if the right operand is skipped due to short-circuit evaluation.\n\nNow, let's discuss the importance of these features and how they help avoid invalid operations and subtle bugs.\n\nConsider the following example:\n\n```c\nint i = 0;\nint* p = NULL;\n\nif (i != 0 && (p = malloc(10 * sizeof(int)))) {\n    // Do something with p\n}\n```\n\nIn this example, the `malloc()` function call is placed in the right-hand operand of the logical AND operator. If `i` is 0, the left-hand operand is evaluated, and the `malloc()` function call is skipped due to short-circuit evaluation, preventing a NULL pointer dereference.\n\nHowever, it's essential to be aware that placing expressions with side effects in the right-hand operand can lead to subtle bugs. For example, consider the following:\n\n```c\nint i = 0;\nint j = 0;\n\nwhile (i < 10 && j++ < 10) {\n    // Do something\n}\n```\n\nIn this example, the variable `j` is incremented in the right-hand operand of the logical AND operator, which will cause `j` to be incremented even when the left-hand operand evaluates to false, leading to unintended behavior.\n\nIn conclusion, understanding short-circuit evaluation, sequence points, and their implications can help you write safer and more efficient C code. Be mindful of the order of evaluation and avoid placing expressions with side effects in the right-hand operand of logical operators.",
+      "latency_seconds": 28.499,
+      "prompt_tokens": 342,
+      "completion_tokens": 681,
+      "total_tokens": 1023,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "short-circuit",
+            "logical AND",
+            "logical OR",
+            "sequence point",
+            "side effect"
+          ],
+          "missing_keywords": [
+            "guard",
+            "evaluation order"
+          ],
+          "coverage_ratio": 0.714
+        },
+        "extracted_c_code": "int i = 0;\nint* p = NULL;\n\nif (i != 0 && (p = malloc(10 * sizeof(int)))) {\n    // Do something with p\n}\n\nint i = 0;\nint j = 0;\n\nwhile (i < 10 && j++ < 10) {\n    // Do something\n}",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    int divisor = 0;\n    int evaluated_safe = 0;\n    if (divisor != 0 && (10 / divisor) > 1) {\n        evaluated_safe = 1;\n    }\n    printf(\"Short circuit prevented division by zero: evaluated_safe=%d\\n\", evaluated_safe);\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "Short circuit prevented division by zero: evaluated_safe=0\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1414,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_07",
+      "topic": "Conditionals",
+      "difficulty": "Beginner",
+      "student_mastery_level": 0.25,
+      "question": "Explain the difference between the assignment operator (`=`) and the relational equality operator (`==`) in C conditional statements. Explain why `if (x = 5)` is syntactically valid in C, what it evaluates to, and how this common student bug alters program execution.",
+      "generated_content": " In the wonderful world of programming, there are special symbols known as operators that help us manipulate data. Today, let's focus on two essential operators: the assignment operator (`=`) and the relational equality operator (`==`).\n\nThe assignment operator (`=`) is used to store a value on the right-hand side into a variable on the left-hand side. For example, `x = 5` means we are storing the value of 5 into the variable `x`. Imagine a mailbox, where you're sending a letter with the value 5 and placing it into the mailbox, which is the variable `x`.\n\nOn the other hand, the relational equality operator (`==`) is used to compare two values and determine whether they are equal or not. For example, `x == 5` checks if the value stored in `x` (the mailbox) is equal to 5. If they match, the result is true; otherwise, false.\n\nNow, let's discuss the confusion that often arises when it comes to the `if` statement: the difference between `if (x = 5)` and `if (x == 5)`. In the former case, `x = 5` is an assignment statement, which evaluates to the value that is assigned (5), and not a boolean (true or false). This means that, for `if (x = 5)`, the `else` branch will always execute since the condition is always a non-zero value.\n\nTo put it simply, imagine you're checking if a mailbox contains your letter:\n- If you ask `if (mailbox = letter)`, you're not checking whether the mailbox contains your letter, but rather if you've replaced the mailbox with the letter. This is similar to `if (x = 5)`.\n- If you ask `if (mailbox == letter)`, you're checking whether the mailbox contains your letter or not. This is similar to `if (x == 5)`.\n\nRemember, C compilers will accept `if (x = 5)` without any complaints, but it may not behave as you expect. To avoid this common pitfall, always use the relational equality operator (`==`) for comparison inside `if` statements.\n\nHappy coding!",
+      "latency_seconds": 21.96,
+      "prompt_tokens": 324,
+      "completion_tokens": 507,
+      "total_tokens": 831,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 6,
+          "matched_keywords": [
+            "assignment",
+            "equality",
+            "relational",
+            "non-zero",
+            "operator"
+          ],
+          "missing_keywords": [
+            "truth value"
+          ],
+          "coverage_ratio": 0.833
+        },
+        "extracted_c_code": null,
+        "llm_code_execution_status": "NO_CODE",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    int score = 100;\n    if (score == 100) {\n        printf(\"Correct check with ==: Perfect score\\n\");\n    }\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "Correct check with ==: Perfect score\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1616,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_08",
+      "topic": "Conditionals",
+      "difficulty": "Intermediate",
+      "student_mastery_level": 0.5,
+      "question": "Explain nested if-else statements and the classic 'dangling else' ambiguity in C. Explain which `if` an `else` binds to according to C language syntax rules, and demonstrate how using explicit compound blocks with braces `{}` prevents logical bugs.",
+      "generated_content": " Hello! Let's delve into the topic of nested if-else statements and discuss the classic 'dangling else' ambiguity in C, a topic that's crucial for avoiding logical bugs in your code.\n\nIn C, the syntax for an if-else statement includes an 'if' condition followed by an 'else' clause. When using multiple if-else statements, it's essential to understand that the 'else' clause in C is associated with the nearest preceding 'if' statement that isn't already terminated with an 'else' or 'if...else'.\n\nHere's a simple example of nested if-else statements:\n\n```c\nif (condition1) {\n    // code block for condition1\n} else if (condition2) {\n    // code block for condition2\n} else {\n    // code block for neither condition1 nor condition2\n}\n```\n\nIn the example above, we have an 'if' statement followed by an 'else if' statement and an 'else' clause. The 'else' clause is explicitly associated with the 'else if' statement, and not the 'if' statement.\n\nNow, let's address the 'dangling else' problem. In C, if you omit the braces `{}` around the code blocks, the 'else' clause can sometimes lead to confusion and unexpected behavior. Here's an example that demonstrates this issue:\n\n```c\nif (a > b)\n    if (c > d)\n        x = 1;\n    else\n        x = 2;  // This else may not be associated with the inner if statement, leading to unexpected behavior\n```\n\nIn the example above, the 'else' clause could be associated with either the outer or the inner 'if' statement, depending on the context. To avoid this ambiguity and ensure predictable behavior, it's best to always use explicit compound blocks with braces `{}`:\n\n```c\nif (a > b) {\n    if (c > d) {\n        x = 1;\n    } else {\n        x = 2;\n    }\n}\n```\n\nBy using braces `{}` to delimit the code blocks, you make your code more readable and easier to understand, reducing the likelihood of logical bugs due to the 'dangling else' problem.\n\nBy understanding the C syntax for nested if-else statements and the 'dangling else' ambiguity, you'll be better equipped to write clear, maintainable, and bug-free C code for problem solving. Happy coding!",
+      "latency_seconds": 24.255,
+      "prompt_tokens": 302,
+      "completion_tokens": 572,
+      "total_tokens": 874,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "dangling else",
+            "nested",
+            "braces",
+            "nearest",
+            "block"
+          ],
+          "missing_keywords": [
+            "indentation",
+            "compound statement"
+          ],
+          "coverage_ratio": 0.714
+        },
+        "extracted_c_code": "if (condition1) {\n    // code block for condition1\n} else if (condition2) {\n    // code block for condition2\n} else {\n    // code block for neither condition1 nor condition2\n}\n\nif (a > b)\n    if (c > d)\n        x = 1;\n    else\n        x = 2;  // This else may not be associated with the inner if statement, leading to unexpected behavior\n\nif (a > b) {\n    if (c > d) {\n        x = 1;\n    } else {\n        x = 2;\n    }\n}",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    int a = 1, b = 0;\n    /* Using explicit braces to avoid dangling else ambiguity */\n    if (a > 0) {\n        if (b > 0) {\n            printf(\"Both positive\\n\");\n        } else {\n            printf(\"a is positive, b is not\\n\");\n        }\n    }\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "a is positive, b is not\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1484,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_09",
+      "topic": "Conditionals",
+      "difficulty": "Advanced",
+      "student_mastery_level": 0.75,
+      "question": "Explain the mechanics of the `switch` statement in C. Detail the requirement for integral/enumeration controlling expressions, the role of `case` labels as jump targets, intentional vs unintentional fall-through, the purpose of `break`, and the function of the `default` label.",
+      "generated_content": " In C, the `switch` statement is a multi-way branching construct that simplifies the evaluation of expressions with multiple possible values. Let's delve into the mechanics of the `switch` statement and discuss its nuances, edge cases, and idiomatic efficiency.\n\n1. Controlling Expression:\nThe controlling expression for a `switch` statement must be an integral or enumeration type. This means that you can only use integers, character constants, or enumerated types as the expression to control the flow. Floating-point numbers and strings cannot be used as controlling expressions in a `switch` statement.\n\n2. Jump Targets (Case Labels):\n`Case` labels in a `switch` statement serve as jump targets for the execution of specific code blocks. They are followed by a colon (`:`) and the code block to be executed when the controlling expression matches the value associated with that `case` label.\n\n3. Intentional vs Unintentional Fall-through:\nWhen a `case` is encountered, the code block associated with that `case` is executed until the `break` statement is encountered or the end of the `switch` statement is reached. If no `break` statement is provided, the execution will fall through to the next `case` label, a behavior known as intentional fall-through. This can be useful when you want to chain multiple `case` labels together and perform the same actions for several values.\n\n4. Break Statement:\nThe `break` statement is used to exit the `switch` statement when the desired code block has been executed. It prevents the unintended fall-through to the next `case` label.\n\n5. Default Label:\nThe `default` label is optional and serves as a catch-all for any values that are not explicitly matched by any `case` label. If a `default` label is present and no matching `case` is found, the code block associated with the `default` label will be executed.\n\nHere's an example of a well-structured `switch` statement:\n\n```c\n#include <stdio.h>\n\nenum WeekDay {\n    SUNDAY,\n    MONDAY,\n    TUESDAY,\n    WEDNESDAY,\n    THURSDAY,\n    FRIDAY,\n    SATURDAY\n};\n\nint main() {\n    enum WeekDay day = SATURDAY;\n\n    switch (day) {\n        case SUNDAY:\n            printf(\"Today is Sunday.\\n\");\n            break;\n        case MONDAY:\n        case TUESDAY:\n        case WEDNESDAY:\n        case THURSDAY:\n        case FRIDAY:\n            printf(\"Today is a weekday.\\n\");\n            break;\n        case SATURDAY:\n            printf(\"Today is Saturday.\\n\");\n            break;\n        default:\n            printf(\"Invalid day of the week.\\n\");\n    }\n\n    return 0;\n}\n```\n\nIn this example, we use an enumeration to define the days of the week, and the `switch` statement effectively checks the value of the `day` variable against the enumeration values. Proper use of `break` statements ensures that the execution flows as intended, and the `default` label catches any unrecognized values.\n\nBy understanding the mechanics of the `switch` statement in C and applying the knowledge gained, you can leverage this powerful construct to write more efficient, readable, and maintainable code for problem-solving.",
+      "latency_seconds": 32.396,
+      "prompt_tokens": 312,
+      "completion_tokens": 779,
+      "total_tokens": 1091,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "switch",
+            "case",
+            "break",
+            "fall-through",
+            "integral",
+            "default",
+            "constant"
+          ],
+          "missing_keywords": [],
+          "coverage_ratio": 1.0
+        },
+        "extracted_c_code": "#include <stdio.h>\n\nenum WeekDay {\n    SUNDAY,\n    MONDAY,\n    TUESDAY,\n    WEDNESDAY,\n    THURSDAY,\n    FRIDAY,\n    SATURDAY\n};\n\nint main() {\n    enum WeekDay day = SATURDAY;\n\n    switch (day) {\n        case SUNDAY:\n            printf(\"Today is Sunday.\\n\");\n            break;\n        case MONDAY:\n        case TUESDAY:\n        case WEDNESDAY:\n        case THURSDAY:\n        case FRIDAY:\n            printf(\"Today is a weekday.\\n\");\n            break;\n        case SATURDAY:\n            printf(\"Today is Saturday.\\n\");\n            break;\n        default:\n            printf(\"Invalid day of the week.\\n\");\n    }\n\n    return 0;\n}",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    int code = 2;\n    switch (code) {\n        case 1:\n            printf(\"Code 1\\n\");\n            break;\n        case 2:\n            printf(\"Code 2: Verified\\n\");\n            break;\n        default:\n            printf(\"Unknown code\\n\");\n            break;\n    }\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "Code 2: Verified\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1203,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_10",
+      "topic": "For and while loops",
+      "difficulty": "Beginner",
+      "student_mastery_level": 0.2,
+      "question": "Explain the four-part lifecycle of a C `for` loop: initialization, condition check, loop body execution, and iteration/update expression. Provide a step-by-step execution trace for `for (int i = 0; i < 3; i++)` highlighting the exact value of `i` at each step and when the loop terminates.",
+      "generated_content": " Let's demystify the four-part lifecycle of a C `for` loop by exploring a simple example and its step-by-step execution. The `for` loop you provided, `for (int i = 0; i < 3; i++)`, will be our focus.\n\nHere's a step-by-step execution trace table with annotated C code:\n\n| Step | Action | Variable `i` Value |\n|------|--------|-------------------|\n| 1    | Initialization: Set `i` to 0 | 0                  |\n| 2    | Condition Check: Check if `i` is less than 3 | True                  |\n| 3    | Loop Body Execution (If condition is true): Perform the loop body code, which in this case is empty | 0                  |\n| 4    | Iteration/Update Expression: Increment `i` by 1 | 1                  |\n| 5    | Return to Step 2: Check if `i` is less than 3 | True                  |\n| 6    | Loop Body Execution (If condition is true): Perform the loop body code, which in this case is empty | 1                  |\n| 7    | Iteration/Update Expression: Increment `i` by 1 | 2                  |\n| 8    | Return to Step 2: Check if `i` is less than 3 | False               |\n| 9    | The loop terminates. | -                  |\n\nIn this example, the `for` loop follows its lifecycle, starting with the initialization, then condition check, followed by loop body execution, and finally the iteration/update expression. This cycle repeats until the condition check returns false, at which point the loop terminates.\n\nIt's essential to understand that the update expression (`i++`) is executed after the loop body, ensuring that the loop body always has access to the current value of `i`. This should help address the common misconceptions you mentioned.\n\nTo summarize, a `for` loop in C follows a four-part lifecycle: initialization, condition check, loop body execution, and iteration/update expression. The loop continues until the condition check returns false.",
+      "latency_seconds": 21.703,
+      "prompt_tokens": 322,
+      "completion_tokens": 503,
+      "total_tokens": 825,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "initialization",
+            "condition",
+            "body",
+            "update",
+            "iteration",
+            "terminates",
+            "lifecycle"
+          ],
+          "missing_keywords": [],
+          "coverage_ratio": 1.0
+        },
+        "extracted_c_code": null,
+        "llm_code_execution_status": "NO_CODE",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    for (int i = 0; i < 3; i++) {\n        printf(\"Iteration i=%d\\n\", i);\n    }\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "Iteration i=0\nIteration i=1\nIteration i=2\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1406,
+          "notes": ""
+        },
+        "while_loop_regression": {
+          "checked": true,
+          "passed": true,
+          "detected_error_phrase": null,
+          "explanation": "Passed: No erroneous while-loop termination patterns detected."
+        }
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_11",
+      "topic": "For and while loops",
+      "difficulty": "Beginner",
+      "student_mastery_level": 0.35,
+      "question": "Explain the execution flow and termination condition of a `while` loop in C calculating the sum of the first N natural numbers using `int i = 1; while (i <= n) { sum += i; i++; }`. Specifically explain the exact condition under which the loop continues, the exact value of `i` that causes the loop to terminate, and why the loop terminates when `i` reaches `n + 1` (because `i <= n` evaluates to false).",
+      "generated_content": " To help clarify the execution flow and termination condition of a `while` loop in C, let's break down the provided code snippet that calculates the sum of the first N natural numbers:\n\n```C\nint i = 1;\nwhile (i <= n) {\n    sum += i;\n    i++;\n}\n```\n\n1. **Loop Continuation Condition**: The `while` loop continues as long as the condition `(i <= n)` evaluates to `true`. This means that the loop will execute as long as the value of `i` is less than or equal to the value of `n`.\n\n2. **Value of `i` causing the loop to terminate**: The loop terminates when the value of `i` is one greater than `n` (`i = n + 1`). At this point, the condition `(i <= n)` evaluates to `false`, causing the loop to terminate.\n\n3. **Why the loop terminates when `i` reaches `n + 1`**: The loop terminates when `i` reaches `n + 1` because the `while` loop checks the continuation condition `(i <= n)` before each execution of the loop body. Since `i` is incremented inside the loop, it will become greater than `n` in the next iteration, making the condition `false`, and the loop terminates.\n\nTo avoid off-by-one errors and confusion with the loop termination condition, it's recommended to initialize `i` to `0` and update the sum calculation accordingly:\n\n```C\nint i = 0, sum = 0;\nwhile (i <= n) {\n    sum += i + 1;\n    i++;\n}\n```\n\nIn this version, the loop continues as long as `i` is less than or equal to `n`, and for each iteration, `i` is incremented, and the sum includes the current value of `i + 1` (the next natural number). This ensures that the loop terminates at the correct index and avoids potential off-by-one errors.",
+      "latency_seconds": 20.45,
+      "prompt_tokens": 358,
+      "completion_tokens": 470,
+      "total_tokens": 828,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "while",
+            "terminates",
+            "n + 1",
+            "false",
+            "condition",
+            "sum",
+            "continuation"
+          ],
+          "missing_keywords": [],
+          "coverage_ratio": 1.0
+        },
+        "extracted_c_code": "int i = 1;\nwhile (i <= n) {\n    sum += i;\n    i++;\n}\n\nint i = 0, sum = 0;\nwhile (i <= n) {\n    sum += i + 1;\n    i++;\n}",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    int n = 5, sum = 0, i = 1;\n    while (i <= n) {\n        sum += i;\n        i++;\n    }\n    printf(\"Sum of first %d numbers: %d, final i: %d\\n\", n, sum, i);\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "Sum of first 5 numbers: 15, final i: 6\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1409,
+          "notes": ""
+        },
+        "while_loop_regression": {
+          "checked": true,
+          "passed": true,
+          "detected_error_phrase": null,
+          "explanation": "Passed: Correctly explains that the loop terminates when i reaches n+1 because i <= n evaluates to false."
+        }
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_12",
+      "topic": "For and while loops",
+      "difficulty": "Intermediate",
+      "student_mastery_level": 0.6,
+      "question": "Compare the `while` loop and the `do-while` loop in C. Explain the fundamental difference in when the loop condition is evaluated, guarantee of at least one execution in `do-while`, and identify practical scenarios where `do-while` is preferred (such as user input validation).",
+      "generated_content": " Comparison of `while` and `do-while` Loops in C\n\n| Feature                       | While Loop                                   | Do-While Loop                                   |\n|-------------------------------|---------------------------------------------|-----------------------------------------------|\n| Syntax                        | while (condition) { ... }                    | do { ... } while (condition);                |\n| Condition Evaluation         | Evaluated before the loop body execution.    | Evaluated after the loop body execution.       |\n| Guaranteed Execution         | May not execute at least once if the condition is initially false. | Always executes at least once, regardless of the initial condition value. |\n| Practical Scenarios           | Useful when you want to check a condition before entering a loop. Examples include iterating through arrays, iterating over a sequence, or waiting for a specific event. | Useful in situations where you want to ensure that the loop body is executed at least once, such as user input validation, where you want to process user input even if it's initially invalid. |\n\nCommon Misconceptions:\n- Assuming that `do-while` can be skipped if the condition is false initially.\n- Omiting the required terminating semicolon after `while(condition)` in `do-while`.\n\nPractical Example: User Input Validation (validating that a user enters an integer between 1 and 100)\n\n```c\n#include <stdio.h>\n\nint main() {\n    int userInput;\n    int validInput = 0;\n\n    do {\n        printf(\"Enter an integer between 1 and 100: \");\n        scanf(\"%d\", &userInput);\n\n        if (userInput >= 1 && userInput <= 100) {\n            validInput = 1;\n        } else {\n            printf(\"Invalid input! Please enter an integer between 1 and 100.\\n\");\n        }\n    } while (!validInput);\n\n    // Continue with the program after validating user input\n    printf(\"Valid input received! The entered integer is: %d\\n\", userInput);\n\n    return 0;\n}\n```\nIn this example, the `do-while` loop ensures that the user is prompted for input until a valid integer is entered. The loop body is guaranteed to execute at least once, even if the initial input is invalid.",
+      "latency_seconds": 23.148,
+      "prompt_tokens": 297,
+      "completion_tokens": 543,
+      "total_tokens": 840,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "while",
+            "do-while",
+            "at least once",
+            "semicolon",
+            "validation"
+          ],
+          "missing_keywords": [
+            "pre-test",
+            "post-test"
+          ],
+          "coverage_ratio": 0.714
+        },
+        "extracted_c_code": "#include <stdio.h>\n\nint main() {\n    int userInput;\n    int validInput = 0;\n\n    do {\n        printf(\"Enter an integer between 1 and 100: \");\n        scanf(\"%d\", &userInput);\n\n        if (userInput >= 1 && userInput <= 100) {\n            validInput = 1;\n        } else {\n            printf(\"Invalid input! Please enter an integer between 1 and 100.\\n\");\n        }\n    } while (!validInput);\n\n    // Continue with the program after validating user input\n    printf(\"Valid input received! The entered integer is: %d\\n\", userInput);\n\n    return 0;\n}",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    int count = 0;\n    /* Condition is false initially, but executes once */\n    do {\n        count++;\n    } while (count < 1);\n    printf(\"do-while executed count=%d time\\n\", count);\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "do-while executed count=1 time\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.161,
+          "notes": ""
+        },
+        "while_loop_regression": {
+          "checked": true,
+          "passed": true,
+          "detected_error_phrase": null,
+          "explanation": "Passed: No erroneous while-loop termination patterns detected."
+        }
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_13",
+      "topic": "Nested loops",
+      "difficulty": "Intermediate",
+      "student_mastery_level": 0.45,
+      "question": "Explain how nested loops operate in C by walking through a nested loop structure generating a right-angled triangle pattern of asterisks. Detail the relationship between the outer loop control variable (representing rows) and the inner loop control variable (representing columns), and calculate total loop iterations.",
+      "generated_content": " To explain how nested loops operate in C, let's walk through an example of generating a right-angled triangle pattern of asterisks. This example will help you understand the relationship between the outer and inner loop variables, as well as the total loop iterations.\n\nHere's the C code for generating a right-angled triangle of asterisks using nested loops:\n\n```c\n#include <stdio.h>\n\nint main() {\n    int rows, cols, i, j;\n\n    // Number of rows\n    rows = 5;\n\n    for (i = 1; i <= rows; ++i) {\n        // Print spaces before the asterisks\n        for (cols = 1; cols <= rows - i; ++cols) {\n            printf(\" \");\n        }\n\n        // Print asterisks\n        for (j = 1; j <= 2 * i - 1; ++j) {\n            printf(\"*\");\n        }\n\n        printf(\"\\n\");\n    }\n\n    return 0;\n}\n```\n\nIn this code, we have an outer loop variable `i` which represents the rows, and an inner loop variable `j` which represents the columns.\n\n1. The outer loop (`for (i = 1; i <= rows; ++i)`) runs from 1 to the number of rows specified (`rows = 5`). Each iteration of the outer loop represents a row in the triangle pattern.\n\n2. Inside the outer loop, we have an inner loop (`for (cols = 1; cols <= rows - i; ++cols)`) that runs from 1 to the difference between the number of rows and the current row number (`rows - i`). This loop prints spaces at the beginning of each row, creating the base of the triangle.\n\n3. After printing spaces, we have another inner loop (`for (j = 1; j <= 2 * i - 1; ++j)`) that prints asterisks. This loop runs from 1 to `2 * i - 1`, which represents the number of asterisks in a row. As the outer loop iterates, the asterisks form the right-angled triangle pattern.\n\n4. After printing the asterisks for the current row, we print a newline character (`\\n`) to move to the next row.\n\n5. The total loop iterations are `rows * (rows + 1) / 2`, since each row below the first one adds one more asterisk and one more space, and the first row has half of those iterations.\n\nBy understanding this example, you can see that the outer loop variable and inner loop variable do not step in parallel lockstep. Instead, the inner loop completes a full cycle for each step of the outer loop. Also, the inner loop variables should not reinitialize or modify the outer loop variable.\n\nI hope this example helps you reinforce your understanding of nested loops in C. Keep practicing, and you'll continue to improve!",
+      "latency_seconds": 28.267,
+      "prompt_tokens": 292,
+      "completion_tokens": 670,
+      "total_tokens": 962,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "nested loops",
+            "outer loop",
+            "inner loop",
+            "rows",
+            "columns",
+            "iterations",
+            "pattern"
+          ],
+          "missing_keywords": [],
+          "coverage_ratio": 1.0
+        },
+        "extracted_c_code": "#include <stdio.h>\n\nint main() {\n    int rows, cols, i, j;\n\n    // Number of rows\n    rows = 5;\n\n    for (i = 1; i <= rows; ++i) {\n        // Print spaces before the asterisks\n        for (cols = 1; cols <= rows - i; ++cols) {\n            printf(\" \");\n        }\n\n        // Print asterisks\n        for (j = 1; j <= 2 * i - 1; ++j) {\n            printf(\"*\");\n        }\n\n        printf(\"\\n\");\n    }\n\n    return 0;\n}",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    int rows = 3;\n    for (int i = 1; i <= rows; i++) {\n        for (int j = 1; j <= i; j++) {\n            printf(\"*\");\n        }\n        printf(\"\\n\");\n    }\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "*\n**\n***\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1267,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_14",
+      "topic": "Nested loops",
+      "difficulty": "Advanced",
+      "student_mastery_level": 0.7,
+      "question": "Explain how nested loops are used to traverse a 2D array in C in row-major order. Explain C's contiguous memory layout for multi-dimensional arrays, why row-major traversal (outer loop over rows, inner loop over columns) yields optimal cache locality compared to column-major traversal, and express the asymptotic time complexity.",
+      "generated_content": " In C, multi-dimensional arrays are represented in a contiguous, row-major order in memory. This means that the elements of each row are stored sequentially, followed by the next row, creating a linear sequence of memory allocations. This is in contrast to column-major order, where the elements of each column are stored sequentially.\n\nFor a 2D array, the memory layout can be visualized as follows:\n\n```\n[array] ----> [row0_col0] [row0_col1] [row0_col2] ...\n          ^\n          |\n         ++\n[array + n*m] <- [row1_col0] [row1_col1] [row1_col2] ...\n          ^\n          |\n         ++\n[array + 2*n*m] <- [row2_col0] [row2_col1] [row2_col2] ...\n```\n\nIn the case of row-major order, the outer loop iterates over rows, and the inner loop iterates over columns. This traversal order is optimal for modern CPU caches, as it allows neighboring memory locations to be accessed in consecutive cache lines.\n\nHere's an example of a nested loop traversal of a 2D array in row-major order:\n\n```c\n#include <stdio.h>\n\nint main() {\n    int arr[3][3] = {\n        {1, 2, 3},\n        {4, 5, 6},\n        {7, 8, 9}\n    };\n\n    for (int i = 0; i < 3; ++i) {\n        for (int j = 0; j < 3; ++j) {\n            printf(\"%d \", arr[i][j]);\n        }\n        printf(\"\\n\");\n    }\n\n    return 0;\n}\n```\n\nIn terms of asymptotic time complexity, accessing a single element of a 2D array in row-major order takes O(1) time, as the elements are located at a fixed offset from the base address. The nested loops for traversing the entire array would result in O(n) time complexity, where n is the number of rows or columns. However, the actual performance may be influenced by factors such as cache locality and the size of the arrays, which are optimized by the row-major traversal.",
+      "latency_seconds": 23.737,
+      "prompt_tokens": 341,
+      "completion_tokens": 544,
+      "total_tokens": 885,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "row-major",
+            "contiguous",
+            "cache locality",
+            "complexity",
+            "offset"
+          ],
+          "missing_keywords": [
+            "matrix",
+            "stride"
+          ],
+          "coverage_ratio": 0.714
+        },
+        "extracted_c_code": "#include <stdio.h>\n\nint main() {\n    int arr[3][3] = {\n        {1, 2, 3},\n        {4, 5, 6},\n        {7, 8, 9}\n    };\n\n    for (int i = 0; i < 3; ++i) {\n        for (int j = 0; j < 3; ++j) {\n            printf(\"%d \", arr[i][j]);\n        }\n        printf(\"\\n\");\n    }\n\n    return 0;\n}",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    int matrix[2][3] = {{1, 2, 3}, {4, 5, 6}};\n    int sum = 0;\n    for (int i = 0; i < 2; i++) {\n        for (int j = 0; j < 3; j++) {\n            sum += matrix[i][j];\n        }\n    }\n    printf(\"Matrix sum: %d\\n\", sum);\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "Matrix sum: 21\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.154,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_15",
+      "topic": "Nested loops",
+      "difficulty": "Advanced",
+      "student_mastery_level": 0.85,
+      "question": "Explain the scope and behavior of the `break` and `continue` statements within nested loops in C. Clarify that `break` terminates only the innermost enclosing loop, and explain standard idiomatic patterns (such as flag variables or returning from a function) used to break out of multiple nested loops without unstructured goto.",
+      "generated_content": " In C programming, the `break` and `continue` statements are crucial for controlling the flow of your loops. Let's delve into their scoping and behavior within nested loops, focusing on the nuances that are essential for advanced problem-solving.\n\n**Break statement**\n\nThe `break` statement exits the innermost enclosing loop when executed. It does not affect any other loop or the surrounding code. If a `break` statement is encountered within a nested loop, only the current loop iteration is terminated, and the control flow continues with the next loop or the outermost code.\n\nHere's a practical example demonstrating the behavior of the `break` statement:\n\n```c\n#include <stdio.h>\n\nvoid nestedLoop(int arr[3][3]) {\n    for (int i = 0; i < 3; ++i) {\n        for (int j = 0; j < 3; ++j) {\n            if (arr[i][j] == 5) {\n                printf(\"Target found at (%d, %d)\\n\", i, j);\n                break; // only the inner loop is terminated\n            }\n        }\n    }\n}\n\nint main() {\n    int arr[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};\n    nestedLoop(arr);\n    return 0;\n}\n```\n\nIn this example, if the target (5) is found within the nested loop, the inner loop is terminated, and the outer loop continues processing.\n\n**Continue statement**\n\nThe `continue` statement skips the current iteration of the enclosing loop and continues with the next iteration. Unlike the `break` statement, `continue` does not exit the loop altogether.\n\nHere's a practical example demonstrating the behavior of the `continue` statement:\n\n```c\n#include <stdio.h>\n\nvoid nestedLoop(int arr[3][3]) {\n    for (int i = 0; i < 3; ++i) {\n        for (int j = 0; j < 3; ++j) {\n            if (arr[i][j] == 5) {\n                continue; // skip the current iteration and continue with the next one\n            }\n            printf(\"Current element: %d\\n\", arr[i][j]);\n        }\n    }\n}\n\nint main() {\n    int arr[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};\n    nestedLoop(arr);\n    return 0;\n}\n```\n\nIn this example, if the target (5) is encountered within the nested loop, the current iteration is skipped, and the control flow continues with the next iteration of the same loop.\n\n**Breaking out of multiple nested loops**\n\nTo break out of multiple nested loops, a common idiomatic pattern involves using flag variables or returning from a function. This approach ensures your code remains structured and easy to understand.\n\nHere's an example demonstrating the use of a flag variable:\n\n```c\n#include <stdio.h>\n\nvoid nestedLoop(int arr[3][3], int* found) {\n    for (int i = 0; i < 3; ++i) {\n        for (int j = 0; j < 3; ++j) {\n            if (arr[i][j] == 5) {\n                *found = 1;\n                break;\n            }\n        }\n        if (*found) {\n            break; // exit the outer loop once the target is found\n        }\n    }\n}\n\nint main() {\n    int arr[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};\n    int found = 0;\n    nestedLoop(arr, &found);\n    if (found) {\n        printf(\"Target found at some position\\n\");\n    } else {\n        printf(\"Target not found\\n\");\n    }\n    return 0;\n}\n```\n\nIn this example, a flag variable `found` is used to track whether the target (5) has been found or not. If the target is found, both nested loops are terminated by setting the flag and breaking out of the outer loop.",
+      "latency_seconds": 42.859,
+      "prompt_tokens": 335,
+      "completion_tokens": 1024,
+      "total_tokens": 1359,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "break",
+            "continue",
+            "innermost",
+            "nested",
+            "flag",
+            "return"
+          ],
+          "missing_keywords": [
+            "scope"
+          ],
+          "coverage_ratio": 0.857
+        },
+        "extracted_c_code": "#include <stdio.h>\n\nvoid nestedLoop(int arr[3][3]) {\n    for (int i = 0; i < 3; ++i) {\n        for (int j = 0; j < 3; ++j) {\n            if (arr[i][j] == 5) {\n                printf(\"Target found at (%d, %d)\\n\", i, j);\n                break; // only the inner loop is terminated\n            }\n        }\n    }\n}\n\nint main() {\n    int arr[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};\n    nestedLoop(arr);\n    return 0;\n}\n\n#include <stdio.h>\n\nvoid nestedLoop(int arr[3][3]) {\n    for (int i = 0; i < 3; ++i) {\n        for (int j = 0; j < 3; ++j) {\n            if (arr[i][j] == 5) {\n                continue; // skip the current iteration and continue with the next one\n            }\n            printf(\"Current element: %d\\n\", arr[i][j]);\n        }\n    }\n}\n\nint main() {\n    int arr[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};\n    nestedLoop(arr);\n    return 0;\n}\n\n#include <stdio.h>\n\nvoid nestedLoop(int arr[3][3], int* found) {\n    for (int i = 0; i < 3; ++i) {\n        for (int j = 0; j < 3; ++j) {\n            if (arr[i][j] == 5) {\n                *found = 1;\n                break;\n            }\n        }\n        if (*found) {\n            break; // exit the outer loop once the target is found\n        }\n    }\n}\n\nint main() {\n    int arr[3][3] = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};\n    int found = 0;\n    nestedLoop(arr, &found);\n    if (found) {\n        printf(\"Target found at some position\\n\");\n    } else {\n        printf(\"Target not found\\n\");\n    }\n    return 0;\n}",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    int found = 0;\n    for (int i = 0; i < 3 && !found; i++) {\n        for (int j = 0; j < 3; j++) {\n            if (i == 1 && j == 1) {\n                found = 1;\n                break; /* Exits inner loop */\n            }\n        }\n    }\n    printf(\"Search completed with flag: found=%d\\n\", found);\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "Search completed with flag: found=1\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1423,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_16",
+      "topic": "Arrays",
+      "difficulty": "Beginner",
+      "student_mastery_level": 0.25,
+      "question": "Explain 1D array declaration, 0-based indexing, and valid index ranges in C for an array of size N (`0` to `N - 1`). Explicitly explain what happens when code accesses an element at index `N` or negative indices: why does the C standard classify out-of-bounds access as Undefined Behavior (UB), and why does C not perform automatic bounds checking?",
+      "generated_content": " In C programming, arrays are a collection of variables of the same data type, stored in contiguous memory locations. They are essential for problem-solving tasks that involve multiple data points.\n\nLet's dive into one-dimensional (1D) array declaration, 0-based indexing, and valid index ranges in C:\n\n1. Array Declaration:\n\nTo declare a 1D array in C, you use the following syntax:\n\n```c\ndata_type array_name[array_size];\n```\n\nFor example:\n\n```c\nint arr[10]; // Declares an array 'arr' of 10 integers\n```\n\n2. 0-Based Indexing:\n\nIn C, arrays are 0-indexed, which means that the first element's index is 0, and the last element's index is one less than the array size. For instance, in the array `arr[10]`, the indices range from 0 to 9.\n\n```c\narr[0]  // First element\narr[1]  // Second element\narr[2]  // Third element\n...\narr[9]  // Tenth element\n```\n\n3. Valid Index Ranges:\n\nThe valid index range for a 1D array of size N is between 0 and N - 1. Accessing elements outside this range, i.e., at index N or negative indices, results in Undefined Behavior (UB).\n\nTo help you understand UB, imagine an array as a line of 10 boxes. If you try to access a box number 11 or a negative box number, there's no box to access, and your program will crash or behave unpredictably.\n\n```c\n// Accessing elements outside the valid index range\narr[10] = 0; // UB: Accessing the 11th box\narr[-1] = 0; // UB: Accessing a negative box number\n```\n\n4. Why C does not perform automatic bounds checking:\n\nThe C standard does not enforce automatic bounds checking to allow for maximum flexibility and efficiency. This can lead to potential pitfalls, like out-of-bounds access, but experienced programmers can leverage this flexibility to optimize their code and access memory directly.\n\nIt's crucial for beginner programmers to be aware of the valid index range and practice safe coding to avoid Undefined Behavior and memory safety issues in their programs.\n\nTo address the student's specific issue, the code `for (int i = 0; i <= N; i++) arr[i] = 0;` will crash when i equals N, because it is trying to access an element at index N, which is outside the valid index range. To fix this issue, change the loop condition to i < N:\n\n```c\nfor (int i = 0; i < N; i++)\n    arr[i] = 0;\n```\n\nBy following these principles, you will be able to work effectively with arrays in C, and your programs will run smoothly!",
+      "latency_seconds": 29.848,
+      "prompt_tokens": 368,
+      "completion_tokens": 690,
+      "total_tokens": 1058,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "0-based indexing",
+            "bounds",
+            "undefined behavior",
+            "N - 1"
+          ],
+          "missing_keywords": [
+            "buffer overflow",
+            "corruption",
+            "off-by-one"
+          ],
+          "coverage_ratio": 0.571
+        },
+        "extracted_c_code": "data_type array_name[array_size];\n\nint arr[10]; // Declares an array 'arr' of 10 integers\n\narr[0]  // First element\narr[1]  // Second element\narr[2]  // Third element\n...\narr[9]  // Tenth element\n\n// Accessing elements outside the valid index range\narr[10] = 0; // UB: Accessing the 11th box\narr[-1] = 0; // UB: Accessing a negative box number\n\nfor (int i = 0; i < N; i++)\n    arr[i] = 0;",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    int arr[3] = {10, 20, 30};\n    /* Strictly valid indices are 0, 1, 2 */\n    int sum = 0;\n    for (int i = 0; i < 3; i++) {\n        sum += arr[i];\n    }\n    printf(\"Valid array sum: %d\\n\", sum);\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "Valid array sum: 60\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1194,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_17",
+      "topic": "Arrays",
+      "difficulty": "Intermediate",
+      "student_mastery_level": 0.55,
+      "question": "Explain array initialization in C (full initialization, partial initialization with zero-fill, and implicit sizing). Explain the behavior of the `sizeof` operator on arrays in the scope of declaration, versus what occurs when an array is passed to a function (array decay to pointer).",
+      "generated_content": " In C programming, arrays play a crucial role in problem-solving, allowing us to store and manipulate multiple values efficiently. Let's address the common misconceptions and clarify array initialization and the behavior of the `sizeof` operator in C.\n\n**Array Initialization**\n\nFull Initialization:\nWhen initializing an array, you can assign specific values to all elements, like this:\n\n```c\nint arr[5] = {1, 2, 3, 4, 5};\n```\nHere, the array 'arr' is fully initialized with 5 integers.\n\nPartial Initialization with Zero-fill:\nIf you only provide some values during initialization, the remaining elements will be zero-filled:\n\n```c\nint arr[5] = {1, 2, 3};\n```\nIn this case, the array 'arr' is initialized with three elements, and the last two elements are zero-filled.\n\nImplicit Sizing:\nYou can also declare an array and initialize it without specifying its size explicitly using the following syntax:\n\n```c\nint arr[] = {1, 2, 3, 4, 5};\n```\nIn this example, the size of the array is automatically determined based on the number of provided elements.\n\n**Behavior of the sizeof Operator**\n\nWhen used on an array within the scope of declaration, the `sizeof` operator returns the size of the entire array in bytes:\n\n```c\nint arr[5] = {1, 2, 3, 4, 5};\nint size = sizeof(arr) / sizeof(arr[0]);\nprintf(\"%d\\n\", size); // Output: 5\n```\nHowever, when an array is passed as an argument to a function, it undergoes a process called \"array-to-pointer decay.\" This means the array is treated as a pointer to its first element. Consequently, using `sizeof` on the passed array inside the function will only return the size of a single integer, not the total size of the array:\n\n```c\nvoid printArraySize(int arr[], int size) {\n    int arraySize = sizeof(arr) / sizeof(arr[0]);\n    printf(\"Array size: %d\\n\", arraySize);\n}\n\nint main() {\n    int arr[5] = {1, 2, 3, 4, 5};\n    printArraySize(arr, sizeof(arr) / sizeof(arr[0]));\n    return 0;\n}\n```\nIn this example, the function `printArraySize` receives the array 'arr' as a pointer, and using `sizeof` on 'arr' inside the function will return the size of a single integer, not the total size of the array. To correctly pass the array length to the function, you should pass it as a separate argument.",
+      "latency_seconds": 27.502,
+      "prompt_tokens": 346,
+      "completion_tokens": 642,
+      "total_tokens": 988,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "decay",
+            "pointer",
+            "sizeof",
+            "initialization",
+            "zero-fill",
+            "scope"
+          ],
+          "missing_keywords": [
+            "parameter"
+          ],
+          "coverage_ratio": 0.857
+        },
+        "extracted_c_code": "int arr[5] = {1, 2, 3, 4, 5};\n\nint arr[5] = {1, 2, 3};\n\nint arr[] = {1, 2, 3, 4, 5};\n\nint arr[5] = {1, 2, 3, 4, 5};\nint size = sizeof(arr) / sizeof(arr[0]);\nprintf(\"%d\\n\", size); // Output: 5\n\nvoid printArraySize(int arr[], int size) {\n    int arraySize = sizeof(arr) / sizeof(arr[0]);\n    printf(\"Array size: %d\\n\", arraySize);\n}\n\nint main() {\n    int arr[5] = {1, 2, 3, 4, 5};\n    printArraySize(arr, sizeof(arr) / sizeof(arr[0]));\n    return 0;\n}",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nvoid print_first(const int *ptr) {\n    printf(\"First element via pointer: %d\\n\", *ptr);\n}\n\nint main(void) {\n    int arr[5] = {10, 20}; /* Remaining 3 elements guaranteed to be 0 */\n    size_t total_bytes = sizeof(arr);\n    size_t count = sizeof(arr) / sizeof(arr[0]);\n    printf(\"Array elements: %zu, Total bytes: %zu, Element 2: %d\\n\", count, total_bytes, arr[2]);\n    print_first(arr);\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "Array elements: 5, Total bytes: 20, Element 2: 0\nFirst element via pointer: 10\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.139,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_18",
+      "topic": "Arrays",
+      "difficulty": "Advanced",
+      "student_mastery_level": 0.75,
+      "question": "Demonstrate and explain an algorithm to reverse a 1D array of integers in-place in C using two-pointer/index swapping. Detail the loop termination condition (`left < right`), explain why the loop runs floor(N/2) iterations, and verify that elements are not swapped back to their original positions.",
+      "generated_content": " To reverse a 1D array of integers in-place in C using two-pointer/index swapping, we will implement an algorithm that swaps elements from the left and right ends of the array, gradually moving towards the middle. Here is the step-by-step walkthrough:\n\n1. Initialize two pointers, `left` and `right`, at the beginning and end of the array, respectively.\n\n```c\nint arr[] = {1, 2, 3, 4, 5};\nint n = sizeof(arr) / sizeof(arr[0]);\nint left = 0;\nint right = n - 1;\n```\n\n2. Iterate through the array using a loop with the termination condition `left < right`. This ensures that we don't swap elements when we've reached the middle of the array, thus avoiding swapping them back to their original positions.\n\n```c\nfor (int i = 0; left < right; i++) {\n    // Swap arr[left] and arr[right]\n    int temp = arr[left];\n    arr[left] = arr[right];\n    arr[right] = temp;\n\n    // Move left and right pointers towards the center\n    left++;\n    right--;\n}\n```\n\n3. Verify that the array is reversed by printing the elements:\n\n```c\nfor (int i = 0; i < n; i++) {\n    printf(\"%d \", arr[i]);\n}\n```\n\nBy using this algorithm, the loop runs floor(N/2) iterations because we are moving two pointers towards the center of the array. This ensures that the elements are not swapped back to their original positions, and the array is reversed in-place.\n\nAddressing Misconceptions:\n- The loop termination condition (`left < right`) ensures that we are swapping elements only when we haven't reached the middle of the array.\n- Swapping elements in-place (without using an auxiliary array) preserves the original memory layout, making the algorithm more efficient in terms of required space.\n- Iterating all the way to N instead of N/2 would result in swapping elements back to their original positions, as the left and right pointers would meet in the middle of the array.\n- Using two pointers (`left` and `right`) to swap elements allows us to traverse the array efficiently, with a time complexity of O(N).",
+      "latency_seconds": 23.857,
+      "prompt_tokens": 329,
+      "completion_tokens": 551,
+      "total_tokens": 880,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "reverse",
+            "in-place",
+            "swap",
+            "left < right",
+            "iterations",
+            "N/2"
+          ],
+          "missing_keywords": [
+            "temporary variable"
+          ],
+          "coverage_ratio": 0.857
+        },
+        "extracted_c_code": "int arr[] = {1, 2, 3, 4, 5};\nint n = sizeof(arr) / sizeof(arr[0]);\nint left = 0;\nint right = n - 1;\n\nfor (int i = 0; left < right; i++) {\n    // Swap arr[left] and arr[right]\n    int temp = arr[left];\n    arr[left] = arr[right];\n    arr[right] = temp;\n\n    // Move left and right pointers towards the center\n    left++;\n    right--;\n}\n\nfor (int i = 0; i < n; i++) {\n    printf(\"%d \", arr[i]);\n}",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nint main(void) {\n    int arr[5] = {1, 2, 3, 4, 5};\n    int n = 5;\n    int left = 0, right = n - 1;\n    while (left < right) {\n        int temp = arr[left];\n        arr[left] = arr[right];\n        arr[right] = temp;\n        left++;\n        right--;\n    }\n    printf(\"Reversed: %d %d %d %d %d\\n\", arr[0], arr[1], arr[2], arr[3], arr[4]);\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "Reversed: 5 4 3 2 1\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1803,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_19",
+      "topic": "Functions",
+      "difficulty": "Beginner",
+      "student_mastery_level": 0.3,
+      "question": "Explain function declaration (prototypes), definition, and the fundamental call-by-value parameter passing mechanism in C. Using an attempt to swap two integers `void swap(int a, int b)`, explain why the caller's arguments remain unchanged after the function executes, and how stack frames isolate local parameter copies.",
+      "generated_content": " To understand the concept of functions, parameter passing, and the `swap()` function in C, let's visualize the memory layout and trace the execution of the program step-by-step.\n\n1. **Memory Layout**: When a function is called, a new area in the stack memory is allocated for the function's local variables and parameters. This area is called a stack frame. The stack frame also contains a return address (where to return after the function completes).\n\n![Memory Stack Frame Diagram](https://i.imgur.com/yBqz82T.png)\n\n2. **Function Declaration (Prototype)**: A function prototype declares the function's name, return type, and the number, types, and order of its parameters. It doesn't contain the function body.\n\n```c\nvoid swap(int a, int b);  // Prototype\n```\n\n3. **Function Definition**: The function definition includes the function prototype and the function body, which contains the code that executes when the function is called.\n\n```c\nvoid swap(int a, int b) {\n    int t = a;\n    a = b;\n    b = t;\n}  // Function Definition\n```\n\n4. **Fundamental call-by-value parameter passing**: In C, arguments are passed by value, meaning a copy of the argument's value is sent to the function. This is why modifying the parameter inside the function does not affect the original variables.\n\n![Call-by-value Parameter Passing](https://i.imgur.com/qy82qrZ.png)\n\nNow, let's analyze the `swap()` function with the given attempt:\n\n```c\nvoid swap(int a, int b) {\n    int t = a;\n    a = b;\n    b = t;\n}\n\nint main() {\n    int x = 5, y = 7;\n    swap(x, y);\n    printf(\"x: %d, y: %d\\n\", x, y);  // x: 5, y: 7\n}\n```\n\n- Initially, `x` and `y` are in the `main` function's stack frame.\n- When `swap(x, y)` is called, a new stack frame for `swap()` is created, and `a` and `b` are assigned the values of `x` and `y` in the caller's stack frame.\n- Inside the `swap()` function, `t` receives the value of `a` (which is the original `x`), and `a` is assigned the value of `b` (the original `y`). Similarly, `b` is assigned the value of `t` (the original `x`).\n- However, these changes occur within the `swap()` function's stack frame and do not modify the values of `x` and `y` in the caller's stack frame.\n\nTo make the `swap()` function work correctly, you should pass the addresses of the variables instead of their values:\n\n```c\nvoid swap(int* a, int* b) {\n    int t = *a;\n    *a = *b;\n    *b = t;\n}\n\nint main() {\n    int x = 5, y = 7;\n    swap(&x, &y);\n    printf(\"x: %d, y: %d\\n\", x, y);  // x: 7, y: 5\n}\n```\n\nNow, the function receives the addresses of the variables in the caller's stack frame, and modifying the values via pointers modifies the original variables as well.",
+      "latency_seconds": 35.6,
+      "prompt_tokens": 349,
+      "completion_tokens": 837,
+      "total_tokens": 1186,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 7,
+          "matched_keywords": [
+            "call-by-value",
+            "prototype",
+            "stack frame",
+            "caller"
+          ],
+          "missing_keywords": [
+            "copies",
+            "isolate",
+            "callee"
+          ],
+          "coverage_ratio": 0.571
+        },
+        "extracted_c_code": "void swap(int a, int b);  // Prototype\n\nvoid swap(int a, int b) {\n    int t = a;\n    a = b;\n    b = t;\n}  // Function Definition\n\nvoid swap(int a, int b) {\n    int t = a;\n    a = b;\n    b = t;\n}\n\nint main() {\n    int x = 5, y = 7;\n    swap(x, y);\n    printf(\"x: %d, y: %d\\n\", x, y);  // x: 5, y: 7\n}\n\nvoid swap(int* a, int* b) {\n    int t = *a;\n    *a = *b;\n    *b = t;\n}\n\nint main() {\n    int x = 5, y = 7;\n    swap(&x, &y);\n    printf(\"x: %d, y: %d\\n\", x, y);  // x: 7, y: 5\n}",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nvoid attempt_swap(int a, int b) {\n    int temp = a;\n    a = b;\n    b = temp;\n}\n\nint main(void) {\n    int x = 10, y = 20;\n    attempt_swap(x, y);\n    printf(\"After call-by-value attempt: x=%d, y=%d\\n\", x, y);\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "After call-by-value attempt: x=10, y=20\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1324,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    },
+    {
+      "benchmark_id": "pps_20",
+      "topic": "Functions",
+      "difficulty": "Intermediate",
+      "student_mastery_level": 0.65,
+      "question": "Explain how to achieve 'call-by-reference' effects in C using pointers as function parameters. Provide a correct implementation of `void swap(int *a, int *b)`, explain the address-of operator (`&`) and dereference operator (`*`), and explain the storage duration and lifetime of local variables versus pointer targets (warning against returning pointers to local automatic stack variables).",
+      "generated_content": " In C, unlike languages such as C++ or Pascal, there's no direct way to achieve call-by-reference using a dedicated keyword. However, we can mimic this behavior using pointers. Let's focus on understanding pointers, the address-of operator (`&`), and the dereference operator (`*`), and learn how to use them for call-by-reference in C.\n\n1. Pointers:\nPointers in C are variables that store the memory address of another variable. They allow us to manipulate memory directly and are especially useful for achieving call-by-reference.\n\n2. Address-of Operator (`&`):\nThe address-of operator `&` returns the memory address of its operand. For example, `&a` returns the memory address of variable `a`.\n\n3. Dereference Operator (`*`):\nThe dereference operator `*` allows us to access the value stored at the memory address pointed to by a pointer. For example, `*ptr` will return the value stored at the memory address pointed to by pointer `ptr`.\n\nNow, let's implement a `swap` function that achieves call-by-reference using pointers:\n\n```c\nvoid swap(int *a, int *b) {\n    int temp = *a;\n    *a = *b;\n    *b = temp;\n}\n```\n\nIn this example, `swap` takes two pointer arguments `a` and `b`, swaps their values, and does not return anything. The function uses the dereference operator (`*`) to access and manipulate the values stored at the memory addresses pointed to by `a` and `b`.\n\nIt is important to note that local automatic stack variables (i.e., variables declared within functions) have a limited lifetime. When the function returns, their memory is deallocated, potentially causing dangling pointers and undefined behavior. Therefore, avoid returning pointers to local automatic stack variables, and instead, allocate memory dynamically using `malloc()` or use static or global variables if necessary.\n\nHere's an example of using `swap`:\n\n```c\nint main() {\n    int a = 5, b = 10;\n    printf(\"Before swapping: a = %d, b = %d\\n\", a, b);\n    swap(&a, &b);\n    printf(\"After swapping: a = %d, b = %d\\n\", a, b);\n    return 0;\n}\n```\n\nIn the provided example, we call the `swap` function with the addresses of `a` and `b` (obtained using the address-of operator `&`). The `swap` function modifies the values of `a` and `b` directly through the pointers passed as arguments, demonstrating call-by-reference in C.",
+      "latency_seconds": 27.353,
+      "prompt_tokens": 341,
+      "completion_tokens": 640,
+      "total_tokens": 981,
+      "model_name": "mistral:7b",
+      "automated_indicators": {
+        "concept_coverage": {
+          "total_keywords": 8,
+          "matched_keywords": [
+            "pointer",
+            "address-of",
+            "dereference",
+            "call-by-reference",
+            "stack",
+            "lifetime",
+            "dangling pointer",
+            "undefined behavior"
+          ],
+          "missing_keywords": [],
+          "coverage_ratio": 1.0
+        },
+        "extracted_c_code": "void swap(int *a, int *b) {\n    int temp = *a;\n    *a = *b;\n    *b = temp;\n}\n\nint main() {\n    int a = 5, b = 10;\n    printf(\"Before swapping: a = %d, b = %d\\n\", a, b);\n    swap(&a, &b);\n    printf(\"After swapping: a = %d, b = %d\\n\", a, b);\n    return 0;\n}",
+        "llm_code_execution_status": "NOT_EXECUTED_UNTRUSTED",
+        "trusted_reference_execution": {
+          "status": "SUCCESS",
+          "is_trusted_reference": true,
+          "source_code": "#include <stdio.h>\n\nvoid swap(int *a, int *b) {\n    int temp = *a;\n    *a = *b;\n    *b = temp;\n}\n\nint main(void) {\n    int x = 10, y = 20;\n    swap(&x, &y);\n    printf(\"After pointer swap: x=%d, y=%d\\n\", x, y);\n    return 0;\n}\n",
+          "compiler_used": "C:\\MinGW\\bin\\gcc.exe",
+          "compiler_output": "",
+          "stdout": "After pointer swap: x=20, y=10\n",
+          "stderr": "",
+          "exit_code": 0,
+          "execution_time_seconds": 0.1401,
+          "notes": ""
+        },
+        "while_loop_regression": null
+      },
+      "manual_review": {
+        "conceptual_correctness": null,
+        "code_correctness": null,
+        "explanation_clarity": null,
+        "appropriateness_for_student_mastery": null,
+        "misconception_handling": null,
+        "reviewer_notes": "",
+        "evaluated_by": null,
+        "is_reviewed": false
+      }
+    }
+  ]
+}

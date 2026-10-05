@@ -1,0 +1,11 @@
+{
+  "query": "How do pointers work in C?",
+  "documents": [
+    {
+      "doc_id": "rag_doc_01",
+      "content": "In C, a pointer is a variable that stores the memory address of another variable. Syntax: int *ptr = &val;",
+      "source": "pps_module_04_pointers.pdf",
+      "score": 0.92
+    }
+  ]
+}
