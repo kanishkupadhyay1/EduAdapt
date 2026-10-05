@@ -13,18 +13,20 @@ import sys
 from pathlib import Path
 
 import pytest
-from helpers import HashingEmbedder
+from tests.helpers import HashingEmbedder
 
-from src import config
-from src.chunking import chunk_pages
-from src.embeddings import Embedder
-from src.preprocessing import preprocess_pages
-from src.rag_interface import PPSCurriculumRAG, RAGContext, RAGDocument
-from src.retriever import Retriever
-from src.vector_store import VectorStore
+from eduadapt.rag import config
+from eduadapt.rag.chunking import chunk_pages
+from eduadapt.rag.embeddings import Embedder
+from eduadapt.rag.preprocessing import preprocess_pages
+from eduadapt.interfaces.rag import RAGContext, RAGDocument
+from eduadapt.rag.rag_interface import PPSCurriculumRAG
+from eduadapt.rag.retriever import Retriever
+from eduadapt.rag.vector_store import VectorStore
 
 ROOT = Path(config.MODULE_ROOT)
-sys.path.insert(0, str(ROOT / "scripts"))
+sys.path.insert(0, str(ROOT / "src"))
+sys.path.insert(0, str(ROOT / "scripts" / "rag"))
 sys.path.insert(0, str(ROOT / "evaluation"))
 import evaluate_retrieval as ev  # noqa: E402
 import ingest  # noqa: E402

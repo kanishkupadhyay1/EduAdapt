@@ -1,181 +1,132 @@
-# Member 2 - PPS Curriculum RAG (NLP module)
+# EduAdapt: Adaptive Learning Platform
 
+EduAdapt is an intelligent, adaptive learning platform for the **Programming for Problem Solving (PPS)** C programming curriculum.
 
-## 1. What this module does
+This branch integrates **Member 1's Generative AI Module** with **Member 2's PPS Curriculum Retrieval-Augmented Generation (RAG) Module**.
 
-It turns the **real PPS (Programming for Problem Solving) course material** into a searchable
-knowledge base and, given a student's question, returns the most relevant pieces of that
-material together with where they came from (file, page, module, topic).
+---
 
-```
-PPS files -> load -> clean -> chunk -> embed -> Qdrant (local) -> retrieve -> RAGContext
-```
+## 📌 Architectural Scope & Module Ownership
 
-It works **independently of Member 1's Mistral code**. It is a plain, fixed pipeline - no agents,
-no autonomous decisions, no LLM calls.
+- **Non-Agentic Deterministic Architecture**: EduAdapt uses direct, deterministic prompting and retrieval pipelines. It does **not** employ autonomous multi-agent loops or agentic frameworks.
+- **Course Focus**: Scoped strictly to the **Programming for Problem Solving (PPS)** C curriculum.
+- **Module Ownership**:
+  - **Member 1 (GenAI & Teaching Personalization)**:
+    - LLM Inference abstraction & clients (Ollama + Mistral 7B, mock fallback)
+    - Prompt template management & student-aware prompt rendering
+    - Pedagogical content generation & misconception-aware instruction
+    - Automated feedback & hints on C code submissions
+    - Dynamic roadmap planner
+    - PPS teaching benchmark (20 questions) & automated evaluation harness (C reference safety checks)
+  - **Member 2 (PPS Curriculum RAG Module)**:
+    - Multi-format curriculum document loader (`.pdf`, `.txt`, `.md`)
+    - Ligature normalization and C-code-preserving preprocessing
+    - Semantic chunker with C code block integrity
+    - Dense vector embeddings (`sentence-transformers/all-MiniLM-L6-v2`)
+    - Local persistent vector storage (`Qdrant`)
+    - Offline semantic retrieval engine & prompt context adapter
+    - Retrieval evaluation (Hit@K, Recall@K, MRR)
+  - **Member 3 (Student Modeling & Learning Twin)**:
+    - Knowledge tracing, mastery estimation, student twin state persistence
+  - **Member 4 (Accessibility)**:
+    - Modality adaptation, audio narration, and assistive adapters
 
-## 2. What "RAG" means
+---
 
-**R**etrieval-**A**ugmented **G**eneration. A language model only knows what it saw during
-training. Before it answers, we first *retrieve* the relevant paragraphs from our own course
-material and hand them to the model, so its answer is grounded in the curriculum. **This module
-does the retrieval half.** Member 1's Mistral does the generation half.
+## 📂 Project Directory Structure
 
-Key words:
-* **Chunk** - a small piece of the curriculum (one or two paragraphs, or one code example).
-* **Embedding** - a list of numbers (384 for the default model) capturing a text's meaning.
-  Similar meaning = similar numbers.
-* **Vector database (Qdrant)** - stores the embeddings plus the chunk text/metadata and quickly
-  finds the closest ones to a question. We use its *local* mode: just a folder, no server/account.
-* **Cosine similarity ("score")** - how close two embeddings are; higher = more similar.
-
-## 3. Folder structure
-
-```
-member2_rag/
-  data/raw/pps/        <- PUT YOUR PPS PDFs HERE
-  data/processed/      <- chunks.jsonl is written here (readable dump of all chunks)
-  src/
-    config.py          settings in one place (+ Python-version check)
-    document_loader.py read PDF/TXT/MD files -> page dictionaries
-    preprocessing.py   clean text safely (C code preserved), heading detection
-    chunking.py        topic-aware chunks with metadata
-    embeddings.py      sentence-transformer wrapper (loads once, caches queries)
-    vector_store.py    local persistent Qdrant
-    retriever.py       question -> top-k results with scores
-    rag_interface.py   RAGContext hand-off (TEMPORARY contract, see section 11)
-  scripts/
-    ingest.py          build/refresh the knowledge base (one command)
-    query.py           ask a question from the command line
-    preview_documents.py  look at loaded + cleaned text (no database)
-  evaluation/
-    test_queries.json  TEMPLATE of queries (expected_* must be filled from real curriculum)
-    evaluate_retrieval.py  Hit@K / Recall@K / MRR report
-  tests/               pytest tests (fake data only, no internet)
-  vector_db/           the Qdrant database (created by ingest.py, not committed)
-```
-
-## 4. Installation
-
-Run in the VS Code terminal (Ctrl + `), inside the `member2_rag` folder:
-
-```
-python --version
-pip install -r requirements.txt
-```
-`python --version` must show 3.11.x (team standard: 3.11.0). Do not change your Python version.
-The first time the embedding model is used it is downloaded once (~90 MB, needs internet) and
-then cached for offline use.
-
-## 5. Where to put the PPS PDFs
-
-Copy your real curriculum files into **`data/raw/pps/`**. Supported: `.pdf`, `.txt`, `.md`
-(text-based PDFs only; scanned/image-only PDFs are skipped with a message).
-
-Naming helps the module detect the **module** automatically:
-`module_1_introduction.pdf`, `Module 4 - Pointers.pdf`, or a folder `Module 3/notes.pdf`
-all give "Module 1", "Module 4", "Module 3". Otherwise the module is "Unknown" (never guessed).
-
-The **topic** is detected from headings in the text (e.g. `4.2 Pointer arithmetic`,
-`ARRAYS AND STRINGS`). If detection is poor on your files, create
-`data/raw/pps/curriculum_map.json` to set names yourself:
-
-```json
-{
-  "module_4_pointers.pdf": {"module": "Module 4", "topic": "Pointers"}
-}
-```
-(A topic given here is used for the whole file and overrides heading detection.)
-
-Nothing in this repository is real curriculum content. Test files use obviously fake text.
-
-## 6. Build the vector database
-
-```
-python scripts/ingest.py
-```
-Reads the files, cleans, chunks, embeds and stores everything in `vector_db/`, and writes a
-readable `data/processed/chunks.jsonl` so you can inspect exactly what was indexed.
-Options: `--data-dir`, `--collection`, `--chunk-size`, `--chunk-overlap`, `--model`, `--rebuild`.
-
-Use `--rebuild` after deleting/renaming files, changing chunk settings or changing the model,
-so no stale chunks remain. Only one program can open the Qdrant folder at a time.
-
-**Chunk size/overlap defaults** (in `src/config.py`): 900 characters with 150 overlap. The default
-embedding model (`all-MiniLM-L6-v2`) reads about 256 tokens (~1000 characters) and ignores the
-rest, so 900 keeps each chunk fully "visible" while holding about one idea. 150 (~15%) overlap
-repeats the end of one chunk at the start of the next so ideas on a boundary are not lost.
-C code is never overlapped and kept in one piece when it fits (up to 2x the chunk size).
-
-## 7. Run retrieval
-
-```
-python scripts/query.py "Explain pointers in C" --top-k 5
+```text
+EduAdapt/
+├── .env.example                     # Environment configuration template
+├── .gitignore                        # Git exclusion rules
+├── README.md                         # Project documentation
+├── requirements.txt                  # Unified project dependencies
+├── data/
+│   ├── benchmark/                    # PPS GenAI benchmark & rubric
+│   │   ├── pps_benchmark_20.json     # 20 curated PPS evaluation problems
+│   │   └── manual_review_rubric.md   # Pedagogical manual review rubric
+│   ├── mock/                         # Mock payloads for unit tests
+│   │   ├── sample_problem.json
+│   │   ├── sample_rag_context.json
+│   │   └── sample_student.json
+│   ├── raw/pps/                      # Raw PPS curriculum documents (.pdf/.txt/.md)
+│   └── processed/                    # Processed curriculum chunks (chunks.jsonl)
+├── evaluation/                       # Retrieval evaluation harness
+│   ├── evaluate_retrieval.py         # Hit@K / Recall@K / MRR metrics
+│   └── test_queries.json             # Retrieval evaluation query templates
+├── scripts/
+│   ├── run_pps_evaluation.py         # GenAI automated benchmark test runner
+│   ├── run_real_mistral_eval.py      # Live Mistral 7B baseline evaluation runner
+│   └── rag/                          # RAG pipeline operations
+│       ├── ingest.py                 # Index PPS curriculum into Qdrant
+│       ├── preview_documents.py      # Dry-run text extraction & cleaning
+│       └── query.py                  # CLI query tool for retrieval
+├── src/
+│   └── eduadapt/                     # Core Python application package
+│       ├── config.py                 # Core application settings
+│       ├── main.py                   # Service factory & module wiring
+│       ├── inference/                # LLM client abstractions (Ollama, Mock)
+│       ├── prompts/                  # Prompt templates & manager
+│       ├── teaching/                 # Personalized teaching generation
+│       ├── feedback/                 # Code feedback evaluator
+│       ├── roadmap/                  # Learning roadmap generator
+│       ├── evaluation/               # C execution & automated evaluation runner
+│       ├── interfaces/               # Canonical team contracts
+│       │   ├── rag.py                # Canonical RAGInterface, RAGDocument, RAGContext
+│       │   ├── student_model.py      # Student profile contract
+│       │   └── accessibility.py      # Accessibility contract
+│       └── rag/                      # Member 2 PPS Curriculum RAG
+│           ├── config.py             # RAG-specific parameters
+│           ├── document_loader.py    # Multi-format document parser
+│           ├── preprocessing.py      # Text cleaner & code detector
+│           ├── chunking.py           # Topic & code-aware chunker
+│           ├── embeddings.py         # Sentence-Transformers embedder
+│           ├── vector_store.py       # Local embedded Qdrant store
+│           ├── retriever.py          # Semantic similarity search
+│           └── rag_interface.py      # PPSCurriculumRAG adapter
+├── tests/
+│   ├── helpers.py                    # Test helpers (HashingEmbedder, mock PDF)
+│   ├── test_smoke.py                 # GenAI core smoke tests
+│   ├── test_ollama.py                # Ollama client & live inference tests
+│   ├── test_evaluation.py            # Evaluation & C executor tests
+│   ├── test_loading_and_preprocessing.py # RAG document loader & text cleaning tests
+│   └── test_retrieval.py             # RAG chunking, store, and retrieval tests
+└── vector_db/                        # Local Qdrant persistent storage (.gitignored)
 ```
 
-## 8. Run the evaluation
+---
 
-1. Ingest the real PPS files.
-2. Open `data/processed/chunks.jsonl`, find which topic/source/module truly covers each query,
-   and fill `expected_topics` / `expected_sources` / `expected_modules` in
-   `evaluation/test_queries.json` (queries with all three empty are skipped).
-3. Run:
-```
-python evaluation/evaluate_retrieval.py --top-k 5
-```
-Reports **Hit@K**, **Recall@K** and **MRR**. These are *retrieval* metrics, not LLM accuracy.
-A result counts as relevant if it matches ANY expected topic (case-insensitive substring),
-source file, or module.
+## ⚙️ Environment Configuration
 
-## 9. Run the tests
+1. Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+2. Key settings:
+   - `LLM_PROVIDER`: `mock` (default for CI/tests) or `ollama` (for live inference)
+   - `LLM_MODEL_NAME`: `mistral:7b-instruct` (or `mock-pps-model`)
+   - `APP_ENV`: `development` | `testing` | `production`
 
-```
-python -m pytest -v
-```
-No internet or model download is needed (a fake embedder is used). One test checks the real
-model's 384 dimensions and runs only if the model is already cached; otherwise it is skipped.
+---
 
-## 10. Example query and output
+## 🚀 Usage
 
-The values below show the **format** only (placeholders, not real curriculum):
-
-```
-Query: Explain pointers in C
-
-1. score=0.912 | <file>.pdf (page <n>) | Module <n> | <detected topic>
-   <first 300 characters of the chunk>
-
-2. score=0.874 | <file>.pdf (page <n>) | Module <n> | <detected topic>
-   ...
+### 1. Run Complete Test Suite
+```bash
+python -m pytest tests/ -v
 ```
 
-## 11. How Member 1 will consume RAGContext
-
-```python
-from src.rag_interface import PPSCurriculumRAG
-
-rag = PPSCurriculumRAG.from_defaults()              # opens the existing vector_db
-context = rag.retrieve(query="Explain pointers in C", top_k=5)
-for doc in context.documents:
-    print(doc.source, doc.page, doc.module, doc.topic, doc.score, doc.text)
-
-curriculum_block = rag.format_for_prompt(context)   # ready-to-paste text with source labels
-rag.close()                                         # release the database folder
+### 2. Ingest PPS Curriculum (When PDFs are added)
+```bash
+python scripts/rag/ingest.py
 ```
-Put `curriculum_block` into the Mistral prompt (e.g. "Use ONLY this PPS material: ...").
 
-**IMPORTANT - the contract is TEMPORARY.** `RAGDocument`, `RAGContext` and `RAGInterface` in
-`src/rag_interface.py` are placeholders because Member 1's real definitions have not been seen
-yet. When they arrive, replace the block marked `TEMPORARY CONTRACT` and update the single
-function `to_rag_document()` (and `format_for_prompt()`). Nothing else changes.
+### 3. Query the Curriculum Knowledge Base
+```bash
+python scripts/rag/query.py "Explain pointers in C" --top-k 5
+```
 
-Notes for integration: keep one `PPSCurriculumRAG` open per process (Qdrant local mode allows one
-opener at a time); the package is named `src`, so rename it or add the package path if it clashes
-with another top-level `src` in the combined repo.
-
-## Known limitations / to tune on real files
-
-* Code-vs-prose and heading detection are heuristics; check `chunks.jsonl` on the real PDFs.
-* Scanned PDFs need OCR (not included). PDF text extraction may lose code indentation.
-* A chunk never spans two pages, so a paragraph continuing across a page break becomes two chunks.
-* A lone number on its own line is treated as a page number and removed.
+### 4. Run the Teaching Generator Application
+```bash
+python -m eduadapt.main
+```

@@ -1,0 +1,7 @@
+{
+  "problem_id": "prob_001",
+  "topic": "Pointers and Memory",
+  "title": "Pointer Swap Function",
+  "description": "Write a C function to swap two integer values using pointers.",
+  "sample_student_code": "void swap(int a, int b) {\n    int temp = a;\n    a = b;\n    b = temp;\n}"
+}

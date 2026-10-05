@@ -26,7 +26,7 @@ from typing import Any
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 
-from src import config
+from eduadapt.rag import config
 
 logger = logging.getLogger(__name__)
 
@@ -76,6 +76,12 @@ class VectorStore:
     def delete_collection(self) -> None:
         if self.collection_exists():
             self.client.delete_collection(self.collection_name)
+            import gc
+            import shutil
+            gc.collect()
+            coll_path = self.path / "collection" / self.collection_name
+            if coll_path.exists():
+                shutil.rmtree(coll_path, ignore_errors=True)
             logger.info("Deleted collection '%s'.", self.collection_name)
 
     def vector_size(self) -> int | None:

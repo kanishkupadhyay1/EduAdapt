@@ -1,0 +1,15 @@
+{
+  "student_id": "std_1001",
+  "current_topic": "Pointers and Memory",
+  "mastery_levels": {
+    "Variables and Types": 0.9,
+    "Control Structures": 0.85,
+    "Functions": 0.7,
+    "Pointers and Memory": 0.35
+  },
+  "learning_style": "visual_interactive",
+  "preferred_pace": "moderate",
+  "common_misconceptions": [
+    "Confusing pointer address with dereferenced value"
+  ]
+}

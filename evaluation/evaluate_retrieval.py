@@ -25,9 +25,9 @@ import sys
 from pathlib import Path
 from typing import Any
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'src'))
 
-from src import config  # noqa: E402
+from eduadapt.rag import config  # noqa: E402
 
 DEFAULT_QUERIES = Path(__file__).resolve().parent / "test_queries.json"
 Result = dict[str, Any]
@@ -147,9 +147,9 @@ def main() -> None:
         print_report({"top_k": args.top_k, "details": [], "skipped": [q["id"] for q in queries], "by_k": {}})
         return
 
-    from src.embeddings import Embedder
-    from src.retriever import Retriever
-    from src.vector_store import VectorStore
+    from eduadapt.rag.embeddings import Embedder
+    from eduadapt.rag.retriever import Retriever
+    from eduadapt.rag.vector_store import VectorStore
 
     try:
         with VectorStore(path=args.db_path, collection_name=args.collection) as store:

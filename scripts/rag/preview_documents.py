@@ -14,11 +14,11 @@ import sys
 from pathlib import Path
 
 # Make "import src..." work when running `python scripts/preview_documents.py`
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent / 'src'))
 
-from src import config  # noqa: E402
-from src.document_loader import load_documents  # noqa: E402
-from src.preprocessing import preprocess_pages  # noqa: E402
+from eduadapt.rag import config  # noqa: E402
+from eduadapt.rag.document_loader import load_documents  # noqa: E402
+from eduadapt.rag.preprocessing import preprocess_pages  # noqa: E402
 
 
 def main() -> None:
