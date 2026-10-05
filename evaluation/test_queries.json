@@ -1,0 +1,15 @@
+{
+  "_README": "TEMPLATE - NOT READY. The 'query' texts are generic C-programming questions to start from. The 'expected_*' fields are intentionally EMPTY because the real PPS curriculum has not been loaded yet: do NOT guess them. After ingesting the real PPS files, open data/processed/chunks.jsonl, find which topic/source/module truly covers each question, and fill in at least one expected_* field per query. Queries with all expected_* fields empty are skipped by evaluate_retrieval.py. You can also copy the 20 questions from Member 1's benchmark here (questions only; expected_* must still come from the real curriculum).",
+  "queries": [
+    {"id": "q01", "query": "What is a pointer in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
+    {"id": "q02", "query": "Explain pointers in C", "expected_topics": [], "expected_sources": [], "expected_modules": []},
+    {"id": "q03", "query": "How do for loops work?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
+    {"id": "q04", "query": "What is the difference between while and do-while loops?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
+    {"id": "q05", "query": "How do I declare and use an array in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
+    {"id": "q06", "query": "How are strings stored in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
+    {"id": "q07", "query": "How do I write and call a function in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
+    {"id": "q08", "query": "What are the data types available in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
+    {"id": "q09", "query": "How does if-else decision making work?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
+    {"id": "q10", "query": "What is a structure in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []}
+  ]
+}

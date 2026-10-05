@@ -1,9 +1,15 @@
-# Core Configuration and Data Validation
+# EduAdapt Core Dependencies (Member 1 - GenAI Module)
 pydantic>=2.5.0
 pydantic-settings>=2.1.0
 python-dotenv>=1.0.0
 requests>=2.31.0
+ollama>=0.4.0
+
+# PPS Curriculum RAG Dependencies (Member 2 - RAG Module)
+# Python 3.11.0 is the team's required reference version.
+sentence-transformers>=3.0
+qdrant-client>=1.10
+pypdf>=4.0
 
 # Testing
 pytest>=7.4.0
-

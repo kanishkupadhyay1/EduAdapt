@@ -1,6 +1,7 @@
 """Interface contract for external RAG module.
 
-Owned by the RAG team member. This module only consumes retrieved context.
+Canonical contract owned by the platform architecture.
+Consumed by the teaching generator and implemented by the PPS Curriculum RAG module.
 """
 
 from abc import ABC, abstractmethod
@@ -15,6 +16,19 @@ class RAGDocument(BaseModel):
     content: str
     source: str
     score: Optional[float] = None
+    page: Optional[int] = None
+    module: Optional[str] = None
+    topic: Optional[str] = None
+
+    @property
+    def text(self) -> str:
+        """Alias for content to support Member 2 interface."""
+        return self.content
+
+    @property
+    def chunk_id(self) -> str:
+        """Alias for doc_id to support Member 2 interface."""
+        return self.doc_id
 
 
 class RAGContext(BaseModel):
@@ -28,6 +42,20 @@ class RAGContext(BaseModel):
         return "\n\n".join(
             f"[Source: {doc.source}]\n{doc.content}" for doc in self.documents
         )
+
+    def format_for_prompt(self) -> str:
+        """Helper to format retrieved documents with detailed source labels."""
+        if not self.documents:
+            return "(No relevant PPS curriculum material was found.)"
+        blocks = []
+        for number, doc in enumerate(self.documents, start=1):
+            page = f", page {doc.page}" if doc.page is not None else ""
+            module = f" | {doc.module}" if doc.module else ""
+            topic = f" | {doc.topic}" if doc.topic else ""
+            blocks.append(
+                f"[Source {number}: {doc.source}{page}{module}{topic}]\n{doc.content}"
+            )
+        return "\n\n".join(blocks)
 
 
 class RAGInterface(ABC):

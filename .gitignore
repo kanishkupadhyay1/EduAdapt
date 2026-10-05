@@ -42,6 +42,8 @@ venv.bak/
 *.swp
 *.swo
 *~
+.DS_Store
+Thumbs.db
 
 # Testing & Coverage
 .pytest_cache/
@@ -58,3 +60,16 @@ weights/
 *.pt
 *.bin
 *.safetensors
+
+# Vector Store & RAG Storage (Rebuildable via python scripts/rag/ingest.py)
+vector_db/*
+!vector_db/.gitkeep
+
+# Processed intermediate curriculum files (Rebuildable)
+data/processed/*
+!data/processed/.gitkeep
+
+# Raw PPS curriculum data files (Preserve directory structure and curriculum map)
+data/raw/pps/*
+!data/raw/pps/.gitkeep
+!data/raw/pps/curriculum_map.json
