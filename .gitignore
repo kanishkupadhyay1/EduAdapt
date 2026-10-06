@@ -61,12 +61,14 @@ weights/
 *.bin
 *.safetensors
 
-# Vector Store & RAG Storage (Rebuildable via python scripts/rag/ingest.py)
+# Vector Store & RAG Storage (rebuildable)
 vector_db/*
 !vector_db/.gitkeep
 
-# Processed intermediate curriculum files (Rebuildable)
+# Processed intermediate curriculum files (rebuildable)
 data/processed/*
 !data/processed/.gitkeep
 
-# Raw PPS curriculum data files
+# Raw PPS curriculum files
+# The PPS PPTs are already tracked in Git.
+# Keep the curriculum mapping file tracked.

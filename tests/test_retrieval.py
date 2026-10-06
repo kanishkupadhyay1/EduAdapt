@@ -13,20 +13,18 @@ import sys
 from pathlib import Path
 
 import pytest
-from tests.helpers import HashingEmbedder
+from helpers import HashingEmbedder
 
-from eduadapt.rag import config
-from eduadapt.rag.chunking import chunk_pages
-from eduadapt.rag.embeddings import Embedder
-from eduadapt.rag.preprocessing import preprocess_pages
-from eduadapt.interfaces.rag import RAGContext, RAGDocument
-from eduadapt.rag.rag_interface import PPSCurriculumRAG
-from eduadapt.rag.retriever import Retriever
-from eduadapt.rag.vector_store import VectorStore
+from src import config
+from src.chunking import chunk_pages
+from src.embeddings import Embedder
+from src.preprocessing import preprocess_pages
+from src.rag_interface import PPSCurriculumRAG, RAGContext, RAGDocument
+from src.retriever import Retriever
+from src.vector_store import VectorStore
 
 ROOT = Path(config.MODULE_ROOT)
-sys.path.insert(0, str(ROOT / "src"))
-sys.path.insert(0, str(ROOT / "scripts" / "rag"))
+sys.path.insert(0, str(ROOT / "scripts"))
 sys.path.insert(0, str(ROOT / "evaluation"))
 import evaluate_retrieval as ev  # noqa: E402
 import ingest  # noqa: E402
@@ -49,8 +47,8 @@ REQUIRED_CHUNK_KEYS = {"chunk_id", "text", "source", "page", "module", "topic"}
 
 def fake_pages(text: str = FAKE_DOCUMENT) -> list[dict]:
     return [{
-        "text": text, "source": "module_7_fake.txt", "page": None,
-        "module": "Module 7", "topic": config.UNKNOWN_LABEL, "file_path": "module_7_fake.txt",
+        "text": text, "source": "unit_3_fake.txt", "page": None,
+        "module": "Unit 3", "topic": config.UNKNOWN_LABEL, "file_path": "unit_3_fake.txt",
     }]
 
 
@@ -81,8 +79,8 @@ def test_every_chunk_has_required_metadata(fake_chunks):
     for chunk in fake_chunks:
         assert REQUIRED_CHUNK_KEYS <= set(chunk)
         assert chunk["text"].strip()
-        assert chunk["source"] == "module_7_fake.txt"
-        assert chunk["module"] == "Module 7"
+        assert chunk["source"] == "unit_3_fake.txt"
+        assert chunk["module"] == "Unit 3"
 
 
 def test_topics_come_from_headings_and_are_not_mixed(fake_chunks):
@@ -101,15 +99,15 @@ def test_c_code_block_stays_in_one_chunk_unchanged(fake_chunks):
 def test_chunk_ids_are_unique_and_readable(fake_chunks):
     ids = [c["chunk_id"] for c in fake_chunks]
     assert len(ids) == len(set(ids))
-    assert all(i.startswith("module_7_fake_txt-full-c") for i in ids)
+    assert all(i.startswith("unit_3_fake_txt-full-c") for i in ids)
 
 
 def test_page_numbers_are_kept_for_pdf_style_pages():
     pages = [
         {"text": "FAKE ALPHA TOPIC\n\nThe alpha widget text.", "source": "f.pdf", "page": 3,
-         "module": "Module 1", "topic": config.UNKNOWN_LABEL, "file_path": "f.pdf"},
+         "module": "Unit 1", "topic": config.UNKNOWN_LABEL, "file_path": "f.pdf"},
         {"text": "More alpha widget text on the next page.", "source": "f.pdf", "page": 4,
-         "module": "Module 1", "topic": config.UNKNOWN_LABEL, "file_path": "f.pdf"},
+         "module": "Unit 1", "topic": config.UNKNOWN_LABEL, "file_path": "f.pdf"},
     ]
     chunks = chunk_pages(pages)
     assert [c["page"] for c in chunks] == [3, 4]
@@ -290,13 +288,13 @@ def test_rag_context_has_expected_fields(populated_store, embedder):
     assert isinstance(doc, RAGDocument)
     for attribute in ("text", "score", "source", "page", "module", "topic", "chunk_id"):
         assert hasattr(doc, attribute)
-    assert doc.source == "module_7_fake.txt" and doc.module == "Module 7"
+    assert doc.source == "unit_3_fake.txt" and doc.module == "Unit 3"
 
 
 def test_format_for_prompt_contains_source_labels(populated_store, embedder):
     rag = PPSCurriculumRAG(Retriever(embedder, populated_store))
     text = rag.format_for_prompt(rag.retrieve("alpha widget banana", top_k=1))
-    assert "module_7_fake.txt" in text and "Module 7" in text and "alpha widget" in text
+    assert "unit_3_fake.txt" in text and "Unit 3" in text and "alpha widget" in text
     assert "No relevant" in rag.format_for_prompt(RAGContext(query="x", documents=[]))
 
 
@@ -311,7 +309,7 @@ def test_from_defaults_refuses_empty_database(tmp_path, embedder):
 def _ingest(tmp_path, embedder, **kwargs):
     data = tmp_path / "pps"
     data.mkdir(exist_ok=True)
-    (data / "module_7_fake.txt").write_text(FAKE_DOCUMENT, encoding="utf-8")
+    (data / "unit_3_fake.txt").write_text(FAKE_DOCUMENT, encoding="utf-8")
     return ingest.run_ingestion(
         data_dir=data, db_path=tmp_path / "db", collection_name="t",
         embedder=embedder, processed_dir=tmp_path / "processed", **kwargs,
@@ -359,7 +357,7 @@ def test_ingestion_respects_chunk_settings(tmp_path, embedder):
 # ===========================================================================
 # Evaluation metrics (pure functions, no database needed)
 # ===========================================================================
-def _res(topic, source="s.pdf", module="Module 1"):
+def _res(topic, source="s.pdf", module="Unit 1"):
     return {"topic": topic, "source": source, "module": module, "score": 0.5, "page": 1}
 
 
@@ -404,3 +402,47 @@ def test_evaluate_aggregates_over_ready_queries():
     report = ev.evaluate(queries, lambda q, k: data[q], top_k=3)
     assert report["by_k"][3]["queries"] == 2
     assert report["by_k"][3]["hit_rate"] == 0.5 and report["by_k"][3]["mrr"] == 0.5
+
+
+# ===========================================================================
+# Scope enforcement (Unit 1-5 only; syllabus excludes structures/recursion/files)
+# ===========================================================================
+def test_ingestion_skips_files_not_mapped_to_a_unit_by_default(tmp_path, embedder):
+    data = tmp_path / "pps"
+    data.mkdir()
+    (data / "unit_2_fake.txt").write_text(FAKE_DOCUMENT, encoding="utf-8")
+    (data / "random_notes.txt").write_text("Fake unmapped text about a gizmo.", encoding="utf-8")
+    (data / "unit_9_fake.txt").write_text("Fake text for a unit the syllabus lacks.", encoding="utf-8")
+
+    def run(**kwargs):
+        return ingest.run_ingestion(data_dir=data, db_path=tmp_path / "db", collection_name="t",
+                                    embedder=embedder, processed_dir=tmp_path / "p", rebuild=True, **kwargs)
+
+    strict = run()
+    assert {name for name, _ in strict["skipped_files"]} == {"random_notes.txt", "unit_9_fake.txt"}
+    lines = (tmp_path / "p" / "chunks.jsonl").read_text(encoding="utf-8").splitlines()
+    assert {json.loads(line)["module"] for line in lines} == {"Unit 2"}
+
+    relaxed = run(allow_unmapped=True)
+    assert relaxed["chunks_created"] > strict["chunks_created"]
+
+
+def test_ingestion_warns_about_out_of_scope_headings(tmp_path, embedder):
+    data = tmp_path / "pps"
+    data.mkdir()
+    text = "FAKE ALPHA TOPIC\n\nThe alpha widget text.\n\nRecursion\n\nFake text about a recursive gizmo."
+    (data / "unit_3_fake.txt").write_text(text, encoding="utf-8")
+    summary = ingest.run_ingestion(data_dir=data, db_path=tmp_path / "db", collection_name="t",
+                                   embedder=embedder, processed_dir=tmp_path / "p")
+    assert [topic for _, topic in summary["out_of_scope_warnings"]] == ["Recursion"]
+    assert summary["chunks_created"] >= 2  # warned, NOT deleted
+
+
+def test_in_scope_headings_do_not_trigger_the_warning(tmp_path, embedder):
+    data = tmp_path / "pps"
+    data.mkdir()
+    text = "Data structures\n\nFake text about lists.\n\nStructure of the C program\n\nFake text about main."
+    (data / "unit_1_fake.txt").write_text(text, encoding="utf-8")
+    summary = ingest.run_ingestion(data_dir=data, db_path=tmp_path / "db", collection_name="t",
+                                   embedder=embedder, processed_dir=tmp_path / "p")
+    assert summary["out_of_scope_warnings"] == []
