@@ -44,6 +44,7 @@ def test_service_run_learning_session_s001():
         "learning_state",
         "roadmap",
         "verification",
+        "accessibility",
     ]
     for section in expected_sections:
         assert section in result, f"Missing section: {section}"
@@ -97,8 +98,15 @@ def test_service_run_learning_session_s001():
     ver = result["verification"]
     assert ver["curriculum_context_available"] is True
     assert ver["generation_completed"] is True
-    assert ver["code_execution_status"] == "NOT_EXECUTED_UNTRUSTED"
+    assert ver["code_execution"] == "NOT_EXECUTED_UNTRUSTED"
     assert "Enforced" in ver["safety_status"]
+
+    # 10. Accessibility section validation
+    acc = result["accessibility"]
+    assert acc["topic"] == "Pointers"
+    assert "explanation" in acc
+    assert "practice_question" in acc
+    assert len(acc["sources"]) == 3
 
 
 def test_service_handles_unknown_student_safely():
@@ -129,3 +137,61 @@ def test_service_without_rag():
     assert result["curriculum"]["retrieved_count"] == 0
     assert result["verification"]["curriculum_context_available"] is False
     assert result["verification"]["generation_completed"] is True
+
+
+def test_response_verifier_grounding_signals():
+    """Verify ResponseVerifier evaluates grounding and extracts code safely."""
+    from eduadapt.verification.response_verifier import ResponseVerifier
+
+    sample_content = (
+        "In C, pointers store memory addresses. Here is a safe example:\n"
+        "```c\n"
+        "#include <stdio.h>\n"
+        "int main() { int x = 10; return 0; }\n"
+        "```"
+    )
+    chunks = [
+        {"topic": "Pointers", "unit_or_module": "Unit 2", "preview": "Pointers and memory addresses in C"}
+    ]
+
+    res = ResponseVerifier.verify_response(sample_content, retrieved_chunks=chunks, topic="Pointers")
+    assert res.generation_completed is True
+    assert res.curriculum_context_available is True
+    assert res.code_detected is True
+    assert res.extracted_code_lines > 0
+    assert res.code_execution_status == "NOT_EXECUTED_UNTRUSTED"
+    assert res.overall_status == "VERIFIED_SAFE"
+
+
+def test_accessibility_formatter():
+    """Verify AccessibilityFormatter produces well-structured accessible data."""
+    from eduadapt.accessibility.formatter import AccessibilityFormatter
+
+    dummy_session = {
+        "student": {"student_id": "S001", "predicted_mastery_level": "High"},
+        "profile": {"current_topic": "Pointers", "preferred_pace": "fast"},
+        "curriculum": {"retrieved_chunks": [{"source": "u2.pptx", "slide_or_page": 10, "unit_or_module": "Unit 2"}]},
+        "teaching": {"generated_teaching_content": "Pointers lesson"},
+        "assessment": {"question": "What is *p?", "options": ["A", "B"], "explanation": "Dereference"},
+        "feedback": {"feedback": "Good job"},
+    }
+
+    acc = AccessibilityFormatter.format_session(dummy_session)
+    assert acc["topic"] == "Pointers"
+    assert acc["learning_level"] == "High"
+    assert acc["explanation"] == "Pointers lesson"
+    assert acc["practice_question"]["question"] == "What is *p?"
+    assert len(acc["sources"]) == 1
+
+
+def test_optional_speech_modules():
+    """Verify speech input and output modules have robust error handling and fallbacks."""
+    from eduadapt.accessibility.speech_input import transcribe_audio
+    from eduadapt.accessibility.speech_output import speak_text
+
+    # Audio file missing raises FileNotFoundError
+    with pytest.raises(FileNotFoundError):
+        transcribe_audio("nonexistent_test_audio.wav")
+
+    # Empty text returns False safely
+    assert speak_text("") is False

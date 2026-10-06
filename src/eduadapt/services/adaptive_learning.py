@@ -29,6 +29,7 @@ from typing import Any, Dict, List, Optional
 
 import pandas as pd
 
+from eduadapt.accessibility.formatter import AccessibilityFormatter
 from eduadapt.adapters.student_twin_adapter import LearningTwinAdapter
 from eduadapt.evaluation.c_executor import extract_c_code
 from eduadapt.evaluation.models import ExecutionStatus
@@ -41,6 +42,7 @@ from eduadapt.prompts.templates import PromptManager
 from eduadapt.rag.rag_interface import PPSCurriculumRAG
 from eduadapt.roadmap.planner import RoadmapGenerator
 from eduadapt.teaching.generator import PersonalizedContentGenerator
+from eduadapt.verification.response_verifier import ResponseVerifier
 from member3.assessment import calculate_student_performance
 from member3.features import create_features
 from member3.learning_twin import create_learning_twin
@@ -341,23 +343,16 @@ class AdaptiveLearningService:
                 "model": roadmap_res.model_name,
             }
 
-        # 8. VERIFICATION & SAFETY (Strict isolation of LLM-generated C code)
-        extracted_code = extract_c_code(content_text)
-        regression_check = check_while_loop_explanation(content_text)
+        # 8. VERIFICATION & SAFETY (Member 4 Response Verifier)
+        verification_res = ResponseVerifier.verify_response(
+            response_text=content_text,
+            retrieved_chunks=retrieved_chunks,
+            topic=topic,
+        )
+        verification_section = verification_res.to_dict()
 
-        verification_section = {
-            "curriculum_context_available": len(retrieved_chunks) > 0,
-            "retrieved_chunks_count": len(retrieved_chunks),
-            "generation_completed": bool(content_text.strip()),
-            "code_extracted": bool(extracted_code),
-            "extracted_code_lines": len(extracted_code.splitlines()) if extracted_code else 0,
-            "code_execution_status": ExecutionStatus.NOT_EXECUTED_UNTRUSTED.value,
-            "safety_status": "Enforced: untrusted LLM code is NOT executed on host machine",
-            "regression_status": "Passed" if regression_check.passed else f"Failed: {regression_check.explanation}",
-        }
-
-        # Contract matching PART 7 Frontend Contract
-        return {
+        # Build preliminary result to pass into Accessibility Formatter
+        session_result = {
             "student": student_section,
             "profile": profile_section,
             "curriculum": curriculum_section,
@@ -368,3 +363,9 @@ class AdaptiveLearningService:
             "roadmap": roadmap_section,
             "verification": verification_section,
         }
+
+        # 9. ACCESSIBILITY FORMATTING (Member 4 Accessibility Formatter)
+        accessibility_section = AccessibilityFormatter.format_session(session_result)
+        session_result["accessibility"] = accessibility_section
+
+        return session_result

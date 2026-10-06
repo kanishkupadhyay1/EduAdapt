@@ -20,12 +20,16 @@ import argparse
 import json
 from pathlib import Path
 import sys
+from typing import Optional
 
 # Ensure repository root and src are in sys.path
 BASE_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(BASE_DIR))
 sys.path.insert(0, str(BASE_DIR / "src"))
 
+from eduadapt.accessibility.formatter import AccessibilityFormatter
+from eduadapt.accessibility.speech_input import transcribe_audio
+from eduadapt.accessibility.speech_output import speak_text
 from eduadapt.inference.base import BaseLLMClient, MockLLMClient
 from eduadapt.inference.ollama import OllamaLLMClient
 from eduadapt.rag.rag_interface import PPSCurriculumRAG
@@ -47,6 +51,23 @@ def parse_args():
         type=str,
         default="Pointers",
         help="Target PPS curriculum topic (default: Pointers).",
+    )
+    parser.add_argument(
+        "--voice-input",
+        type=str,
+        default=None,
+        help="Optional path to audio file for Whisper voice transcription.",
+    )
+    parser.add_argument(
+        "--tts",
+        action="store_true",
+        help="Enable text-to-speech synthesis of the generated teaching content.",
+    )
+    parser.add_argument(
+        "--tts-output",
+        type=str,
+        default=None,
+        help="Optional path to save synthesized audio WAV file.",
     )
     parser.add_argument(
         "--provider",
@@ -87,8 +108,23 @@ def run_full_demo(
     model: str = "mistral:7b",
     ollama_url: str = "http://localhost:11434",
     top_k: int = 3,
+    voice_input_path: Optional[str] = None,
+    enable_tts: bool = False,
+    tts_output_path: Optional[str] = None,
     json_output: bool = False,
 ):
+    # Handle optional voice input
+    speech_input_status = "Not requested (standard text input used)"
+    actual_topic = topic
+    if voice_input_path:
+        try:
+            transcribed_text = transcribe_audio(voice_input_path)
+            speech_input_status = f"Transcribed '{transcribed_text}' from {voice_input_path}"
+            if transcribed_text.strip():
+                actual_topic = transcribed_text.strip()
+        except Exception as e:
+            speech_input_status = f"Voice input optional module notice: {e}"
+
     # Initialize LLM Client
     llm_client: BaseLLMClient
     if provider == "ollama":
@@ -109,7 +145,7 @@ def run_full_demo(
         service = AdaptiveLearningService(llm_client=llm_client, rag=rag)
         result = service.run_learning_session(
             student_id=student_id,
-            topic=topic,
+            topic=actual_topic,
             top_k=top_k,
             generate_roadmap=True,
             generate_feedback=True,
@@ -117,6 +153,20 @@ def run_full_demo(
     finally:
         if rag is not None:
             rag.close()
+
+    # Optional TTS speech output
+    speech_output_status = "Not requested"
+    if enable_tts:
+        teach_text = result["teaching"]["generated_teaching_content"]
+        synthesis_ok = speak_text(teach_text, output_path=tts_output_path)
+        if synthesis_ok:
+            speech_output_status = (
+                f"Generated speech audio saved to {tts_output_path}"
+                if tts_output_path
+                else "Played speech audio via system synthesizer"
+            )
+        else:
+            speech_output_status = "TTS synthesis unconfigured or system synthesizer unavailable"
 
     if json_output:
         print(json.dumps(result, indent=2))
@@ -166,9 +216,21 @@ def run_full_demo(
     print(teach["generated_teaching_content"].strip())
     print("--- End Teaching Content ---")
 
-    # 5. PRACTICE / ASSESSMENT
+    # 5. RESPONSE VERIFICATION (Member 4)
+    ver = result["verification"]
+    print("\n5. RESPONSE VERIFICATION")
+    print(f"- Curriculum Context     : {'Available' if ver['curriculum_context_available'] else 'None'} ({ver['retrieved_sources_count']} chunks)")
+    print(f"- Grounding Check        : {ver['grounding_status']} ({ver['matched_curriculum_terms_count']} terms matched, ratio: {ver['grounding_ratio']})")
+    print(f"- Generation Completed   : {'Yes' if ver['generation_completed'] else 'No'}")
+    print(f"- C Code Detected        : {'Yes (' + str(ver['extracted_code_lines']) + ' lines)' if ver['code_detected'] else 'No'}")
+    print(f"- Code Safety / Sandbox  : {ver['safety_status']}")
+    print(f"- Untrusted Code Status  : {ver['code_execution']}")
+    print(f"- Regression Check       : {ver['regression_check']}")
+    print(f"- Overall Status         : {ver['overall_status']}")
+
+    # 6. PRACTICE / ASSESSMENT
     assess = result["assessment"]
-    print("\n5. PRACTICE / ASSESSMENT")
+    print("\n6. PRACTICE / ASSESSMENT")
     print(f"- Assessment Topic       : {assess['topic']}")
     print(f"- Question               : {assess['question']}")
     for opt in assess["options"]:
@@ -179,17 +241,17 @@ def run_full_demo(
     print(f"- Time Taken             : {assess['time_taken_seconds']}s")
     print(f"- Correct Answer         : Option {assess['correct_option']} ({assess['explanation']})")
 
-    # 6. FEEDBACK
+    # 7. FEEDBACK
     fb = result["feedback"]
-    print("\n6. FEEDBACK")
+    print("\n7. FEEDBACK")
     if fb and fb.get("feedback"):
         print(fb["feedback"].strip())
     else:
         print("No feedback generated.")
 
-    # 7. UPDATED LEARNING STATE
+    # 8. LEARNING TWIN STATUS
     ls = result["learning_state"]
-    print("\n7. UPDATED LEARNING STATE")
+    print("\n8. LEARNING TWIN STATUS")
     if ls.get("can_update_in_place") and ls.get("updated_state"):
         up = ls["updated_state"]
         print(f"- Status                 : {ls['status_message']}")
@@ -200,24 +262,22 @@ def run_full_demo(
     else:
         print(f"- Status                 : {ls.get('status_message', 'No update available.')}")
 
-    # 8. PERSONALIZED ROADMAP
+    # 9. ROADMAP
     rm = result["roadmap"]
-    print("\n8. PERSONALIZED ROADMAP")
+    print("\n9. ROADMAP")
     print(f"- Target Competency      : {rm.get('target_competency', 'PPS')}")
     print(f"- Baseline Mastery       : {rm.get('current_mastery', 'Beginner')}")
     print("\n--- Roadmap Sequence ---")
     print(rm.get("roadmap_content", "No roadmap available.").strip())
     print("--- End Roadmap Sequence ---")
 
-    # 9. VERIFICATION
-    ver = result["verification"]
-    print("\n9. VERIFICATION")
-    print(f"- RAG Context Grounding  : {'Available' if ver['curriculum_context_available'] else 'None'} ({ver['retrieved_chunks_count']} chunks)")
-    print(f"- Generation Completed   : {'Yes' if ver['generation_completed'] else 'No'}")
-    print(f"- C Code Extracted       : {'Yes (' + str(ver['extracted_code_lines']) + ' lines)' if ver['code_extracted'] else 'No'}")
-    print(f"- Code Safety / Sandbox  : {ver['safety_status']}")
-    print(f"- Untrusted Code Status  : {ver['code_execution_status']}")
-    print(f"- Regression Check       : {ver['regression_status']}")
+    # 10. ACCESSIBILITY (Member 4)
+    acc = result.get("accessibility", {})
+    print("\n10. ACCESSIBILITY")
+    print(f"- Formatted Modality     : {acc.get('modality', 'standard_text')}")
+    print(f"- Screen Reader Summary  : {acc.get('screen_reader_summary', 'N/A')}")
+    print(f"- Optional Speech Input  : {speech_input_status}")
+    print(f"- Optional Speech Output : {speech_output_status}")
     print("=" * 80)
     print("EduAdapt Adaptive Learning Session Demonstration Completed.")
     print("=" * 80)
@@ -234,6 +294,9 @@ def main():
         model=args.model,
         ollama_url=args.ollama_url,
         top_k=args.top_k,
+        voice_input_path=args.voice_input,
+        enable_tts=args.tts,
+        tts_output_path=args.tts_output,
         json_output=args.json_output,
     )
 
