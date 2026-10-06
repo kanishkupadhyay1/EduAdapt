@@ -55,6 +55,27 @@ def test_mock_inference_and_teaching():
     assert result.model_name == "mock-pps-model"
     assert result.prompt_tokens is not None and result.prompt_tokens > 0
 
+    # Verify generate_for_student with mock RAG interface
+    from eduadapt.interfaces.rag import RAGInterface, RAGDocument
+    class DummyRAG(RAGInterface):
+        def retrieve(self, query: str, top_k: int = 3) -> RAGContext:
+            return RAGContext(
+                query=query,
+                documents=[
+                    RAGDocument(doc_id="1", content="Pointer chunk", source="unit2.pptx", page=1)
+                ],
+            )
+
+    teaching_rag = PersonalizedContentGenerator(llm_client=client, prompt_manager=pm, rag=DummyRAG())
+    profile = StudentProfile(
+        student_id="S001",
+        current_topic="Pointers",
+        mastery_levels={"Pointers": 0.8},
+        preferred_pace="fast",
+    )
+    student_res = teaching_rag.generate_for_student(topic="Pointers", student_profile=profile)
+    assert student_res.content.startswith("[Mock LLM Output")
+
 
 def test_feedback_generation():
     """Verify feedback generator using mock LLM client."""

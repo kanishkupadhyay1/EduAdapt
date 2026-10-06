@@ -6,6 +6,7 @@ Does not implement agentic loops or autonomous workflows.
 
 from typing import Optional
 from eduadapt.inference.base import BaseLLMClient, GenerationResult
+from eduadapt.interfaces.rag import RAGInterface
 from eduadapt.interfaces.student_model import StudentProfile
 from eduadapt.prompts.templates import PromptManager
 
@@ -17,9 +18,11 @@ class PersonalizedContentGenerator:
         self,
         llm_client: BaseLLMClient,
         prompt_manager: Optional[PromptManager] = None,
+        rag: Optional[RAGInterface] = None,
     ) -> None:
         self.llm_client = llm_client
         self.prompt_manager = prompt_manager or PromptManager()
+        self.rag = rag
 
     def generate_explanation(
         self,
@@ -76,6 +79,18 @@ class PersonalizedContentGenerator:
             or f"Pace: {student_profile.preferred_pace}, Current curriculum topic: {student_profile.current_topic}"
         )
 
+        # Retrieve curriculum context via RAG if available
+        context_str = additional_context
+        if self.rag is not None:
+            rag_context = self.rag.retrieve(query=topic, top_k=3)
+            formatted_rag = rag_context.format_for_prompt()
+            if context_str:
+                context_str = f"{formatted_rag}\n\nAdditional Student Context:\n{context_str}"
+            else:
+                context_str = formatted_rag
+        elif not context_str:
+            context_str = "Standard PPS curriculum progression"
+
         try:
             template = self.prompt_manager.get("personalized_teaching")
             prompt = template.render(
@@ -84,14 +99,14 @@ class PersonalizedContentGenerator:
                 performance_history=history_str,
                 misconceptions=misconceptions_str,
                 response_format=preferred_response_format,
-                context=additional_context or "Standard PPS curriculum progression",
+                context=context_str,
             )
         except KeyError:
             template = self.prompt_manager.get("teaching_explanation")
             prompt = template.render(
                 topic=topic,
                 learning_preference=preferred_response_format,
-                context=f"Mastery: {mastery_level}. Misconceptions: {misconceptions_str}. {additional_context}".strip(),
+                context=f"Mastery: {mastery_level}. Misconceptions: {misconceptions_str}. {context_str}".strip(),
             )
 
         return self.llm_client.generate(prompt=prompt)
