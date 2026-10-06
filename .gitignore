@@ -70,7 +70,3 @@ data/processed/*
 !data/processed/.gitkeep
 
 # Raw PPS curriculum data files
-!data/raw/pps/
-!data/raw/pps/*
-!data/raw/pps/.gitkeep
-!data/raw/pps/curriculum_map.json
