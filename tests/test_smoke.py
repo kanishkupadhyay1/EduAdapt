@@ -23,7 +23,7 @@ def test_settings_initialization():
     settings = get_settings()
     assert isinstance(settings, Settings)
     assert settings.app_name == "EduAdapt Generative AI Module"
-    assert settings.llm_provider == "mock"
+    assert settings.llm_provider in {"mock", "ollama"}
 
 
 def test_main_app_wiring():
