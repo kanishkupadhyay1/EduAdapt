@@ -1,14 +1,15 @@
+from pathlib import Path
 import joblib
 import pandas as pd
 
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.model_selection import train_test_split
 
-from features import create_features
+from .features import create_features
 
-
-DATA_PATH = "../data/assessment_data.csv"
-MODEL_PATH = "../models/xgboost_model.pkl"
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_PATH = BASE_DIR / "data" / "assessment_data.csv"
+MODEL_PATH = BASE_DIR / "models" / "xgboost_model.pkl"
 
 
 def evaluate_model():

@@ -1,11 +1,12 @@
+from pathlib import Path
 import pandas as pd
 from typing import Any
 
-from features import create_features
-from learning_twin import create_learning_twin
+from .features import create_features
+from .learning_twin import create_learning_twin
 
-
-DATA_PATH = "../data/assessment_data.csv"
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_PATH = BASE_DIR / "data" / "assessment_data.csv"
 
 
 def update_student_state(

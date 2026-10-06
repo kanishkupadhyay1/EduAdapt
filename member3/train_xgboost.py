@@ -1,3 +1,4 @@
+from pathlib import Path
 import os
 import joblib
 import pandas as pd
@@ -7,11 +8,11 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import accuracy_score, classification_report
 from xgboost import XGBClassifier
 
-from features import create_features
+from .features import create_features
 
-
-DATA_PATH = "../data/assessment_data.csv"
-MODEL_PATH = "../models/xgboost_model.pkl"
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATA_PATH = BASE_DIR / "data" / "assessment_data.csv"
+MODEL_PATH = BASE_DIR / "models" / "xgboost_model.pkl"
 
 FEATURE_COLUMNS = [
     "accuracy",
@@ -74,7 +75,7 @@ def train_model():
         )
     )
 
-    os.makedirs("../models", exist_ok=True)
+    os.makedirs(MODEL_PATH.parent, exist_ok=True)
 
     joblib.dump(
         {
