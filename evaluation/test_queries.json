@@ -1,15 +1,185 @@
 {
-  "_README": "TEMPLATE - NOT READY. The 'query' texts are generic C-programming questions to start from. The 'expected_*' fields are intentionally EMPTY because the real PPS curriculum has not been loaded yet: do NOT guess them. After ingesting the real PPS files, open data/processed/chunks.jsonl, find which topic/source/module truly covers each question, and fill in at least one expected_* field per query. Queries with all expected_* fields empty are skipped by evaluate_retrieval.py. You can also copy the 20 questions from Member 1's benchmark here (questions only; expected_* must still come from the real curriculum).",
+ "_README": "Expected modules come from the official SRM 21CSS101J syllabus (curriculum/srm_21CSS101J_scope.json), which lists each topic under one unit. IMPORTANT ASSUMPTION: this only works if each corpus file is named/organised by unit (e.g. unit_2_pointers.pdf, or via data/raw/pps/curriculum_map.json) so the 'module' metadata is 'Unit N'. A file that mixes several units cannot be scored at unit level. 'What is a pointer?' is listed under Unit 2, but Unit 3 also covers function pointers, so a Unit-3 hit on that query would count as a miss. Review the expected values once the real files are in. expected_topics is left empty on purpose: topic labels depend on the headings in the real material.",
   "queries": [
-    {"id": "q01", "query": "What is a pointer in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q02", "query": "Explain pointers in C", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q03", "query": "How do for loops work?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q04", "query": "What is the difference between while and do-while loops?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q05", "query": "How do I declare and use an array in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q06", "query": "How are strings stored in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q07", "query": "How do I write and call a function in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q08", "query": "What are the data types available in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q09", "query": "How does if-else decision making work?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q10", "query": "What is a structure in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []}
+    {
+      "id": "q01",
+      "query": "What is the structure of a C program?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 1"
+      ]
+    },
+    {
+      "id": "q02",
+      "query": "How do I write an algorithm and pseudocode for a problem?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 1"
+      ]
+    },
+    {
+      "id": "q03",
+      "query": "What are storage classes in C?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 1"
+      ]
+    },
+    {
+      "id": "q04",
+      "query": "What is the difference between an lvalue and an rvalue?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 1"
+      ]
+    },
+    {
+      "id": "q05",
+      "query": "What is operator precedence and how do pre and post increment work?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 1"
+      ]
+    },
+    {
+      "id": "q06",
+      "query": "What is the difference between a while and a do-while loop?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 2"
+      ]
+    },
+    {
+      "id": "q07",
+      "query": "How does a switch case statement work?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 2"
+      ]
+    },
+    {
+      "id": "q08",
+      "query": "What do break, continue and goto do?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 2"
+      ]
+    },
+    {
+      "id": "q09",
+      "query": "How do I declare and initialize a one-dimensional array in C?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 2"
+      ]
+    },
+    {
+      "id": "q10",
+      "query": "How do I access elements of a 2D array?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 2"
+      ]
+    },
+    {
+      "id": "q11",
+      "query": "What is a pointer in C?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 2"
+      ]
+    },
+    {
+      "id": "q12",
+      "query": "What are void pointers and null pointers?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 2"
+      ]
+    },
+    {
+      "id": "q13",
+      "query": "How do strlen, strcat and strcmp work?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 3"
+      ]
+    },
+    {
+      "id": "q14",
+      "query": "What is call by reference in C?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 3"
+      ]
+    },
+    {
+      "id": "q15",
+      "query": "How do I pass an array to a function?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 3"
+      ]
+    },
+    {
+      "id": "q16",
+      "query": "What is a function pointer?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 3"
+      ]
+    },
+    {
+      "id": "q17",
+      "query": "What are Python lists, tuples, sets and dictionaries?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 4"
+      ]
+    },
+    {
+      "id": "q18",
+      "query": "How do I take input and print output in Python?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 4"
+      ]
+    },
+    {
+      "id": "q19",
+      "query": "How do I create a NumPy array and slice it?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 5"
+      ]
+    },
+    {
+      "id": "q20",
+      "query": "How do I create a pandas DataFrame and query it?",
+      "expected_topics": [],
+      "expected_sources": [],
+      "expected_modules": [
+        "Unit 5"
+      ]
+    }
   ]
 }
