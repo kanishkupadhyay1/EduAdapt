@@ -33,6 +33,7 @@ from pathlib import Path
 from typing import Any
 
 from pypdf import PdfReader
+from pptx import Presentation
 
 from eduadapt.rag import config
 
@@ -42,8 +43,8 @@ logger = logging.getLogger(__name__)
 PageDict = dict[str, Any]
 Problem = tuple[str, str]
 
-# Matches things like "module_4", "Module 4", "module-04", "unit2".
-_MODULE_PATTERN = re.compile(r"(module|unit)[\s_\-]*0*(\d+)", re.IGNORECASE)
+# Matches things like "module_4", "Module 4", "module-04", "unit2", "pps u5".
+_MODULE_PATTERN = re.compile(r"(module|unit|\bu)[\s_\-]*0*(\d+)", re.IGNORECASE)
 
 
 class DocumentLoadError(Exception):
@@ -61,7 +62,9 @@ def detect_module(relative_path: Path) -> str:
     for name in [relative_path.stem, *folders_innermost_first]:
         match = _MODULE_PATTERN.search(name)
         if match:
-            return f"{match.group(1).capitalize()} {int(match.group(2))}"
+            kind = match.group(1).lower()
+            label = "Unit" if kind in ("unit", "u") else match.group(1).capitalize()
+            return f"{label} {int(match.group(2))}"
     return config.UNKNOWN_LABEL
 
 
@@ -97,6 +100,32 @@ def _read_pdf_pages(path: Path) -> list[tuple[int, str]]:
         if text.strip():
             pages.append((number, text))
     return pages
+
+
+def _read_pptx_slides(path: Path) -> list[tuple[int, str]]:
+    """Return [(slide_number, text), ...] for slides that contain text."""
+    try:
+        prs = Presentation(str(path))
+    except Exception as exc:
+        raise DocumentLoadError(f"could not read presentation ({type(exc).__name__}: {exc})") from exc
+
+    slides: list[tuple[int, str]] = []
+    for number, slide in enumerate(prs.slides, start=1):
+        texts: list[str] = []
+        for shape in slide.shapes:
+            if shape.has_text_frame:
+                t = shape.text.strip()
+                if t:
+                    texts.append(t)
+            elif shape.has_table:
+                for row in shape.table.rows:
+                    row_t = " | ".join(c.text.strip() for c in row.cells if c.text.strip())
+                    if row_t:
+                        texts.append(row_t)
+        slide_text = "\n".join(texts).strip()
+        if slide_text:
+            slides.append((number, slide_text))
+    return slides
 
 
 def _read_text_file(path: Path) -> str:
@@ -137,6 +166,12 @@ def load_document(
             if not sections:
                 raise DocumentLoadError(
                     "no extractable text (the PDF may be a scan/images only)"
+                )
+        elif suffix == ".pptx":
+            sections = list(_read_pptx_slides(path))
+            if not sections:
+                raise DocumentLoadError(
+                    "no extractable text (the presentation may contain images only)"
                 )
         elif suffix in (".txt", ".md"):
             text = _read_text_file(path)

@@ -1,15 +1,75 @@
 {
-  "_README": "TEMPLATE - NOT READY. The 'query' texts are generic C-programming questions to start from. The 'expected_*' fields are intentionally EMPTY because the real PPS curriculum has not been loaded yet: do NOT guess them. After ingesting the real PPS files, open data/processed/chunks.jsonl, find which topic/source/module truly covers each question, and fill in at least one expected_* field per query. Queries with all expected_* fields empty are skipped by evaluate_retrieval.py. You can also copy the 20 questions from Member 1's benchmark here (questions only; expected_* must still come from the real curriculum).",
+  "_README": "Real PPS benchmark queries grounded in the SRM PPS curriculum PowerPoint material (Units 1 to 5). Created and validated against data/raw/pps PPTX files.",
   "queries": [
-    {"id": "q01", "query": "What is a pointer in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q02", "query": "Explain pointers in C", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q03", "query": "How do for loops work?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q04", "query": "What is the difference between while and do-while loops?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q05", "query": "How do I declare and use an array in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q06", "query": "How are strings stored in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q07", "query": "How do I write and call a function in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q08", "query": "What are the data types available in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q09", "query": "How does if-else decision making work?", "expected_topics": [], "expected_sources": [], "expected_modules": []},
-    {"id": "q10", "query": "What is a structure in C?", "expected_topics": [], "expected_sources": [], "expected_modules": []}
+    {
+      "id": "q01",
+      "query": "What are the basic data types available in C such as int, char, and float?",
+      "expected_topics": ["Datatypes"],
+      "expected_sources": ["Unit 1 PPS.pptx"],
+      "expected_modules": ["Unit 1"]
+    },
+    {
+      "id": "q02",
+      "query": "What are the guidelines and symbols for drawing a flowchart in problem solving?",
+      "expected_topics": ["Flowcharts", "Guidelines for Preparing Flowchart"],
+      "expected_sources": ["Unit 1 PPS.pptx"],
+      "expected_modules": ["Unit 1"]
+    },
+    {
+      "id": "q03",
+      "query": "How does the switch case control statement work in C?",
+      "expected_topics": ["Control Statements"],
+      "expected_sources": ["PPS Unit 2.pptx"],
+      "expected_modules": ["Unit 2"]
+    },
+    {
+      "id": "q04",
+      "query": "How do you declare and initialize two dimensional arrays in C?",
+      "expected_topics": ["INITIALIZING OF 2D ARRAY"],
+      "expected_sources": ["PPS Unit 2.pptx"],
+      "expected_modules": ["Unit 2"]
+    },
+    {
+      "id": "q05",
+      "query": "What is a pointer and how do you declare a pointer variable in C?",
+      "expected_topics": ["POINTERS", "Definition"],
+      "expected_sources": ["PPS Unit 2.pptx"],
+      "expected_modules": ["Unit 2"]
+    },
+    {
+      "id": "q06",
+      "query": "What are the string manipulation functions like strlen, strcpy, and strcat in C?",
+      "expected_topics": ["STRING FUNCTIONS", "STRCAT FUNCTION"],
+      "expected_sources": ["PPS Unit 3.pptx"],
+      "expected_modules": ["Unit 3"]
+    },
+    {
+      "id": "q07",
+      "query": "What is the difference between call by value and call by reference in C?",
+      "expected_topics": ["TYPES OF CALLING", "CALL BY REFERENCE"],
+      "expected_sources": ["PPS Unit 3.pptx"],
+      "expected_modules": ["Unit 3"]
+    },
+    {
+      "id": "q08",
+      "query": "How do you create and manipulate lists and dictionaries in Python?",
+      "expected_topics": ["Python Dictionary", "Lists"],
+      "expected_sources": ["UNIT 4-PPS.pptx"],
+      "expected_modules": ["Unit 4"]
+    },
+    {
+      "id": "q09",
+      "query": "How do you create single and multi-dimensional arrays in NumPy?",
+      "expected_topics": ["Creating NumPy Array", "Create NumPy Array"],
+      "expected_sources": ["pps u5.pptx"],
+      "expected_modules": ["Unit 5"]
+    },
+    {
+      "id": "q10",
+      "query": "How does the query method work on a Pandas DataFrame?",
+      "expected_topics": ["Definition and Usage", "Syntax"],
+      "expected_sources": ["pps u5.pptx"],
+      "expected_modules": ["Unit 5"]
+    }
   ]
 }

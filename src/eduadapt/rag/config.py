@@ -21,7 +21,7 @@ RAW_DATA_DIR = MODULE_ROOT / "data" / "raw" / "pps"
 PROCESSED_DATA_DIR = MODULE_ROOT / "data" / "processed"
 
 # ---- Document loading -----------------------------------------------------
-SUPPORTED_EXTENSIONS = (".pdf", ".txt", ".md")
+SUPPORTED_EXTENSIONS = (".pdf", ".txt", ".md", ".pptx")
 CURRICULUM_MAP_FILENAME = "curriculum_map.json"
 UNKNOWN_LABEL = "Unknown"
 
