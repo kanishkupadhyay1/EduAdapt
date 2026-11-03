@@ -11,16 +11,16 @@ import logging
 from pathlib import Path
 
 import pytest
-from tests.helpers import make_pdf
+from helpers import make_pdf
 
-from eduadapt.rag import config
-from eduadapt.rag.document_loader import (
+from src import config
+from src.document_loader import (
     DocumentLoadError,
     detect_module,
     load_document,
     load_documents,
 )
-from eduadapt.rag.preprocessing import (
+from src.preprocessing import (
     clean_text,
     detect_heading,
     is_code_line,
@@ -53,7 +53,7 @@ def test_python_version_guard_rejects_other_versions():
 
 
 def test_python_version_guard_warns_on_other_311_patch(caplog):
-    with caplog.at_level(logging.WARNING, logger="eduadapt.rag.config"):
+    with caplog.at_level(logging.WARNING, logger="src.config"):
         config.check_python_version((3, 11, 9))
     assert "3.11.0" in caplog.text
 
@@ -62,7 +62,7 @@ def test_source_files_use_only_python_311_syntax():
     """Parse every src/ and scripts/ file as Python 3.11 code. Newer-only
     syntax (e.g. 3.12 'type X = ...' statements) would fail here."""
     root = Path(config.MODULE_ROOT)
-    files = list((root / "src").rglob("*.py")) + list((root / "scripts").rglob("*.py"))
+    files = list((root / "src").glob("*.py")) + list((root / "scripts").glob("*.py"))
     assert files
     for file in files:
         ast.parse(file.read_text(encoding="utf-8"), filename=str(file), feature_version=(3, 11))
@@ -72,33 +72,33 @@ def test_source_files_use_only_python_311_syntax():
 # Document loading
 # ===========================================================================
 def test_loads_text_file_with_metadata(tmp_path):
-    (tmp_path / "module_2_fake.txt").write_text("Fake test text.", encoding="utf-8")
+    (tmp_path / "unit_2_fake.txt").write_text("Fake test text.", encoding="utf-8")
     pages, problems = load_documents(tmp_path)
     assert problems == []
     assert len(pages) == 1
     page = pages[0]
     assert page["text"] == "Fake test text."
-    assert page["source"] == "module_2_fake.txt"
+    assert page["source"] == "unit_2_fake.txt"
     assert page["page"] is None  # text files have no page numbers
-    assert page["module"] == "Module 2"
+    assert page["module"] == "Unit 2"
     assert page["topic"] == config.UNKNOWN_LABEL
 
 
 def test_loads_pdf_pages_with_page_numbers(tmp_path):
     pdf = make_pdf([["Fake first page."], ["Fake second page."]])
-    (tmp_path / "module_1_fake.pdf").write_bytes(pdf)
+    (tmp_path / "unit_1_fake.pdf").write_bytes(pdf)
     pages, problems = load_documents(tmp_path)
     assert problems == []
     assert [p["page"] for p in pages] == [1, 2]
     assert "Fake first page." in pages[0]["text"]
     assert "Fake second page." in pages[1]["text"]
-    assert all(p["source"] == "module_1_fake.pdf" for p in pages)
-    assert all(p["module"] == "Module 1" for p in pages)
+    assert all(p["source"] == "unit_1_fake.pdf" for p in pages)
+    assert all(p["module"] == "Unit 1" for p in pages)
 
 
 def test_loads_multiple_documents_including_subfolders(tmp_path):
     (tmp_path / "a.txt").write_text("Fake A", encoding="utf-8")
-    sub = tmp_path / "Module 3"
+    sub = tmp_path / "Unit 3"
     sub.mkdir()
     (sub / "b.md").write_text("Fake B", encoding="utf-8")
     pages, problems = load_documents(tmp_path)
@@ -106,23 +106,39 @@ def test_loads_multiple_documents_including_subfolders(tmp_path):
     assert {p["source"] for p in pages} == {"a.txt", "b.md"}
     by_source = {p["source"]: p for p in pages}
     assert by_source["a.txt"]["module"] == config.UNKNOWN_LABEL
-    assert by_source["b.md"]["module"] == "Module 3"  # taken from the folder name
+    assert by_source["b.md"]["module"] == "Unit 3"  # taken from the folder name
 
 
 def test_detect_module_examples():
-    assert detect_module(Path("module_4_pointers.pdf")) == "Module 4"
-    assert detect_module(Path("Module-04.pdf")) == "Module 4"
+    assert detect_module(Path("unit_4_pointers.pdf")) == "Unit 4"
+    assert detect_module(Path("Unit-04.pdf")) == "Unit 4"
     assert detect_module(Path("Unit 2/notes.pdf")) == "Unit 2"
+    assert detect_module(Path("module_3_notes.pdf")) == "Unit 3"  # 'module' is normalised to 'Unit'
     assert detect_module(Path("notes.pdf")) == config.UNKNOWN_LABEL
+
+
+def test_unit_numbers_outside_the_syllabus_are_rejected(caplog):
+    with caplog.at_level(logging.WARNING, logger="src.document_loader"):
+        assert detect_module(Path("unit_7_extra.pdf")) == config.UNKNOWN_LABEL
+        assert detect_module(Path("module_0.pdf")) == config.UNKNOWN_LABEL
+    assert "Units 1-5" in caplog.text
 
 
 def test_curriculum_map_overrides_module_and_topic(tmp_path):
     (tmp_path / "notes.txt").write_text("Fake text", encoding="utf-8")
-    mapping = {"notes.txt": {"module": "Module 9", "topic": "Fake Topic"}}
+    mapping = {"notes.txt": {"module": "module 4", "topic": "Fake Topic"}}
     (tmp_path / "curriculum_map.json").write_text(json.dumps(mapping), encoding="utf-8")
     pages, _ = load_documents(tmp_path)
-    assert pages[0]["module"] == "Module 9"
+    assert pages[0]["module"] == "Unit 4"  # normalised to the syllabus term
     assert pages[0]["topic"] == "Fake Topic"
+
+
+def test_curriculum_map_with_invalid_unit_falls_back_to_file_name(tmp_path):
+    (tmp_path / "unit_2_fake.txt").write_text("Fake text", encoding="utf-8")
+    mapping = {"unit_2_fake.txt": {"module": "Unit 9"}}
+    (tmp_path / "curriculum_map.json").write_text(json.dumps(mapping), encoding="utf-8")
+    pages, _ = load_documents(tmp_path)
+    assert pages[0]["module"] == "Unit 2"
 
 
 def test_broken_curriculum_map_is_ignored(tmp_path):
@@ -130,7 +146,7 @@ def test_broken_curriculum_map_is_ignored(tmp_path):
     (tmp_path / "curriculum_map.json").write_text("{not valid json", encoding="utf-8")
     pages, problems = load_documents(tmp_path)
     assert len(pages) == 1 and problems == []
-    assert pages[0]["module"] == "Module 1"
+    assert pages[0]["module"] == "Unit 1"
 
 
 def test_corrupt_pdf_is_skipped_but_other_files_still_load(tmp_path):
@@ -240,7 +256,7 @@ def test_repeated_headers_and_footers_are_removed_but_code_is_kept():
     pages = [
         {
             "text": f"FAKE COURSE HEADER\nUnique {word} sentence here.\nreturn 0;\nPage {i + 1}",
-            "source": "f.pdf", "page": i + 1, "module": "Module 1",
+            "source": "f.pdf", "page": i + 1, "module": "Unit 1",
             "topic": "Unknown", "file_path": "f.pdf",
         }
         for i, word in enumerate(unique)
@@ -256,7 +272,7 @@ def test_repeated_headers_and_footers_are_removed_but_code_is_kept():
 def test_preprocess_pages_keeps_metadata_and_does_not_modify_input():
     original = [{
         "text": "  Fake   text  \n" + FAKE_C_CODE, "source": "s.pdf", "page": 7,
-        "module": "Module 4", "topic": "Fake Topic", "file_path": "s.pdf",
+        "module": "Unit 4", "topic": "Fake Topic", "file_path": "s.pdf",
     }]
     snapshot = json.loads(json.dumps(original))
     result = preprocess_pages(original)
@@ -275,7 +291,7 @@ def test_pages_that_become_empty_are_dropped():
 
 def test_detect_heading_examples():
     assert detect_heading("4.2 Pointer arithmetic") == "Pointer arithmetic"
-    assert detect_heading("Module 4: Fake Title") == "Module 4: Fake Title"
+    assert detect_heading("Unit 4: Fake Title") == "Unit 4: Fake Title"
     assert detect_heading("ARRAYS AND STRINGS") == "ARRAYS AND STRINGS"
     assert detect_heading("Pointers") == "Pointers"
     assert detect_heading("This is an ordinary sentence about something.") is None
@@ -288,11 +304,39 @@ def test_end_to_end_load_then_preprocess(tmp_path):
         ["Fake heading", "Some   fake   words."],
         ["int x = 5;", "return 0;"],
     ])
-    (tmp_path / "module_5_fake.pdf").write_bytes(pdf)
+    (tmp_path / "unit_5_fake.pdf").write_bytes(pdf)
     pages, problems = load_documents(tmp_path)
     cleaned = preprocess_pages(pages)
     assert problems == []
     assert [p["page"] for p in cleaned] == [1, 2]
     assert "Some fake words." in cleaned[0]["text"]
     assert "int x = 5;" in cleaned[1]["text"]
-    assert all(p["module"] == "Module 5" for p in cleaned)
+    assert all(p["module"] == "Unit 5" for p in cleaned)
+
+
+# ===========================================================================
+# Python code (Units 4-5 of the syllabus are Python/NumPy/Pandas)
+# ===========================================================================
+FAKE_PYTHON_CODE = (
+    "import numpy as np\n"
+    "arr = np.array([1, 2, 3])\n"
+    "for x in arr:\n"
+    "    print(x)\n"
+    "    if x > 1:\n"
+    '        print("big")'
+)
+
+
+def test_python_code_and_its_indentation_are_preserved_exactly():
+    text = "Fake intro sentence.\n\n" + FAKE_PYTHON_CODE + "\n\nFake closing sentence."
+    assert FAKE_PYTHON_CODE in clean_text(text)
+
+
+def test_python_line_examples_are_recognised_as_code():
+    for code in ["import numpy as np", "from math import sqrt", "def add(a, b):",
+                 "for i in range(3):", "if x > 1:", "else:", "print(x)", ">>> a = 1",
+                 "df = pd.DataFrame(data)", "df.head()", "np.mean(arr)", "total = a + b"]:
+        assert is_code_line(code), code
+    for prose in ["Python is a popular language.", "Example:", "for example, consider the list.",
+                  "NumPy arrays are fast.", "The result = good."]:
+        assert not is_code_line(prose), prose

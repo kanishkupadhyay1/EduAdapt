@@ -1,0 +1,141 @@
+{
+  "_note": "Transcribed from the official syllabus page supplied by the team. Topic names are copied as listed there (including its own spelling, e.g. 'sprint').",
+  "course_code": "21CSS101J",
+  "course_name": "Programming for Problem Solving",
+  "source": "B.Tech / M.Tech (Integrated) Programmes, Regulations 2021, Volume 2 (Revised July 2023), First Year Syllabi - Control Copy, pages 67-68",
+  "units": [
+    {
+      "unit": "Unit 1",
+      "hours": 15,
+      "language": "C",
+      "topics": [
+        "Evolution of Programming & Languages",
+        "Problem solving through programming",
+        "Writing algorithms & pseudo code",
+        "Single line and multiline comments",
+        "Introduction to C: structure of the C program",
+        "Input and output statements",
+        "Variables and identifiers",
+        "Constants",
+        "Keywords",
+        "Values, names, scope, binding, storage classes",
+        "Numeric data types: integer, floating point",
+        "Non-numeric data types: char and string",
+        "L value and R value in expression",
+        "Increment and decrement operator",
+        "Comma, arrow and assignment operator",
+        "Bitwise and size-of operator",
+        "Arithmetic, relational and logical operators",
+        "Condition operators",
+        "Operator precedence",
+        "Expressions with pre/post increment operator"
+      ]
+    },
+    {
+      "unit": "Unit 2",
+      "hours": 15,
+      "language": "C",
+      "topics": [
+        "Conditional statements: simple if, if...else, else if and nested if",
+        "Switch case",
+        "Unconditional control statements: break, continue, goto",
+        "Looping statements: for, while, do...while",
+        "Nested for and nested while",
+        "Introduction to arrays",
+        "One-dimensional (1D) array declaration and initialization",
+        "Accessing, indexing and operations with 1D arrays",
+        "Array programs - 1D",
+        "Initializing and accessing 2D array",
+        "Array programs - 2D",
+        "Pointer and address-of operators",
+        "Pointer declaration and dereferencing",
+        "Void pointers",
+        "Null pointers",
+        "Pointer based array manipulation"
+      ]
+    },
+    {
+      "unit": "Unit 3",
+      "hours": 15,
+      "language": "C",
+      "topics": [
+        "String basics",
+        "String declaration and initialization",
+        "String functions: gets(), puts(), getchar(), putchar(), printf()",
+        "Built-in string functions: atoi, strlen, strcat, strcmp",
+        "String functions: sprint, sscanf, strrev, strcpy, strstr, strtok",
+        "Operations on strings",
+        "Function prototype declaration",
+        "Function definition",
+        "Actual and formal parameters",
+        "Function with and without arguments",
+        "Function with and without return values",
+        "Call by value",
+        "Call by reference",
+        "Passing array to function",
+        "Passing array elements to function",
+        "Function pointers"
+      ]
+    },
+    {
+      "unit": "Unit 4",
+      "hours": 15,
+      "language": "Python",
+      "topics": [
+        "Introduction to Python",
+        "Introduction to Google Colab",
+        "Basic data types: integers, floating points, boolean types",
+        "Working with string functions",
+        "Working with input and output functions",
+        "Single and multi-line comments / error handling",
+        "Conditional and looping statements: if, for, while",
+        "Working with list structures",
+        "Working with tuples data structures",
+        "Working with sets",
+        "Working with dictionaries",
+        "Introduction to Python libraries",
+        "Introduction to NumPy",
+        "High dimensional arrays"
+      ]
+    },
+    {
+      "unit": "Unit 5",
+      "hours": 15,
+      "language": "Python (NumPy, Pandas)",
+      "topics": [
+        "Creating NumPy array",
+        "NumPy indexing",
+        "NumPy array attributes",
+        "Slicing using NumPy",
+        "Descriptive statistics in NumPy: percentile",
+        "Variance in NumPy",
+        "Introduction to Pandas",
+        "Creating Series objects",
+        "Creating Data Frame objects",
+        "Simple operations with data frames",
+        "Querying from data frames",
+        "Applying functions to data frames",
+        "Comparison between NumPy and Pandas",
+        "Speed testing between NumPy and Pandas",
+        "Other Python libraries"
+      ]
+    }
+  ],
+  "learning_resources_named_in_syllabus": [
+    "Programming in C, E. Balagurusamy, McGraw Hill, 8th ed. 2019 [chapters 1 to 6 & 8 to 11]",
+    "Head First C, David Griffiths and Dawn Griffiths, O'Reilly [chapters 2 to 4]",
+    "Let Us C, Yashavant P. Kanetkar, BPB, 5th ed. [chapters 1 to 6, 8 to 9]",
+    "Problem Solving & Programming Concepts, Maureen Sprankle and Jim Hubbard, Prentice Hall, 9th ed. [chapters 1 to 7]",
+    "geeksforgeeks.org/c-programming-language/",
+    "Python Datascience Handbook, Jake VanderPlas, O'Reilly, 2017 [chapters 2 & 3]",
+    "Python for Beginners, Timothy C. Needham, 2019 [chapters 1 to 4]",
+    "tutorialspoint.com/python/index.htm",
+    "w3schools.com/python/"
+  ],
+  "NOT_in_this_syllabus": [
+    "structures",
+    "recursion",
+    "file handling",
+    "dynamic memory allocation"
+  ]
+}
