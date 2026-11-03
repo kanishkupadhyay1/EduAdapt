@@ -1460,6 +1460,7 @@ class TeachingResponse:
             "diagram": diag,
             "diagrams": self.diagrams or ([diag] if diag else []),
             "walkthrough_steps": self.walkthrough_steps,
+            "code_walkthrough": self.walkthrough_steps,
             "common_mistakes": self.common_mistakes,
             "understanding_check": self.understanding_check,
             "personalization_applied": self.personalization_applied,
