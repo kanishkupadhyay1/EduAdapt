@@ -686,6 +686,9 @@ def execute_practice_code(req: PracticeExecuteRequest) -> Dict[str, Any]:
     diagnostic_type = res.status.value
     diagnostic_message = ""
 
+    updated_student = None
+    updated_learning_state = None
+
     if res.status == ExecutionStatus.COMPILATION_ERROR:
         status_label = "COMPILATION_ERROR"
         diagnostic_type = "COMPILATION_ERROR"
@@ -702,12 +705,26 @@ def execute_practice_code(req: PracticeExecuteRequest) -> Dict[str, Any]:
         if req.is_submission:
             norm_actual = "\n".join(line.rstrip() for line in actual_output.replace("\r\n", "\n").splitlines()).strip()
             norm_expected = "\n".join(line.rstrip() for line in expected_output.replace("\r\n", "\n").splitlines()).strip()
+            tokens_actual = " ".join(norm_actual.split())
+            tokens_expected = " ".join(norm_expected.split())
             if expected_output:
-                passed = (norm_actual == norm_expected) or (norm_expected in norm_actual)
+                passed = (norm_actual == norm_expected) or (tokens_actual == tokens_expected) or (norm_expected in norm_actual)
                 if passed:
                     status_label = "ACCEPTED"
                     diagnostic_type = "ACCEPTED"
                     diagnostic_message = "Accepted: Your program compiled and produced the exact expected output."
+                    try:
+                        service = get_service()
+                        twin_eval = service.evaluate_submission(
+                            student_id=req.student_id,
+                            topic=req.topic,
+                            selected_option="B",
+                            time_taken_seconds=res.execution_time_seconds or 10.0,
+                        )
+                        updated_student = twin_eval.get("updated_student")
+                        updated_learning_state = twin_eval.get("updated_learning_state")
+                    except Exception:
+                        pass
                 else:
                     status_label = "WRONG_ANSWER"
                     diagnostic_type = "WRONG_ANSWER"
@@ -717,6 +734,18 @@ def execute_practice_code(req: PracticeExecuteRequest) -> Dict[str, Any]:
                 status_label = "ACCEPTED"
                 diagnostic_type = "ACCEPTED"
                 diagnostic_message = "Accepted: Program executed successfully without runtime errors."
+                try:
+                    service = get_service()
+                    twin_eval = service.evaluate_submission(
+                        student_id=req.student_id,
+                        topic=req.topic,
+                        selected_option="B",
+                        time_taken_seconds=res.execution_time_seconds or 10.0,
+                    )
+                    updated_student = twin_eval.get("updated_student")
+                    updated_learning_state = twin_eval.get("updated_learning_state")
+                except Exception:
+                    pass
         else:
             status_label = "SUCCESS"
             diagnostic_type = "SUCCESS"
@@ -739,6 +768,8 @@ def execute_practice_code(req: PracticeExecuteRequest) -> Dict[str, Any]:
         "is_submission": req.is_submission,
         "student_id": req.student_id,
         "topic": req.topic,
+        "updated_student": updated_student,
+        "updated_learning_state": updated_learning_state,
     }
 
 

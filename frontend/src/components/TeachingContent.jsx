@@ -14,7 +14,7 @@ function cleanText(txt) {
 }
 
 /**
- * Fallback defaults for core PPS C topics in case model response is incomplete.
+ * Fallback defaults for all 10 PPS C curriculum topics ensuring complete, grounded instruction.
  */
 const TOPIC_FALLBACKS = {
   Pointers: {
@@ -58,6 +58,109 @@ int main(void) {
       ],
       correct_answer: 'The integer value 25 stored at num',
       explanation: 'The asterisk (*) operator dereferences the pointer, fetching the actual value stored at the target memory location.'
+    }
+  },
+  'Dynamic Memory Allocation': {
+    learning_objective: 'Master heap memory management using malloc, calloc, realloc, and free in standard C99.',
+    explanation: 'Dynamic memory allocation permits programs to request variable-sized memory blocks from the operating system heap at runtime. Unlike stack memory which is automatically tied to function scope, heap memory persists until explicitly released using free().',
+    c_code: `#include <stdio.h>
+#include <stdlib.h>
+
+void createArray(int *array, int size) {
+    for (int i = 0; i < size; i++) {
+        array[i] = (i + 1) * 10;
+    }
+}
+
+void printArray(int *array, int size) {
+    for (int i = 0; i < size; i++) {
+        printf("%d%s", array[i], (i == size - 1) ? "" : " ");
+    }
+    printf("\\n");
+}
+
+int main(void) {
+    int size = 5;
+    int *array = (int *)malloc(size * sizeof(int));
+
+    if (array == NULL) {
+        printf("Memory allocation failed!\\n");
+        return 1;
+    }
+
+    createArray(array, size);
+    printArray(array, size);
+
+    free(array);
+    array = NULL;
+    return 0;
+}`,
+    c_code_title: 'Dynamic Array Allocation and Safe Deallocation in C99',
+    c_code_explanation: 'Allocates an integer array on the heap using malloc, checks for NULL, populates and prints elements, and safely frees memory.',
+    walkthrough_steps: [
+      'malloc(size * sizeof(int)): Allocates 20 contiguous bytes on the heap for 5 integers.',
+      'if (array == NULL): Critical verification preventing crashes if system memory is exhausted.',
+      'createArray(array, size): Populates allocated heap cells through pointer subscripting.',
+      'printArray(array, size): Formats and displays space-separated integers.',
+      'free(array); array = NULL: Releases memory back to the OS and prevents dangling pointer bugs.'
+    ],
+    common_mistakes: [
+      'Failing to verify malloc return value before dereferencing.',
+      'Memory leaks caused by forgetting to call free() before pointer variables go out of scope.',
+      'Accessing memory after it has been freed (dangling pointer access).'
+    ],
+    understanding_check: {
+      question: 'What happens if a program repeatedly calls malloc() without ever calling free()?',
+      options: [
+        'Heap memory is released automatically at function return',
+        'A memory leak occurs because heap memory persists across function calls',
+        'The compiler throws a syntax error',
+        'Stack overflow exception occurs'
+      ],
+      correct_answer: 'A memory leak occurs because heap memory persists across function calls',
+      explanation: 'Heap memory has a dynamic lifetime that persists until explicitly released with free(). Omitting free() creates a memory leak.'
+    }
+  },
+  Strings: {
+    learning_objective: 'Master null-terminated character arrays, string literals, and standard string manipulation in C.',
+    explanation: 'In C, strings are one-dimensional arrays of characters terminated by a special null character sentinel (\'\\0\', ASCII value 0). The null terminator indicates to standard library functions (like strlen and printf) where the text sequence terminates in memory.',
+    c_code: `#include <stdio.h>
+#include <string.h>
+
+int main(void) {
+    char greeting[] = "Hello";
+
+    printf("String: %s\\n", greeting);
+    printf("Length (strlen): %zu\\n", strlen(greeting));
+    printf("Allocated Bytes (sizeof): %zu\\n", sizeof(greeting));
+
+    for (int i = 0; i <= 5; i++) {
+        printf("Index %d: '%c' (ASCII: %d)\\n", i, greeting[i], (int)greeting[i]);
+    }
+    return 0;
+}`,
+    c_code_title: 'Null-Terminated Character Array Inspection in C99',
+    c_code_explanation: 'Inspects character elements, length calculation via strlen, and the mandatory terminating \\0 byte.',
+    walkthrough_steps: [
+      'char greeting[] = "Hello": Creates a 6-byte array containing \'H\', \'e\', \'l\', \'l\', \'o\', and \'\\0\'.',
+      'strlen(greeting): Traverses characters until reaching \'\\0\' (counts 5 visible characters).',
+      'sizeof(greeting): Counts all allocated bytes including the \'\\0\' sentinel (yields 6 bytes).'
+    ],
+    common_mistakes: [
+      'Forgetting space for the \'\\0\' null terminator when declaring character array dimensions.',
+      'Using \'==\' to compare string contents instead of strcmp().',
+      'Buffer overflows when copying unbounded inputs into fixed-size character arrays.'
+    ],
+    understanding_check: {
+      question: 'What is the byte size of the character array declared as char str[] = "EduAdapt";?',
+      options: [
+        '8 bytes',
+        '9 bytes (8 visible characters + 1 null terminator \'\\0\')',
+        '16 bytes',
+        '4 bytes'
+      ],
+      correct_answer: '9 bytes (8 visible characters + 1 null terminator \'\\0\')',
+      explanation: 'In C, string literals append an implicit null terminator \'\\0\', requiring 8 + 1 = 9 bytes in memory.'
     }
   },
   Arrays: {
@@ -168,14 +271,167 @@ int main(void) {
       correct_answer: 'C uses call-by-value, so the function only modifies a local copy of x.',
       explanation: 'In C, parameters are passed by value. To modify caller memory, a pointer (memory address) must be passed.'
     }
+  },
+  Conditionals: {
+    learning_objective: 'Understand boolean logic, if-else decision branching, and relational comparisons in C.',
+    explanation: 'Conditionals evaluate non-zero (True) and zero (False) expressions to direct programmatic execution paths. Branching allows programs to adapt behavior depending on input state and boundary invariants.',
+    c_code: `#include <stdio.h>
+
+int main(void) {
+    int score = 75;
+    if (score >= 50) {
+        printf("Result: Passed (Score: %d)\\n", score);
+    } else {
+        printf("Result: Failed (Score: %d)\\n", score);
+    }
+    return 0;
+}`,
+    c_code_title: 'Conditional Branching with If-Else in C99',
+    c_code_explanation: 'Evaluates relational condition and executes the appropriate branch body.',
+    walkthrough_steps: [
+      'score >= 50: Evaluates to 1 (True) because 75 is greater than or equal to 50.',
+      'Executes the if block body and skips the else block.'
+    ],
+    common_mistakes: [
+      'Using assignment = instead of equality == inside if statements.',
+      'Omitting braces around multi-statement blocks.'
+    ],
+    understanding_check: {
+      question: 'What is the boolean evaluation of if (5) in C?',
+      options: ['True (any non-zero integer is True)', 'False', 'Compilation error', 'Undefined'],
+      correct_answer: 'True (any non-zero integer is True)',
+      explanation: 'In C, any non-zero numeric value is evaluated as boolean True; only 0 is evaluated as False.'
+    }
+  },
+  Structures: {
+    learning_objective: 'Understand user-defined composite data types with struct, member declarations, and dot operator access in C.',
+    explanation: 'A structure allows grouping heterogeneous variables of different data types together under a single user-defined record name. Members are accessed via the dot operator (.) for values and arrow operator (->) for pointers.',
+    c_code: `#include <stdio.h>
+#include <string.h>
+
+struct Student {
+    int id;
+    char name[20];
+    float gpa;
+};
+
+int main(void) {
+    struct Student s1;
+    s1.id = 101;
+    strcpy(s1.name, "Alex");
+    s1.gpa = 3.85f;
+
+    printf("Student ID: %d, Name: %s, GPA: %.2f\\n", s1.id, s1.name, s1.gpa);
+    return 0;
+}`,
+    c_code_title: 'Structure Declaration and Member Access in C99',
+    c_code_explanation: 'Defines a composite student record, populates fields, and prints member data.',
+    walkthrough_steps: [
+      'struct Student: Declares composite structure layout.',
+      's1.id = 101: Accesses member using dot operator.',
+      'strcpy(s1.name, "Alex"): Copies string into character array member.'
+    ],
+    common_mistakes: [
+      'Forgetting the terminating semicolon after the structure declaration body.',
+      'Using dot operator with a pointer to structure without dereferencing.'
+    ],
+    understanding_check: {
+      question: 'Which operator is used to access members through a structure pointer in C?',
+      options: ['Arrow operator (->)', 'Dot operator (.)', 'Asterisk (*)', 'Ampersand (&)'],
+      correct_answer: 'Arrow operator (->)',
+      explanation: 'The arrow operator (`->`) dereferences a structure pointer and accesses the member directly (identical to (*ptr).member).'
+    }
+  },
+  'Operators and Expressions': {
+    learning_objective: 'Understand operator precedence, associativity, and expression evaluation in C.',
+    explanation: 'Expressions combine operators and operands to produce values. Operator precedence rules dictate the execution order, with parentheses overriding default precedence.',
+    c_code: `#include <stdio.h>
+
+int main(void) {
+    int a = 10, b = 4, c = 2;
+    int res1 = a + b * c;     // Multiplies first (10 + 8 = 18)
+    int res2 = (a + b) * c;   // Parentheses first (14 * 2 = 28)
+
+    printf("res1: %d, res2: %d\\n", res1, res2);
+    return 0;
+}`,
+    c_code_title: 'Operator Precedence and Evaluation in C99',
+    c_code_explanation: 'Compares default precedence with explicit parenthetical overrides.',
+    walkthrough_steps: [
+      'b * c: Multiplication has higher precedence than addition.',
+      '(a + b) * c: Parentheses force addition to evaluate before multiplication.'
+    ],
+    common_mistakes: [
+      'Expecting integer division 7 / 2 to return 3.5 (it truncates to 3).',
+      'Confusing bitwise & with logical &&.'
+    ],
+    understanding_check: {
+      question: 'What is the value of integer expression 7 / 2 in C?',
+      options: ['3 (integer division truncates)', '3.5', '4', 'Undefined'],
+      correct_answer: '3 (integer division truncates)',
+      explanation: 'Dividing two integers in C performs integer truncation, discarding any fractional remainder.'
+    }
+  },
+  'Variables and Data Types': {
+    learning_objective: 'Understand fundamental data types (char, int, float, double), declarations, and memory footprints in C.',
+    explanation: 'Variables represent named memory locations. Data types specify the byte footprint and bit interpretation for stored values.',
+    c_code: `#include <stdio.h>
+
+int main(void) {
+    char letter = 'A';
+    int count = 42;
+    float price = 19.99f;
+    double pi = 3.1415926535;
+
+    printf("char: %c (%zu B), int: %d (%zu B), float: %.2f (%zu B)\\n",
+           letter, sizeof(letter), count, sizeof(count), price, sizeof(price));
+    return 0;
+}`,
+    c_code_title: 'Fundamental Data Types and sizeof Inspection in C99',
+    c_code_explanation: 'Demonstrates declarations, format specifiers, and queries exact byte footprints using sizeof.',
+    walkthrough_steps: [
+      'char letter = \'A\': Allocates 1 byte.',
+      'int count = 42: Allocates 4 bytes.',
+      'sizeof operator: Queries exact byte footprints from compiler.'
+    ],
+    common_mistakes: [
+      'Using single quotes for strings or double quotes for characters.',
+      'Using variables before declaring them.'
+    ],
+    understanding_check: {
+      question: 'What is the guaranteed byte size of a char in C?',
+      options: ['Exactly 1 byte', '2 bytes', '4 bytes', '8 bytes'],
+      correct_answer: 'Exactly 1 byte',
+      explanation: 'By standard C specification, sizeof(char) is always exactly 1 byte.'
+    }
   }
 };
+
+/**
+ * Normalized helper retrieving topic-specific fallback matching any curriculum alias.
+ */
+function getTopicFallback(topic = '') {
+  const t = String(topic).toLowerCase();
+  if (t.includes('dynamic') || t.includes('malloc') || t.includes('dma') || t.includes('heap')) {
+    return TOPIC_FALLBACKS['Dynamic Memory Allocation'];
+  }
+  if (t.includes('string')) return TOPIC_FALLBACKS.Strings;
+  if (t.includes('point')) return TOPIC_FALLBACKS.Pointers;
+  if (t.includes('array')) return TOPIC_FALLBACKS.Arrays;
+  if (t.includes('struct')) return TOPIC_FALLBACKS.Structures;
+  if (t.includes('func') || t.includes('recur')) return TOPIC_FALLBACKS.Functions;
+  if (t.includes('loop') || t.includes('for') || t.includes('while')) return TOPIC_FALLBACKS.Loops;
+  if (t.includes('cond') || t.includes('if') || t.includes('switch')) return TOPIC_FALLBACKS.Conditionals;
+  if (t.includes('op') || t.includes('expr')) return TOPIC_FALLBACKS['Operators and Expressions'];
+  if (t.includes('var') || t.includes('type') || t.includes('data')) return TOPIC_FALLBACKS['Variables and Data Types'];
+  return TOPIC_FALLBACKS.Pointers;
+}
 
 /**
  * Extracts and structures the lesson fields from either structured_response or parsed content.
  */
 function extractLessonData(teaching, currentTopic) {
-  const fallback = TOPIC_FALLBACKS[currentTopic] || TOPIC_FALLBACKS.Pointers;
+  const fallback = getTopicFallback(currentTopic);
   const sr = teaching?.structured_response || {};
 
   // 1. Learning Objective
@@ -315,14 +571,38 @@ export default function TeachingContent({
 
   const lesson = extractLessonData(teaching, topic);
 
-  // Copy code feedback state
+  // Copy code feedback state with clipboard fallback
   const [copied, setCopied] = useState(false);
   const handleCopyCode = () => {
     if (!lesson.cCode) return;
-    navigator.clipboard.writeText(lesson.cCode).then(() => {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(lesson.cCode).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }).catch(() => {
+        fallbackCopyText(lesson.cCode);
+      });
+    } else {
+      fallbackCopyText(lesson.cCode);
+    }
+  };
+
+  const fallbackCopyText = (text) => {
+    try {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    } catch {
+      // Ignored
+    }
   };
 
   // Understanding check interactive state
@@ -565,12 +845,30 @@ export default function TeachingContent({
           <div className="personalization-card" role="region" aria-label="Personalization Applied Details">
             <div className="personalization-header">
               <span className="personalization-title">
-                Personalization Applied (Student State Driven)
+                Personalization Applied (Learning Twin & Profile Driven)
               </span>
               <span className="badge-green">
                 Tier: {personalizationApplied.mastery_tier || difficulty} ({personalizationApplied.topic_mastery ? `${Number(personalizationApplied.topic_mastery).toFixed(2)}` : 'Adaptive'})
               </span>
             </div>
+
+            {personalizationApplied.rationale && (
+              <div
+                style={{
+                  backgroundColor: 'rgba(59, 130, 246, 0.08)',
+                  borderLeft: '3px solid var(--color-blue)',
+                  padding: '8px 12px',
+                  borderRadius: 'var(--radius-sm)',
+                  marginBottom: '12px',
+                  fontSize: '12px',
+                  color: 'var(--color-text-primary)',
+                  lineHeight: 1.5,
+                }}
+              >
+                <strong>Pedagogical Adaptation:</strong> {personalizationApplied.rationale}
+              </div>
+            )}
+
             <div className="personalization-grid">
               {personalizationBullets.length > 0 ? (
                 personalizationBullets.map((bullet, idx) => {

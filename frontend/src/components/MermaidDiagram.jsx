@@ -62,6 +62,18 @@ const DEFAULT_TOPIC_DIAGRAMS = {
     Branch -->|False| PathF["Execute else / else-if Body"]
     PathT --> Merge["Continue Sequential Execution"]
     PathF --> Merge`,
+  'Operators and Expressions': `flowchart TD
+    Expr["C Expression Evaluation"] --> P1["1. Postfix: (), [], ->, ."]
+    P1 --> P2["2. Unary: ++, --, *, &, sizeof"]
+    P2 --> P3["3. Multiplicative: *, /, %"]
+    P3 --> P4["4. Additive: +, -"]
+    P4 --> P5["5. Relational: <, <=, >, >="]
+    P5 --> P6["6. Assignment: =, +=, -="]`,
+  'Variables and Data Types': `flowchart TD
+    Types["Fundamental C Data Types"] --> CharT["char (1 Byte, -128 to 127)"]
+    Types --> IntT["int (4 Bytes, -2^31 to 2^31-1)"]
+    Types --> FloatT["float (4 Bytes, 6-7 Decimals)"]
+    Types --> DoubleT["double (8 Bytes, 15 Decimals)"]`,
 };
 
 function getFallbackDiagram(topic = '') {
@@ -75,6 +87,8 @@ function getFallbackDiagram(topic = '') {
   if (t.includes('func') || t.includes('recur')) return DEFAULT_TOPIC_DIAGRAMS.Functions;
   if (t.includes('loop') || t.includes('for') || t.includes('while')) return DEFAULT_TOPIC_DIAGRAMS.Loops;
   if (t.includes('cond') || t.includes('if') || t.includes('switch')) return DEFAULT_TOPIC_DIAGRAMS.Conditionals;
+  if (t.includes('op') || t.includes('expr')) return DEFAULT_TOPIC_DIAGRAMS['Operators and Expressions'];
+  if (t.includes('var') || t.includes('type') || t.includes('data')) return DEFAULT_TOPIC_DIAGRAMS['Variables and Data Types'];
   return DEFAULT_TOPIC_DIAGRAMS.Pointers;
 }
 

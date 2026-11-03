@@ -164,6 +164,7 @@ class PersonalizedContentGenerator:
             topic=topic,
             diagram_type=strat.diagram_type if strat else "concept_flowchart",
             personalization_summary=p_context.personalization_summary,
+            mastery_tier=p_context.mastery_tier,
         )
 
         # 6. Record observable personalization and diagram metadata
@@ -226,6 +227,7 @@ class PersonalizedContentGenerator:
             topic=topic,
             diagram_type=p_context.strategy.diagram_type if p_context.strategy else "concept_flowchart",
             personalization_summary=p_context.personalization_summary,
+            mastery_tier=p_context.mastery_tier,
         )
 
     def generate_tutor_response(

@@ -61,6 +61,7 @@ export default function Practice({
   const [isRunningCode, setIsRunningCode] = useState(false);
   const [isSubmittingCode, setIsSubmittingCode] = useState(false);
   const [execResult, setExecResult] = useState(null);
+  const [customStdin, setCustomStdin] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
 
   // Load 5-Question Curriculum Practice Session
@@ -112,12 +113,19 @@ export default function Practice({
       const data = await generatePracticeProblems(sid, top);
       setAiProblems(data);
       const chal = data?.challenge || (Array.isArray(data?.practice_problems) ? data.practice_problems[0] : null);
-      if (chal && chal.starter_code) {
-        setStudentCode(chal.starter_code);
-      } else {
-        setStudentCode(
-          `#include <stdio.h>\n\n// Complete solution for ${top}\nint main() {\n    printf("Hello EduAdapt\\n");\n    return 0;\n}`
-        );
+      if (chal) {
+        if (chal.starter_code) {
+          setStudentCode(chal.starter_code);
+        } else {
+          setStudentCode(
+            `#include <stdio.h>\n\n// Complete solution for ${top}\nint main() {\n    printf("Hello EduAdapt\\n");\n    return 0;\n}`
+          );
+        }
+        if (chal.sample_input) {
+          setCustomStdin(chal.sample_input);
+        } else {
+          setCustomStdin('');
+        }
       }
     } catch (err) {
       setErrorMessage('Unable to generate AI challenge: ' + (err.message || 'Check backend status'));
@@ -176,9 +184,9 @@ export default function Practice({
         studentId,
         currentTopic,
         studentCode,
-        chal?.expected_output || null,
+        null,
         false,
-        chal?.sample_input || null
+        customStdin || chal?.sample_input || null
       );
       setExecResult(res);
     } catch (err) {
@@ -200,7 +208,7 @@ export default function Practice({
         studentCode,
         chal?.expected_output || chal?.sample_output || null,
         true,
-        chal?.sample_input || null
+        chal?.sample_input || customStdin || null
       );
       setExecResult(res);
       if (res.passed && onAssessmentCompleted) {
@@ -210,6 +218,8 @@ export default function Practice({
           topic: currentTopic,
           student_id: studentId,
           type: 'coding_challenge',
+          updated_student: res.updated_student,
+          updated_learning_state: res.updated_learning_state,
         });
       }
     } catch (err) {
@@ -223,6 +233,11 @@ export default function Practice({
     const chal = aiProblems?.challenge || (Array.isArray(aiProblems?.practice_problems) ? aiProblems.practice_problems[0] : null);
     if (chal && chal.starter_code) {
       setStudentCode(chal.starter_code);
+    }
+    if (chal && chal.sample_input) {
+      setCustomStdin(chal.sample_input);
+    } else {
+      setCustomStdin('');
     }
     setExecResult(null);
   };
@@ -756,6 +771,36 @@ export default function Practice({
                     }}
                     placeholder="// Write your C solution here..."
                     aria-label="C code editor"
+                  />
+                </div>
+
+                {/* Custom Program Input (stdin) */}
+                <div style={{ marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                    <label htmlFor="custom-stdin-input" style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-primary)' }}>
+                      Standard Input (stdin):
+                    </label>
+                    <span style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
+                      Passed to stdin (scanf / fgets) during program execution
+                    </span>
+                  </div>
+                  <textarea
+                    id="custom-stdin-input"
+                    value={customStdin}
+                    onChange={(e) => setCustomStdin(e.target.value)}
+                    rows={3}
+                    style={{
+                      width: '100%',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '12px',
+                      padding: '8px 12px',
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--color-border)',
+                      backgroundColor: 'var(--color-surface-subtle)',
+                      boxSizing: 'border-box',
+                      resize: 'vertical',
+                    }}
+                    placeholder="Enter test inputs here (e.g. 5\n10 20 30 40 50)..."
                   />
                 </div>
 

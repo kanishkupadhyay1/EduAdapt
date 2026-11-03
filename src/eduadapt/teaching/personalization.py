@@ -81,14 +81,17 @@ class PersonalizationContext:
         """Human-readable bullet points explaining what personalization was applied."""
         if not self.strategy:
             return ["Strategy: General PPS curriculum progression"]
-        return [
-            f"Explanation depth: {self.strategy.explanation_depth}",
-            f"Teaching approach: {self.strategy.teaching_approach}",
-            f"Scaffolding level: {self.strategy.scaffolding_level}",
-            f"Code complexity: {self.strategy.code_complexity}",
-            f"Diagram selection: {self.strategy.diagram_type}",
-            f"Practice complexity: {self.strategy.practice_complexity}",
+        bullets = [
+            f"Topic Mastery: {self.topic_mastery:.2f} ({self.mastery_tier} Tier)",
+            f"Learning Pace: {self.learning_pace.capitalize()} pace instruction",
+            f"Teaching Strategy: {self.strategy.teaching_approach}",
+            f"Explanation Depth: {self.strategy.explanation_depth}",
+            f"Code Complexity: {self.strategy.code_complexity}",
+            f"Scaffolding Level: {self.strategy.scaffolding_level}",
+            f"Concept Focus: {self.personalization_summary.get('concept_focus', 'Core curriculum mechanics and invariants')}",
+            f"Pedagogical Rationale: {self.personalization_summary.get('rationale', '')}",
         ]
+        return bullets
 
 
 def select_diagram_type_for_topic(topic: str, mastery_tier: str) -> str:
@@ -256,15 +259,35 @@ class PersonalizationEngine:
             diagram_directive=diagram_directive,
         )
 
+        # Derive pedagogical rationale and concept focus from observed profile state
+        if student_profile.common_misconceptions:
+            concept_focus = f"Identified error patterns: {'; '.join(student_profile.common_misconceptions)}"
+        else:
+            concept_focus = f"Core syllabus fundamentals and memory mechanics for {topic}"
+
+        if mastery_tier == "Beginner":
+            if normalized_pace == "slow":
+                rationale = "Student is establishing fundamentals at a measured pace (<0.40 mastery); instruction teaches from core memory primitives, uses intuitive real-world analogies, provides small (<15 lines) C code, and granular line-by-line tracing."
+            else:
+                rationale = "Student has introductory topic mastery (<0.40); instruction focuses directly on core syntactic rules, memory representations, and targeted diagnostic checks to resolve prerequisite gaps quickly."
+        elif mastery_tier == "Intermediate":
+            rationale = "Student has established basic understanding (0.40-0.70 mastery); instruction recaps essential rules and advances to practical multi-statement C programs, array/function connections, and execution flow tracing."
+        else:
+            rationale = "Student demonstrates strong mastery (>=0.70); instruction skips introductory programming lectures to focus on advanced C semantics, edge cases, pointer indirection, and robust modular design."
+
         summary = {
             "mastery_tier": mastery_tier,
             "topic_mastery": f"{topic_mastery:.2f}",
             "learning_pace": normalized_pace,
             "pattern": pattern_name,
+            "instructional_strategy": strategy.teaching_approach,
             "explanation_depth": strategy.explanation_depth,
             "scaffolding": strategy.scaffolding_level,
+            "code_complexity": strategy.code_complexity,
             "practice_complexity": strategy.practice_complexity,
             "diagram": diagram_type,
+            "concept_focus": concept_focus,
+            "rationale": rationale,
         }
 
         return PersonalizationContext(
