@@ -1,14 +1,30 @@
 import React from 'react';
 
-const DEFAULT_ROADMAP = [
-  { num: '01', title: 'Basics & Variables', status: 'Completed' },
-  { num: '02', title: 'Pointers Fundamentals', status: 'Current' },
-  { num: '03', title: 'Pointer Arithmetic & Types', status: 'Next' },
-  { num: '04', title: 'Dynamic Memory Allocation', status: 'Upcoming' },
-  { num: '05', title: 'Structures & Pointers', status: 'Upcoming' },
-  { num: '06', title: 'Double Pointers & Function Arguments', status: 'Upcoming' },
-  { num: '07', title: 'Advanced Problem Solving', status: 'Upcoming' },
-];
+/**
+ * Parses roadmap content into structured milestones.
+ */
+function parseRoadmapSteps(rawContent) {
+  if (!rawContent) return [];
+  const lines = rawContent.split('\n');
+  const steps = [];
+  let counter = 1;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const match = trimmed.match(/^(?:(?:\d+\.|\*|-|•)\s*)?(.*)$/);
+    const content = match ? match[1].trim() : trimmed;
+    if (content.length > 3) {
+      steps.push({
+        num: String(counter).padStart(2, '0'),
+        title: content,
+        status: counter === 1 ? 'Completed' : counter === 2 ? 'Current' : 'Upcoming',
+      });
+      counter++;
+    }
+  }
+  return steps;
+}
 
 export default function Progress({
   student,
@@ -17,12 +33,15 @@ export default function Progress({
   roadmapData,
   onNavigate,
 }) {
+  const hasHistory = Boolean(learningState?.updated_state || (student?.tests_completed && student.tests_completed > 0));
   const current = learningState?.updated_state || learningState?.simulated_twin || student;
-  const mastery = current?.mastery !== undefined ? `${Math.round(current.mastery * 100)}%` : '100%';
-  const accuracy = current?.accuracy !== undefined ? `${Math.round(current.accuracy * 100)}%` : '100%';
-  const pace = current?.learning_pace || 'Fast';
-  const difficulty = current?.recommended_difficulty || 'Advanced';
-  const predictedMastery = current?.predicted_mastery_level || student?.predicted_mastery_level || 'High';
+  const mastery = hasHistory && current?.mastery !== undefined ? `${Math.round(current.mastery * 100)}%` : '0%';
+  const accuracy = hasHistory && current?.accuracy !== undefined ? `${Math.round(current.accuracy * 100)}%` : '0%';
+  const pace = hasHistory ? (current?.learning_pace || 'Moderate') : 'Unassessed';
+  const difficulty = hasHistory ? (current?.recommended_difficulty || 'Beginner') : 'Beginner';
+  const predictedMastery = hasHistory ? (current?.predicted_mastery_level || 'Developing') : 'New Learner';
+
+  const roadmapSteps = parseRoadmapSteps(roadmapData?.roadmap_content);
 
   return (
     <div className="progress-page">
@@ -35,7 +54,9 @@ export default function Progress({
       <div className="card">
         <h3 className="card-title">
           <span>Current Learning State</span>
-          <span className="badge-green">Learning Twin Recomputed</span>
+          <span className={hasHistory ? 'badge-green' : 'badge-gray'}>
+            {hasHistory ? 'Learning Twin Recomputed' : 'Initial Baseline State'}
+          </span>
         </h3>
         <div className="stats-grid">
           <div className="stat-box">
@@ -44,11 +65,11 @@ export default function Progress({
           </div>
           <div className="stat-box">
             <div className="stat-label">Mastery</div>
-            <div className="stat-value" style={{ color: 'var(--color-green)' }}>{mastery}</div>
+            <div className="stat-value" style={{ color: hasHistory ? 'var(--color-green)' : 'var(--color-text-secondary)' }}>{mastery}</div>
           </div>
           <div className="stat-box">
             <div className="stat-label">Accuracy</div>
-            <div className="stat-value" style={{ color: 'var(--color-green)' }}>{accuracy}</div>
+            <div className="stat-value" style={{ color: hasHistory ? 'var(--color-green)' : 'var(--color-text-secondary)' }}>{accuracy}</div>
           </div>
           <div className="stat-box">
             <div className="stat-label">Learning Pace</div>
@@ -60,7 +81,7 @@ export default function Progress({
           </div>
           <div className="stat-box">
             <div className="stat-label">Predicted Mastery</div>
-            <div className="stat-value" style={{ color: 'var(--color-blue)' }}>{predictedMastery}</div>
+            <div className="stat-value" style={{ color: hasHistory ? 'var(--color-blue)' : 'var(--color-text-secondary)' }}>{predictedMastery}</div>
           </div>
         </div>
 
@@ -73,48 +94,78 @@ export default function Progress({
 
       {/* Learning Roadmap */}
       <div className="card">
-        <h3 className="card-title">
-          <span>Learning Roadmap</span>
-          <span className="badge-blue">Curriculum Milestones</span>
-        </h3>
-        <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', marginBottom: '16px' }}>
-          Your personalized pathway towards PPS course competency:
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+          <div>
+            <h3 className="card-title" style={{ margin: 0 }}>
+              <span>Adaptive Milestone Roadmap</span>
+              <span className="badge-blue" style={{ marginLeft: '10px' }}>Curriculum Milestones</span>
+            </h3>
+          </div>
+          <button
+            type="button"
+            className="btn-pill"
+            onClick={() => onNavigate('roadmap')}
+          >
+            Open Roadmap Explorer ☵
+          </button>
+        </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {DEFAULT_ROADMAP.map((step, idx) => {
-            const isCurrent = step.status === 'Current';
-            const isCompleted = step.status === 'Completed';
+        {roadmapSteps.length > 0 ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {roadmapSteps.map((step, idx) => {
+              const isCurrent = step.status === 'Current';
+              const isCompleted = step.status === 'Completed';
 
-            let badgeClass = 'badge-gray';
-            if (isCompleted) badgeClass = 'badge-green';
-            if (isCurrent) badgeClass = 'badge-blue';
+              let badgeClass = 'badge-gray';
+              if (isCompleted) badgeClass = 'badge-green';
+              if (isCurrent) badgeClass = 'badge-blue';
 
-            return (
-              <div
-                key={idx}
-                className={`roadmap-step ${isCurrent ? 'active' : ''}`}
-                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                  <span className="step-num">{step.num}</span>
-                  <div>
-                    <div style={{ fontSize: '14px', fontWeight: isCurrent ? 700 : 500 }}>
-                      {step.title}
+              return (
+                <div
+                  key={idx}
+                  className={`roadmap-step ${isCurrent ? 'active' : ''}`}
+                  style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <span className="step-num">{step.num}</span>
+                    <div>
+                      <div style={{ fontSize: '14px', fontWeight: isCurrent ? 700 : 500 }}>
+                        {step.title}
+                      </div>
                     </div>
                   </div>
+                  <div>
+                    <span className={badgeClass}>{step.status}</span>
+                  </div>
                 </div>
-                <div>
-                  <span className={badgeClass}>{step.status}</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div style={{ padding: '20px 0', color: 'var(--color-text-secondary)', fontSize: '13px' }}>
+            <p style={{ marginBottom: '12px' }}>
+              No custom roadmap has been generated for <strong>{currentTopic}</strong> in the current session.
+            </p>
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => onNavigate('roadmap')}
+            >
+              Generate Personalized Roadmap Now ☵
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Next Step Action */}
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
+        <button
+          type="button"
+          className="btn-secondary"
+          onClick={() => onNavigate('profile')}
+        >
+          View Full Student Twin Profile 👤
+        </button>
         <button
           type="button"
           className="btn-primary"

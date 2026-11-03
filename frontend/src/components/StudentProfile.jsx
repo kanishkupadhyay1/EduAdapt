@@ -4,15 +4,16 @@ export default function StudentProfile({ profile, currentTopic }) {
   // If backend returns profile data, use it; otherwise fallback cleanly
   const studentId = profile?.student_id || 'S001';
   const topic = currentTopic || profile?.current_topic || 'Pointers';
+  const hasAssessment = Boolean(profile?.tests_completed && profile.tests_completed > 0);
   const mastery = profile?.mastery !== undefined 
     ? `${Math.round(profile.mastery * 100)}%` 
-    : '100%';
+    : (hasAssessment ? '0%' : 'Unassessed');
   const accuracy = profile?.accuracy !== undefined 
     ? `${Math.round(profile.accuracy * 100)}%` 
-    : '100%';
-  const pace = profile?.learning_pace || 'Fast';
-  const difficulty = profile?.recommended_difficulty || 'Advanced';
-  const predictedMastery = profile?.predicted_mastery_level || 'High';
+    : (hasAssessment ? '0%' : 'Unassessed');
+  const pace = profile?.learning_pace || 'Moderate';
+  const difficulty = profile?.recommended_difficulty || 'Beginner';
+  const predictedMastery = profile?.predicted_mastery_level || 'New Learner';
   const learningStyle = profile?.learning_style || 'Balanced';
 
   return (

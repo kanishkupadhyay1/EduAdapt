@@ -567,3 +567,160 @@ body {
 .error-box p {
   font-size: 13px;
 }
+
+/* Educational Diagram Styles */
+.diagram-container {
+  margin: 18px 0;
+  border: 1px solid #cbd5e1;
+  border-radius: var(--radius-md);
+  background-color: #f8fafc;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.diagram-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background-color: #e2e8f0;
+  border-bottom: 1px solid #cbd5e1;
+}
+
+.diagram-title-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.diagram-badge {
+  background-color: #0284c7;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.diagram-title {
+  font-weight: 600;
+  font-size: 13px;
+  color: #1e293b;
+}
+
+.diagram-explanation {
+  padding: 8px 16px;
+  font-size: 12px;
+  color: #475569;
+  background-color: #f1f5f9;
+  border-bottom: 1px solid #e2e8f0;
+  font-style: italic;
+}
+
+.diagram-body {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 120px;
+  background-color: #ffffff;
+}
+
+.diagram-loading {
+  font-size: 13px;
+  color: #64748b;
+  font-style: italic;
+}
+
+.diagram-svg-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.diagram-svg-wrapper svg {
+  max-width: 100%;
+  height: auto;
+}
+
+.diagram-fallback {
+  width: 100%;
+}
+
+.diagram-fallback-notice {
+  font-size: 12px;
+  color: #b45309;
+  background-color: #fef3c7;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 10px;
+}
+
+.diagram-fallback-code {
+  padding: 12px;
+  background-color: #0f172a;
+  color: #e2e8f0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+}
+
+.diagram-source-view {
+  border-top: 1px solid #cbd5e1;
+  padding: 12px 16px;
+  background-color: #f1f5f9;
+}
+
+/* Personalization Applied Card */
+.personalization-card {
+  background: linear-gradient(135deg, #f0fdf4 0%, #e0f2fe 100%);
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  margin-bottom: 16px;
+}
+
+.personalization-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.personalization-title {
+  font-weight: 700;
+  font-size: 13px;
+  color: #166534;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.personalization-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 12px;
+}
+
+.personalization-item {
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(22, 101, 52, 0.1);
+}
+
+.personalization-item-label {
+  font-weight: 600;
+  color: #15803d;
+  margin-right: 6px;
+}
+
+.personalization-item-value {
+  color: #1e293b;
+}

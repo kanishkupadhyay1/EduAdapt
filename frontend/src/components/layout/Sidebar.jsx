@@ -6,10 +6,13 @@ const NAV_ITEMS = [
   { id: 'tutor', label: 'AI Tutor', symbol: '?' },
   { id: 'practice', label: 'Practice', symbol: '+' },
   { id: 'tests', label: 'Tests', symbol: '✓' },
+  { id: 'roadmap', label: 'Roadmap', symbol: '☵' },
   { id: 'progress', label: 'Progress', symbol: '▲' },
+  { id: 'profile', label: 'Student Profile', symbol: '👤' },
+  { id: 'curriculum', label: 'PPS Curriculum', symbol: '📚' },
 ];
 
-export default function Sidebar({ activePage, onNavigate, studentId = 'S001' }) {
+export default function Sidebar({ activePage, onNavigate, studentId = 'S001', onReset }) {
   return (
     <aside className="sidebar">
       <div>
@@ -39,9 +42,22 @@ export default function Sidebar({ activePage, onNavigate, studentId = 'S001' }) 
       </div>
 
       <div className="sidebar-footer">
-        <div className="student-badge-card">
-          <div className="student-badge-label">Active Student</div>
-          <div className="student-badge-id">{studentId}</div>
+        <div className="student-badge-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <div className="student-badge-label">Active Student</div>
+            <div className="student-badge-id">{studentId}</div>
+          </div>
+          {onReset && (
+            <button
+              type="button"
+              className="btn-pill"
+              style={{ padding: '2px 8px', fontSize: '11px', color: '#64748b', cursor: 'pointer' }}
+              title="Reset session and start from 0"
+              onClick={onReset}
+            >
+              Reset (0)
+            </button>
+          )}
         </div>
         <div style={{ fontSize: '11px', color: 'var(--color-text-muted)' }}>
           PPS Course • Non-Agentic GenAI

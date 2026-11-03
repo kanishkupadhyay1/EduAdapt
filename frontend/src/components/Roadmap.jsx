@@ -26,21 +26,7 @@ function parseRoadmapStages(rawText) {
     }
   }
 
-  // Fallback to default realistic stages if LLM output was concise or raw
-  if (stages.length === 0) {
-    return [
-      { num: '01', text: 'Basics' },
-      { num: '02', text: 'Pointers' },
-      { num: '03', text: 'Pointer Arithmetic' },
-      { num: '04', text: 'Dynamic Allocation' },
-      { num: '05', text: 'Structures' },
-      { num: '06', text: 'Double Pointers' },
-      { num: '07', text: 'Advanced Practice' },
-      { num: '08', text: 'Project' },
-      { num: '09', text: 'Final Review' },
-    ];
-  }
-
+  // Return parsed stages (empty if none could be parsed)
   return stages;
 }
 
@@ -63,12 +49,18 @@ export default function Roadmap({ roadmap }) {
         </div>
 
         <div className="roadmap-list">
-          {stages.map((stg, idx) => (
-            <div key={idx} className="roadmap-item">
-              <span className="roadmap-num">{stg.num}</span>
-              <span className="roadmap-desc">{stg.text}</span>
+          {stages.length > 0 ? (
+            stages.map((stg, idx) => (
+              <div key={idx} className="roadmap-item">
+                <span className="roadmap-num">{stg.num}</span>
+                <span className="roadmap-desc">{stg.text}</span>
+              </div>
+            ))
+          ) : (
+            <div style={{ color: 'var(--color-text-secondary)', padding: '16px 0', fontSize: '13px' }}>
+              No custom roadmap stages generated yet. Generate an adaptive roadmap from the Roadmap tab.
             </div>
-          ))}
+          )}
         </div>
       </div>
     </section>

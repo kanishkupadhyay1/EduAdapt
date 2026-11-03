@@ -83,6 +83,49 @@ class PromptManager:
                 ),
             )
         )
+        # Register new production-quality prompt templates
+        from eduadapt.teaching.prompts import (
+            PERSONALIZED_LESSON_PROMPT_TEMPLATE,
+            AI_TUTOR_PROMPT_TEMPLATE,
+            PRACTICE_GENERATION_PROMPT_TEMPLATE,
+            FORMATIVE_FEEDBACK_PROMPT_TEMPLATE,
+            ADAPTIVE_ROADMAP_PROMPT_TEMPLATE,
+        )
+        self.register(
+            PromptTemplate(
+                name="personalized_lesson_v2",
+                description="Grounding-verified, student-adaptive lesson prompt with native Mermaid diagrams.",
+                template=PERSONALIZED_LESSON_PROMPT_TEMPLATE,
+            )
+        )
+        self.register(
+            PromptTemplate(
+                name="ai_tutor_dialogue",
+                description="Curriculum-grounded AI Tutor dialogue prompt.",
+                template=AI_TUTOR_PROMPT_TEMPLATE,
+            )
+        )
+        self.register(
+            PromptTemplate(
+                name="practice_generation",
+                description="Topic-specific adaptive practice problem generator with hint ladders.",
+                template=PRACTICE_GENERATION_PROMPT_TEMPLATE,
+            )
+        )
+        self.register(
+            PromptTemplate(
+                name="formative_feedback_v2",
+                description="Formative code feedback with progressive hints.",
+                template=FORMATIVE_FEEDBACK_PROMPT_TEMPLATE,
+            )
+        )
+        self.register(
+            PromptTemplate(
+                name="adaptive_roadmap_v2",
+                description="Adaptive curriculum roadmap generator.",
+                template=ADAPTIVE_ROADMAP_PROMPT_TEMPLATE,
+            )
+        )
 
     def register(self, template: PromptTemplate) -> None:
         """Register a new template."""
