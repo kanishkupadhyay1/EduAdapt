@@ -37,6 +37,7 @@ from eduadapt.services.adaptive_learning import (
     AdaptiveLearningService,
 )
 from eduadapt.services.question_service import QuestionService, PPS_CURRICULUM_SEQUENCE
+from eduadapt.services.tutor_history_service import TutorHistoryService
 from member3.student_state import get_student_state
 from member4.speech_to_text import SpeechToText
 from member4.text_to_speech import TextToSpeech, clean_text_for_speech
@@ -146,6 +147,7 @@ class PracticeExecuteRequest(BaseModel):
     source_code: str = Field(..., description="C source code to compile and run")
     expected_output: Optional[str] = Field(default=None, description="Expected output for evaluation")
     stdin_input: Optional[str] = Field(default=None, description="Optional stdin input to feed to the program")
+    timeout_seconds: Optional[float] = Field(default=30.0, description="Execution timeout limit in seconds")
     is_submission: bool = Field(default=False, description="Whether this is a final submission evaluation")
 
 
@@ -356,10 +358,50 @@ def generate_session(req: LearningSessionRequest) -> Dict[str, Any]:
         raise HTTPException(status_code=500, detail=f"Failed to generate learning session: {str(e)}")
 
 
+tutor_history_service = TutorHistoryService()
+
+
+@app.get("/api/tutor/history/{student_id}/{topic}")
+def get_tutor_history(student_id: str, topic: str) -> Dict[str, Any]:
+    """Retrieve persistent conversation history for a student on a specific topic."""
+    messages = tutor_history_service.get_history(student_id, topic)
+    return {
+        "student_id": student_id,
+        "topic": topic,
+        "messages": messages,
+    }
+
+
+@app.delete("/api/tutor/history/{student_id}/{topic}")
+def clear_tutor_history(student_id: str, topic: str) -> Dict[str, Any]:
+    """Reset persistent conversation history for a student on a specific topic."""
+    cleared = tutor_history_service.clear_topic_history(student_id, topic)
+    return {
+        "student_id": student_id,
+        "topic": topic,
+        "cleared": cleared,
+        "messages": [],
+    }
+
+
 @app.post("/api/tutor/chat")
 def tutor_chat(req: TutorChatRequest) -> Dict[str, Any]:
     """Curriculum-grounded AI Tutor dialogue using the existing LLM and RAG pipelines."""
     service = get_service()
+
+    # Retrieve prior conversation context before logging this turn
+    recent_dialogue = tutor_history_service.get_recent_context_for_prompt(
+        student_id=req.student_id, topic=req.topic, max_turns=6
+    )
+
+    # Persist the student's inquiry immediately
+    tutor_history_service.append_message(
+        student_id=req.student_id,
+        topic=req.topic,
+        role="student",
+        text=req.message,
+        prompt_variation=req.prompt_variation,
+    )
     
     # 1. Fetch student state
     adapter = LearningTwinAdapter(default_topic=req.topic)
@@ -404,12 +446,17 @@ def tutor_chat(req: TutorChatRequest) -> Dict[str, Any]:
             "Help the student understand the conceptual mechanics, memory layout, and underlying logic."
         )
 
+    history_section = ""
+    if recent_dialogue:
+        history_section = f"Prior Conversation Context on {req.topic}:\n{recent_dialogue}\n\n"
+
     full_prompt = (
         f"You are the friendly, supportive EduAdapt AI Tutor for Programming for Problem Solving (PPS).\n"
         f"Topic: {req.topic}\n"
         f"Student ID: {req.student_id}\n"
         f"Current Level: {mastery_desc} (Pace: {pace_desc})\n\n"
         f"PPS Curriculum Reference Context:\n{curriculum_context}\n\n"
+        f"{history_section}"
         f"Tutor Role: You are a helpful conceptual mentor. "
         f"If the student asks why an answer is correct or asks for conceptual help, "
         f"explain the 'why' clearly and warmly with clean C code examples.\n\n"
@@ -428,6 +475,14 @@ def tutor_chat(req: TutorChatRequest) -> Dict[str, Any]:
             if diag_res.is_valid:
                 diagram_data = diag_res.to_dict()
 
+        # Persist assistant reply
+        tutor_history_service.append_message(
+            student_id=req.student_id,
+            topic=req.topic,
+            role="assistant",
+            text=gen_res.content,
+        )
+
         return {
             "reply": gen_res.content,
             "topic": req.topic,
@@ -435,6 +490,7 @@ def tutor_chat(req: TutorChatRequest) -> Dict[str, Any]:
             "model": gen_res.model_name,
             "curriculum_sources": retrieved_sources,
             "diagram": diagram_data,
+            "history": tutor_history_service.get_history(req.student_id, req.topic),
         }
     except (OllamaConnectionError, OllamaTimeoutError) as e:
         raise HTTPException(
@@ -665,7 +721,8 @@ def execute_practice_code(req: PracticeExecuteRequest) -> Dict[str, Any]:
     from eduadapt.evaluation.c_executor import CExecutor
     from eduadapt.evaluation.models import ExecutionStatus
 
-    executor = CExecutor(default_timeout_seconds=3.0)
+    timeout = req.timeout_seconds if req.timeout_seconds is not None else 30.0
+    executor = CExecutor(default_timeout_seconds=timeout)
     if not executor.has_compiler():
         raise HTTPException(
             status_code=503,
@@ -675,11 +732,17 @@ def execute_practice_code(req: PracticeExecuteRequest) -> Dict[str, Any]:
     res = executor.execute_student_code(
         source_code=req.source_code,
         stdin_input=req.stdin_input,
-        timeout_seconds=3.0,
+        timeout_seconds=timeout,
     )
 
     actual_output = (res.stdout or "").strip()
     expected_output = (req.expected_output or "").strip() if req.expected_output else ""
+
+    code_reads_stdin = any(kw in req.source_code for kw in ("scanf", "getchar", "fgets"))
+    stdin_empty = not (req.stdin_input and req.stdin_input.strip())
+    stdin_note = ""
+    if code_reads_stdin and stdin_empty:
+        stdin_note = " (Notice: Your C program reads from standard input with scanf/fgets, but the Standard Input box was empty.)"
 
     passed = False
     status_label = res.status.value
@@ -696,7 +759,7 @@ def execute_practice_code(req: PracticeExecuteRequest) -> Dict[str, Any]:
     elif res.status == ExecutionStatus.TIMEOUT:
         status_label = "TIMEOUT"
         diagnostic_type = "TIMEOUT"
-        diagnostic_message = f"Execution timed out after {res.execution_time_seconds}s. The program may be waiting for standard input (scanf) without input, or trapped in an infinite loop."
+        diagnostic_message = f"Execution timed out after {res.execution_time_seconds or timeout}s (Configured Limit: {timeout}s). The program may be waiting for standard input without input, or trapped in an infinite loop."
     elif res.status == ExecutionStatus.RUNTIME_ERROR:
         status_label = "RUNTIME_ERROR"
         diagnostic_type = "RUNTIME_ERROR"
@@ -728,7 +791,7 @@ def execute_practice_code(req: PracticeExecuteRequest) -> Dict[str, Any]:
                 else:
                     status_label = "WRONG_ANSWER"
                     diagnostic_type = "WRONG_ANSWER"
-                    diagnostic_message = "Wrong Answer: Output format or content mismatch with expected test case."
+                    diagnostic_message = f"Wrong Answer: Output mismatch with expected test case.{stdin_note}"
             else:
                 passed = True
                 status_label = "ACCEPTED"
@@ -749,7 +812,9 @@ def execute_practice_code(req: PracticeExecuteRequest) -> Dict[str, Any]:
         else:
             status_label = "SUCCESS"
             diagnostic_type = "SUCCESS"
-            diagnostic_message = "Program Compiled & Executed Successfully."
+            diagnostic_message = f"Program Compiled & Executed Successfully.{stdin_note}"
+
+    notes_str = (res.notes or "") + (stdin_note if (stdin_note and stdin_note not in (res.notes or "")) else "")
 
     return {
         "status": status_label,
@@ -762,9 +827,10 @@ def execute_practice_code(req: PracticeExecuteRequest) -> Dict[str, Any]:
         "stdout": res.stdout or "",
         "stderr": res.stderr or "",
         "execution_time_seconds": res.execution_time_seconds,
+        "timeout_limit_seconds": timeout,
         "actual_output": actual_output,
         "expected_output": expected_output if req.expected_output else None,
-        "notes": res.notes or "",
+        "notes": notes_str.strip(),
         "is_submission": req.is_submission,
         "student_id": req.student_id,
         "topic": req.topic,

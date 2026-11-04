@@ -1966,11 +1966,22 @@ class ResponseParser:
             if len(hints) < 4 and h not in hints:
                 hints.append(h)
 
+        learning_objective = topic_defaults.get(
+            "learning_objective",
+            f"Demonstrate algorithmic problem solving and accurate C memory manipulation for {norm_topic}."
+        )
+        expected_test_cases = topic_defaults.get(
+            "expected_test_cases",
+            [{"input": sample_input, "expected_output": expected_output}]
+        )
+        hidden_test_cases = topic_defaults.get("hidden_test_cases", [])
+
         return {
             "title": title,
             "topic": norm_topic,
             "difficulty": difficulty,
             "mastery_tier": mastery_tier,
+            "learning_objective": learning_objective,
             "problem_statement": problem_statement,
             "description": problem_statement,
             "input_format": input_format,
@@ -1981,6 +1992,8 @@ class ResponseParser:
             "sample_explanation": sample_explanation,
             "starter_code": starter_code,
             "expected_output": expected_output,
+            "expected_test_cases": expected_test_cases,
+            "hidden_test_cases": hidden_test_cases,
             "hints": hints[:4],
             "hint_1": hints[0] if len(hints) > 0 else "",
             "hint_2": hints[1] if len(hints) > 1 else "",
@@ -1995,6 +2008,10 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
 
     if norm == "Dynamic Memory Allocation":
         return {
+            "title": "Dynamic Integer Array Allocation and Deallocation",
+            "topic": norm,
+            "difficulty": "Intermediate",
+            "learning_objective": "Allocate memory dynamically on the heap using malloc(), verify pointers, and free allocated memory in C.",
             "problem_statement": (
                 "Write a C program that dynamically allocates memory on the heap for an array of integers using `malloc()`.\n"
                 "The program must first read an integer `size` indicating the number of elements.\n"
@@ -2009,6 +2026,13 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
             "sample_output": "10 20 30 40 50",
             "expected_output": "10 20 30 40 50",
             "sample_explanation": "Memory for 5 integers is allocated on the heap, filled with the 5 numbers, printed, and freed.",
+            "expected_test_cases": [
+                {"input": "5\n10 20 30 40 50", "expected_output": "10 20 30 40 50"},
+            ],
+            "hidden_test_cases": [
+                {"input": "3\n1 2 3", "expected_output": "1 2 3"},
+                {"input": "1\n99", "expected_output": "99"},
+            ],
             "starter_code": (
                 "#include <stdio.h>\n"
                 "#include <stdlib.h>\n\n"
@@ -2050,6 +2074,10 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
 
     elif norm == "Pointers":
         return {
+            "title": "In-Place Value Swapping Using Pointers",
+            "topic": norm,
+            "difficulty": "Beginner",
+            "learning_objective": "Pass addresses to functions using the address-of operator (&) and dereference pointers (*) to modify caller variables.",
             "problem_statement": (
                 "Write a C program that swaps the values of two integers using pointers and a helper function `swap(int *a, int *b)`.\n"
                 "Read two integers from standard input, swap their values using their memory addresses, and print the swapped values."
@@ -2061,6 +2089,13 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
             "sample_output": "27 15",
             "expected_output": "27 15",
             "sample_explanation": "The addresses of 15 and 27 are passed to swap(), exchanging their values in-place.",
+            "expected_test_cases": [
+                {"input": "15 27", "expected_output": "27 15"},
+            ],
+            "hidden_test_cases": [
+                {"input": "100 200", "expected_output": "200 100"},
+                {"input": "0 5", "expected_output": "5 0"},
+            ],
             "starter_code": (
                 "#include <stdio.h>\n\n"
                 "void swap(int *a, int *b) {\n"
@@ -2087,6 +2122,10 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
 
     elif norm == "Strings":
         return {
+            "title": "String Reversal In-Place",
+            "topic": norm,
+            "difficulty": "Beginner",
+            "learning_objective": "Manipulate null-terminated character sequences, compute lengths, and reverse strings without memory corruption.",
             "problem_statement": (
                 "Write a C program that reads a string (up to 100 characters) and prints it reversed.\n"
                 "You must respect the terminating null character `'\\0'`."
@@ -2098,6 +2137,13 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
             "sample_output": "olleh",
             "expected_output": "olleh",
             "sample_explanation": "The characters of 'hello' are printed from index 4 down to 0.",
+            "expected_test_cases": [
+                {"input": "hello", "expected_output": "olleh"},
+            ],
+            "hidden_test_cases": [
+                {"input": "cprogramming", "expected_output": "gnimmargorpc"},
+                {"input": "radar", "expected_output": "radar"},
+            ],
             "starter_code": (
                 "#include <stdio.h>\n"
                 "#include <string.h>\n\n"
@@ -2123,6 +2169,10 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
 
     elif norm == "Arrays":
         return {
+            "title": "Find Maximum Element in Array",
+            "topic": norm,
+            "difficulty": "Beginner",
+            "learning_objective": "Traverse indexed integer collections and maintain running extrema.",
             "problem_statement": (
                 "Write a C program that reads an integer `N`, followed by `N` integers into an array.\n"
                 "Find and print the maximum integer element in the array."
@@ -2134,6 +2184,13 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
             "sample_output": "89",
             "expected_output": "89",
             "sample_explanation": "Among the 5 integers {12, 45, 7, 89, 23}, 89 is the largest.",
+            "expected_test_cases": [
+                {"input": "5\n12 45 7 89 23", "expected_output": "89"},
+            ],
+            "hidden_test_cases": [
+                {"input": "4\n-10 -5 -20 -1", "expected_output": "-1"},
+                {"input": "3\n100 100 100", "expected_output": "100"},
+            ],
             "starter_code": (
                 "#include <stdio.h>\n\n"
                 "int main(void) {\n"
@@ -2159,6 +2216,10 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
 
     elif norm == "Functions":
         return {
+            "title": "Recursive Factorial Calculation",
+            "topic": norm,
+            "difficulty": "Beginner",
+            "learning_objective": "Construct recursive functions with explicit base criteria and call-stack unwinding in C.",
             "problem_statement": (
                 "Write a C program that computes the factorial of an integer `N` using a recursive function `factorial(int n)`.\n"
                 "Read N from standard input and print `N!`."
@@ -2170,6 +2231,13 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
             "sample_output": "120",
             "expected_output": "120",
             "sample_explanation": "5! = 5 * 4 * 3 * 2 * 1 = 120.",
+            "expected_test_cases": [
+                {"input": "5", "expected_output": "120"},
+            ],
+            "hidden_test_cases": [
+                {"input": "0", "expected_output": "1"},
+                {"input": "6", "expected_output": "720"},
+            ],
             "starter_code": (
                 "#include <stdio.h>\n\n"
                 "long long factorial(int n) {\n"
@@ -2188,11 +2256,16 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
                 "Define base case: if `n <= 1`, return `1`.",
                 "In recursive step, return `n * factorial(n - 1)`.",
                 "Use `long long` for return type to handle larger factorial values.",
+                "Read input with `scanf(\"%d\", &n)` and print `factorial(n)` formatted as `%lld\\n`.",
             ],
         }
 
     elif norm == "Loops":
         return {
+            "title": "Sum of First N Natural Numbers",
+            "topic": norm,
+            "difficulty": "Beginner",
+            "learning_objective": "Utilize iteration structures (for/while loops) to aggregate sequential numeric data.",
             "problem_statement": (
                 "Write a C program that reads an integer `N` and computes the sum of the first N natural numbers (1 to N) using a loop."
             ),
@@ -2203,6 +2276,13 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
             "sample_output": "15",
             "expected_output": "15",
             "sample_explanation": "1 + 2 + 3 + 4 + 5 = 15.",
+            "expected_test_cases": [
+                {"input": "5", "expected_output": "15"},
+            ],
+            "hidden_test_cases": [
+                {"input": "10", "expected_output": "55"},
+                {"input": "1", "expected_output": "1"},
+            ],
             "starter_code": (
                 "#include <stdio.h>\n\n"
                 "int main(void) {\n"
@@ -2220,11 +2300,16 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
                 "Initialize `int sum = 0;` before entering the loop.",
                 "Iterate from `i = 1` up to and including `n`.",
                 "Add `i` to `sum` in each iteration: `sum += i;`.",
+                "Print the final `sum` followed by a newline: `printf(\"%d\\n\", sum);`.",
             ],
         }
 
     elif norm == "Conditionals":
         return {
+            "title": "Number Sign Classifier",
+            "topic": norm,
+            "difficulty": "Beginner",
+            "learning_objective": "Control program execution flow using branching logic (if / else if / else).",
             "problem_statement": (
                 "Write a C program that reads an integer and prints 'Positive', 'Negative', or 'Zero' depending on its value."
             ),
@@ -2235,6 +2320,13 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
             "sample_output": "Negative",
             "expected_output": "Negative",
             "sample_explanation": "-7 is less than zero, so 'Negative' is printed.",
+            "expected_test_cases": [
+                {"input": "-7", "expected_output": "Negative"},
+            ],
+            "hidden_test_cases": [
+                {"input": "42", "expected_output": "Positive"},
+                {"input": "0", "expected_output": "Zero"},
+            ],
             "starter_code": (
                 "#include <stdio.h>\n\n"
                 "int main(void) {\n"
@@ -2251,11 +2343,16 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
                 "Use `if (num > 0)` for positive numbers.",
                 "Use `else if (num < 0)` for negative numbers.",
                 "Use `else` for zero.",
+                "Ensure every branch prints a trailing newline `\\n`.",
             ],
         }
 
     elif norm == "Structures":
         return {
+            "title": "Student Record Formatter Using Struct",
+            "topic": norm,
+            "difficulty": "Beginner",
+            "learning_objective": "Define heterogeneous user types with struct and access fields with the dot member operator.",
             "problem_statement": (
                 "Define a structure `struct Student` with fields `int id` and `int marks`.\n"
                 "Read `id` and `marks` from standard input, store them in a structure variable, and print them formatted as `ID: <id>, Marks: <marks>`."
@@ -2267,6 +2364,13 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
             "sample_output": "ID: 101, Marks: 95",
             "expected_output": "ID: 101, Marks: 95",
             "sample_explanation": "Structure members are populated with 101 and 95 and printed.",
+            "expected_test_cases": [
+                {"input": "101 95", "expected_output": "ID: 101, Marks: 95"},
+            ],
+            "hidden_test_cases": [
+                {"input": "202 88", "expected_output": "ID: 202, Marks: 88"},
+                {"input": "5 100", "expected_output": "ID: 5, Marks: 100"},
+            ],
             "starter_code": (
                 "#include <stdio.h>\n\n"
                 "struct Student {\n"
@@ -2283,6 +2387,7 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
             ),
             "hints": [
                 "Declare `struct Student { int id; int marks; };` before `main()`.",
+                "Instantiate the struct variable: `struct Student s;`.",
                 "Access structure fields using the dot operator: `s.id` and `s.marks`.",
                 "Print the exact formatted output: `ID: %d, Marks: %d\\n`.",
             ],
@@ -2290,6 +2395,10 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
 
     elif norm == "Operators and Expressions":
         return {
+            "title": "Arithmetic Precedence Evaluator",
+            "topic": norm,
+            "difficulty": "Beginner",
+            "learning_objective": "Apply arithmetic operator precedence and grouping parentheses to evaluate numeric expressions.",
             "problem_statement": (
                 "Write a C program that reads three integers `a`, `b`, and `c` and evaluates the expression `(a + b) * c`.\n"
                 "Print the integer result."
@@ -2301,6 +2410,13 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
             "sample_output": "35",
             "expected_output": "35",
             "sample_explanation": "(3 + 4) * 5 = 7 * 5 = 35.",
+            "expected_test_cases": [
+                {"input": "3 4 5", "expected_output": "35"},
+            ],
+            "hidden_test_cases": [
+                {"input": "2 3 4", "expected_output": "20"},
+                {"input": "0 10 2", "expected_output": "20"},
+            ],
             "starter_code": (
                 "#include <stdio.h>\n\n"
                 "int main(void) {\n"
@@ -2313,13 +2429,19 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
                 "}"
             ),
             "hints": [
+                "Understand operator precedence: multiplication naturally binds tighter than addition in C.",
                 "Use parentheses `(a + b)` so addition evaluates before multiplication.",
                 "Multiply by `c`: `(a + b) * c`.",
+                "Print the integer output followed by a newline: `printf(\"%d\\n\", result);`.",
             ],
         }
 
     else:  # Variables and Data Types
         return {
+            "title": "C Primitive Data Type Footprints",
+            "topic": norm,
+            "difficulty": "Beginner",
+            "learning_objective": "Inspect memory byte allocations of primitive C data types with the sizeof operator.",
             "problem_statement": (
                 "Write a C program that prints the byte size of standard C datatypes: `char`, `int`, and `float`.\n"
                 "Output must be formatted as: `char: 1, int: 4, float: 4`."
@@ -2331,6 +2453,12 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
             "sample_output": "char: 1, int: 4, float: 4",
             "expected_output": "char: 1, int: 4, float: 4",
             "sample_explanation": "sizeof operator evaluates byte footprints of char, int, and float.",
+            "expected_test_cases": [
+                {"input": "", "expected_output": "char: 1, int: 4, float: 4"},
+            ],
+            "hidden_test_cases": [
+                {"input": "", "expected_output": "char: 1, int: 4, float: 4"},
+            ],
             "starter_code": (
                 "#include <stdio.h>\n\n"
                 "int main(void) {\n"
@@ -2339,7 +2467,9 @@ def _get_challenge_defaults(topic: str) -> Dict[str, Any]:
                 "}"
             ),
             "hints": [
-                "Use `sizeof(type)` operator to query byte sizes.",
-                "Format using `%zu` specifier for `size_t`.",
+                "Use `sizeof(type)` operator to query byte sizes of primitive types.",
+                "Inspect `char`, `int`, and `float`.",
+                "Format using `%zu` specifier for `size_t` return types in C99.",
+                "Print the exact formatted output: `char: %zu, int: %zu, float: %zu\\n`.",
             ],
         }

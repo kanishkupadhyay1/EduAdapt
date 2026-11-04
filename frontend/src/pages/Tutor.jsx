@@ -1,6 +1,20 @@
-import React, { useState, useRef } from 'react';
-import { askAiTutor, transcribeAudioFile, synthesizeLessonAudio } from '../api/learningApi';
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  askAiTutor,
+  fetchTutorHistory,
+  clearTutorHistory,
+  transcribeAudioFile,
+  synthesizeLessonAudio,
+} from '../api/learningApi';
 import MermaidDiagram from '../components/MermaidDiagram';
+
+const getStorageKey = (sid, topic) => `eduadapt_tutor_${sid}_${topic}`;
+const getDefaultGreeting = (topic) => [
+  {
+    role: 'assistant',
+    text: `Hello! I am your EduAdapt AI Tutor for Programming for Problem Solving. Ask me anything about ${topic}, memory layout, or C code implementation.`,
+  },
+];
 
 function ChatMessageContent({ text }) {
   if (!text) return null;
@@ -78,15 +92,71 @@ export default function Tutor({
   initialContextCode = '',
   initialContextQuestion = null,
 }) {
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      text: `Hello! I am your EduAdapt AI Tutor for Programming for Problem Solving. Ask me anything about ${currentTopic}, memory layout, or C code implementation.`,
-    },
-  ]);
+  const activeTopicRef = useRef(currentTopic);
+  const activeStudentRef = useRef(studentId);
+
+  const [messages, setMessages] = useState(() => {
+    try {
+      const cached = localStorage.getItem(getStorageKey(studentId, currentTopic));
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return getDefaultGreeting(currentTopic);
+  });
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Keep active refs updated synchronously
+  activeTopicRef.current = currentTopic;
+  activeStudentRef.current = studentId;
+
+  // Load topic-isolated history whenever topic or student changes
+  useEffect(() => {
+    activeTopicRef.current = currentTopic;
+    activeStudentRef.current = studentId;
+
+    // 1. Immediately display local cached history for instant responsiveness
+    let hasLocal = false;
+    try {
+      const cached = localStorage.getItem(getStorageKey(studentId, currentTopic));
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMessages(parsed);
+          hasLocal = true;
+        }
+      }
+    } catch {}
+
+    if (!hasLocal) {
+      setMessages(getDefaultGreeting(currentTopic));
+    }
+
+    // 2. Fetch authoritative history from backend
+    let isCancelled = false;
+    fetchTutorHistory(studentId, currentTopic)
+      .then((res) => {
+        if (isCancelled || activeTopicRef.current !== currentTopic || activeStudentRef.current !== studentId) {
+          return;
+        }
+        if (res && Array.isArray(res.messages) && res.messages.length > 0) {
+          setMessages(res.messages);
+          try {
+            localStorage.setItem(getStorageKey(studentId, currentTopic), JSON.stringify(res.messages));
+          } catch {}
+        }
+      })
+      .catch(() => {
+        // Keep cached state if offline/network error
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [studentId, currentTopic]);
 
   // Audio Accessibility State
   const [isRecording, setIsRecording] = useState(false);
@@ -195,26 +265,72 @@ export default function Tutor({
   const sendMessage = async (messageText, variation = null) => {
     if (!messageText || !messageText.trim() || isLoading) return;
 
+    const targetTopic = currentTopic;
+    const targetStudent = studentId;
     const userMsg = { role: 'student', text: messageText };
-    setMessages((prev) => [...prev, userMsg]);
+
+    setMessages((prev) => {
+      const updated = [...prev, userMsg];
+      try {
+        localStorage.setItem(getStorageKey(targetStudent, targetTopic), JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
     setInputMessage('');
     setIsLoading(true);
     setError(null);
 
     try {
-      const res = await askAiTutor(studentId, currentTopic, messageText, variation);
-      setMessages((prev) => [
-        ...prev,
-        { role: 'assistant', text: res.reply || 'No explanation generated.' },
-      ]);
+      const res = await askAiTutor(targetStudent, targetTopic, messageText, variation);
+      // Guard against race conditions when student switches topics mid-request
+      if (activeTopicRef.current !== targetTopic || activeStudentRef.current !== targetStudent) {
+        return;
+      }
+
+      if (res && Array.isArray(res.history) && res.history.length > 0) {
+        setMessages(res.history);
+        try {
+          localStorage.setItem(getStorageKey(targetStudent, targetTopic), JSON.stringify(res.history));
+        } catch {}
+      } else {
+        const assistantMsg = { role: 'assistant', text: res.reply || 'No explanation generated.' };
+        setMessages((prev) => {
+          const updated = [...prev, assistantMsg];
+          try {
+            localStorage.setItem(getStorageKey(targetStudent, targetTopic), JSON.stringify(updated));
+          } catch {}
+          return updated;
+        });
+      }
     } catch (err) {
-      setError('Unable to get response from AI Tutor. Please check that EduAdapt backend is online.');
+      if (activeTopicRef.current === targetTopic) {
+        setError('Unable to get response from AI Tutor. Please check that EduAdapt backend is online.');
+      }
     } finally {
-      setIsLoading(false);
+      if (activeTopicRef.current === targetTopic) {
+        setIsLoading(false);
+      }
     }
   };
 
-  React.useEffect(() => {
+  const handleClearTopicChat = async () => {
+    const confirmed = window.confirm(
+      `Clear chat history for topic "${currentTopic}"? This will not remove conversations for other curriculum topics.`
+    );
+    if (!confirmed) return;
+
+    try {
+      await clearTutorHistory(studentId, currentTopic);
+    } catch {}
+
+    try {
+      localStorage.removeItem(getStorageKey(studentId, currentTopic));
+    } catch {}
+
+    setMessages(getDefaultGreeting(currentTopic));
+  };
+
+  useEffect(() => {
     if (initialContextQuestion && initialContextQuestion.question) {
       const prompt = `I answered option ${initialContextQuestion.selectedOption} for the question: "${initialContextQuestion.question}". The correct answer is ${initialContextQuestion.correctOption}. Can you explain conceptually why this is correct and help me master this topic?`;
       sendMessage(prompt);
@@ -230,11 +346,22 @@ export default function Tutor({
 
   return (
     <div className="tutor-page">
-      <header className="page-header">
-        <h2 className="page-title">AI Tutor</h2>
-        <p className="page-subtitle">
-          Ask anything about <strong>{currentTopic}</strong>. Explanations are curriculum-grounded and adapted to Student <strong>{studentId}</strong>.
-        </p>
+      <header className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+        <div>
+          <h2 className="page-title">AI Tutor</h2>
+          <p className="page-subtitle">
+            Ask anything about <strong>{currentTopic}</strong>. Explanations are curriculum-grounded and adapted to Student <strong>{studentId}</strong>.
+          </p>
+        </div>
+        <button
+          type="button"
+          className="btn-pill"
+          onClick={handleClearTopicChat}
+          title={`Clear chat history for ${currentTopic}`}
+          style={{ fontSize: '12px', padding: '6px 14px', border: '1px solid var(--color-border)', color: 'var(--color-text-secondary)' }}
+        >
+          🗑 Clear Topic Chat
+        </button>
       </header>
 
       {error && (

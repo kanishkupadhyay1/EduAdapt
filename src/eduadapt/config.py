@@ -52,6 +52,10 @@ class Settings(BaseSettings):
         default="http://localhost:8003", alias="ACCESSIBILITY_SERVICE_URL"
     )
 
+    # C Execution Sandbox Configuration
+    c_sandbox_timeout: float = Field(default=30.0, alias="C_SANDBOX_TIMEOUT")
+    c_compile_timeout: float = Field(default=10.0, alias="C_COMPILE_TIMEOUT")
+
     # Base Paths
     base_dir: Path = Path(__file__).resolve().parent.parent.parent
 

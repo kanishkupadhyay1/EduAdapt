@@ -275,6 +275,28 @@
         "weak_concepts": [
           "Address-Of Operator"
         ]
+      },
+      {
+        "timestamp": "2026-11-04T06:17:06.829741",
+        "topic": "Pointers",
+        "score": 100,
+        "accuracy": 1.0,
+        "correct_count": 5,
+        "total_questions": 5,
+        "time_taken_seconds": 30,
+        "weak_concepts": []
+      },
+      {
+        "timestamp": "2026-11-04T06:17:06.856704",
+        "topic": "Pointers",
+        "score": 80,
+        "accuracy": 0.8,
+        "correct_count": 4,
+        "total_questions": 5,
+        "time_taken_seconds": 45,
+        "weak_concepts": [
+          "Address-Of Operator"
+        ]
       }
     ],
     "assessments": [
@@ -435,6 +457,21 @@
       },
       {
         "timestamp": "2026-11-03T21:15:12.530843",
+        "topic": "Pointers",
+        "score": 80,
+        "accuracy": 0.8,
+        "correct_count": 8,
+        "total_questions": 10,
+        "mastery_achieved": true,
+        "time_taken_seconds": 120,
+        "weak_concepts": [
+          "Dangling Pointer Remediation",
+          "Pointer Decay Exclusions"
+        ],
+        "next_topic": "Structures"
+      },
+      {
+        "timestamp": "2026-11-04T06:17:06.896105",
         "topic": "Pointers",
         "score": 80,
         "accuracy": 0.8,
@@ -643,6 +680,27 @@
           "Comma Operator in For Loops"
         ],
         "next_topic": "Loops"
+      },
+      {
+        "timestamp": "2026-11-04T06:17:06.928035",
+        "topic": "Loops",
+        "score": 20,
+        "accuracy": 0.2,
+        "correct_count": 2,
+        "total_questions": 10,
+        "mastery_achieved": false,
+        "time_taken_seconds": 90,
+        "weak_concepts": [
+          "Loop Counter Iteration Count",
+          "For Loop Variable Scope (C99)",
+          "Accidental Empty Loop Body",
+          "Nested Loop Complexity",
+          "Unsigned Loop Underflow",
+          "Loop Invariant Definition",
+          "Goto vs Structured Loop",
+          "Comma Operator in For Loops"
+        ],
+        "next_topic": "Loops"
       }
     ],
     "completed_topics": [],
@@ -757,6 +815,16 @@
       },
       {
         "timestamp": "2026-11-03T21:15:12.751969",
+        "topic": "Arrays",
+        "score": 100,
+        "accuracy": 1.0,
+        "correct_count": 5,
+        "total_questions": 5,
+        "time_taken_seconds": 50,
+        "weak_concepts": []
+      },
+      {
+        "timestamp": "2026-11-04T06:17:06.999155",
         "topic": "Arrays",
         "score": 100,
         "accuracy": 1.0,

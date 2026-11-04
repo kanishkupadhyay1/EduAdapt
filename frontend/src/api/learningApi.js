@@ -61,6 +61,24 @@ export async function askAiTutor(studentId = 'S001', topic = 'Pointers', message
   return await res.json();
 }
 
+export async function fetchTutorHistory(studentId = 'S001', topic = 'Pointers') {
+  const res = await fetch(`${API_BASE_URL}/api/tutor/history/${encodeURIComponent(studentId)}/${encodeURIComponent(topic)}`);
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+  }
+  return await res.json();
+}
+
+export async function clearTutorHistory(studentId = 'S001', topic = 'Pointers') {
+  const res = await fetch(`${API_BASE_URL}/api/tutor/history/${encodeURIComponent(studentId)}/${encodeURIComponent(topic)}`, {
+    method: 'DELETE',
+  });
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+  }
+  return await res.json();
+}
+
 export async function fetchTopicAssessment(studentId = 'S001', topic = 'Pointers') {
   const res = await fetch(`${API_BASE_URL}/api/assessment/${encodeURIComponent(studentId)}/${encodeURIComponent(topic)}`);
   if (!res.ok) {
@@ -189,7 +207,7 @@ export async function generatePracticeProblems(studentId = 'S001', topic = 'Poin
   return await res.json();
 }
 
-export async function executePracticeCode(studentId = 'S001', topic = 'Pointers', sourceCode = '', expectedOutput = null, isSubmission = false, stdinInput = null) {
+export async function executePracticeCode(studentId = 'S001', topic = 'Pointers', sourceCode = '', expectedOutput = null, isSubmission = false, stdinInput = null, timeoutSeconds = 30.0) {
   const res = await fetch(`${API_BASE_URL}/api/practice/execute`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -199,6 +217,7 @@ export async function executePracticeCode(studentId = 'S001', topic = 'Pointers'
       source_code: sourceCode,
       expected_output: expectedOutput,
       stdin_input: stdinInput,
+      timeout_seconds: Number(timeoutSeconds),
       is_submission: isSubmission,
     }),
   });

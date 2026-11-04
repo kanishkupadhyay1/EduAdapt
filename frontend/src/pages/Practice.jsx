@@ -186,7 +186,8 @@ export default function Practice({
         studentCode,
         null,
         false,
-        customStdin || chal?.sample_input || null
+        customStdin !== '' ? customStdin : (chal?.sample_input || null),
+        30.0
       );
       setExecResult(res);
     } catch (err) {
@@ -208,7 +209,8 @@ export default function Practice({
         studentCode,
         chal?.expected_output || chal?.sample_output || null,
         true,
-        chal?.sample_input || customStdin || null
+        chal?.sample_input || customStdin || null,
+        30.0
       );
       setExecResult(res);
       if (res.passed && onAssessmentCompleted) {
@@ -755,6 +757,13 @@ export default function Practice({
                     value={studentCode}
                     onChange={(e) => setStudentCode(e.target.value)}
                     rows={24}
+                    spellCheck={false}
+                    autoCapitalize="none"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    data-gramm="false"
+                    data-gramm_editor="false"
+                    data-enable-grammarly="false"
                     style={{
                       width: '100%',
                       minHeight: '480px',
@@ -789,6 +798,13 @@ export default function Practice({
                     value={customStdin}
                     onChange={(e) => setCustomStdin(e.target.value)}
                     rows={3}
+                    spellCheck={false}
+                    autoCapitalize="none"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    data-gramm="false"
+                    data-gramm_editor="false"
+                    data-enable-grammarly="false"
                     style={{
                       width: '100%',
                       fontFamily: 'var(--font-mono)',
@@ -807,7 +823,7 @@ export default function Practice({
                 {/* Editor Action Buttons */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
                   <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
-                    Protected execution via 64-bit GCC compiler (C99 • Sandboxed • Strict 3.0s Timeout).
+                    Protected execution via 64-bit GCC compiler (C99 • Sandboxed • Configurable 30.0s Timeout).
                   </span>
                   <div style={{ display: 'flex', gap: '10px' }}>
                     <button
@@ -881,7 +897,7 @@ export default function Practice({
                           : execResult.status === 'RUNTIME_ERROR'
                           ? `× Runtime Error (Exit Code: ${execResult.exit_code ?? -1})`
                           : execResult.status === 'TIMEOUT'
-                          ? '⏱ Time Limit Exceeded (3.0s Timeout)'
+                          ? `⏱ Time Limit Exceeded (${execResult.timeout_limit_seconds || 30.0}s Timeout)`
                           : '▶ Program Executed Successfully'}
                       </div>
                       <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
@@ -946,7 +962,7 @@ export default function Practice({
                     {/* Timeout Guidance */}
                     {execResult.status === 'TIMEOUT' && (
                       <div style={{ marginBottom: '12px', backgroundColor: '#fff', border: '1px solid var(--color-red-border)', padding: '10px 14px', borderRadius: 'var(--radius-sm)', fontSize: '12px', color: 'var(--color-red)' }}>
-                        <strong>Diagnostic Note:</strong> {execResult.notes || 'The program took longer than 3.0 seconds to finish. Check for infinite loops or waiting for unsupplied scanf() input.'}
+                        <strong>Diagnostic Note:</strong> {execResult.notes || `The program took longer than ${execResult.timeout_limit_seconds || 30.0} seconds to finish. Check for infinite loops or waiting for unsupplied scanf() input.`}
                       </div>
                     )}
 
@@ -997,7 +1013,7 @@ export default function Practice({
                     )}
 
                     {/* Standard Output Display for Accepted or Success */}
-                    {(execResult.status === 'ACCEPTED' || execResult.status === 'SUCCESS' || execResult.passed) && execResult.stdout && (
+                    {(execResult.status === 'ACCEPTED' || execResult.status === 'SUCCESS' || execResult.passed) && (
                       <div style={{ marginBottom: '10px' }}>
                         <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--color-text-secondary)', marginBottom: '4px' }}>
                           Program Output (stdout):
@@ -1015,8 +1031,15 @@ export default function Practice({
                             margin: 0,
                           }}
                         >
-                          {execResult.stdout}
+                          {execResult.stdout || '(No standard output generated)'}
                         </pre>
+                      </div>
+                    )}
+
+                    {/* Stdin / Execution Notice Notes */}
+                    {execResult.notes && execResult.status !== 'TIMEOUT' && (
+                      <div style={{ marginTop: '8px', fontSize: '12px', color: '#475569', fontStyle: 'italic', padding: '6px 10px', backgroundColor: '#f1f5f9', borderRadius: '4px' }}>
+                        💡 {execResult.notes}
                       </div>
                     )}
                   </div>

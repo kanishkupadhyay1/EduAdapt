@@ -116,7 +116,7 @@ class CExecutor:
     def __init__(
         self,
         compiler_path: Optional[str] = None,
-        default_timeout_seconds: float = 3.0,
+        default_timeout_seconds: float = 30.0,
     ) -> None:
         self.compiler_path = discover_c_compiler(compiler_path)
         self.default_timeout_seconds = default_timeout_seconds
@@ -248,7 +248,7 @@ class CExecutor:
                     exit_code=exec_proc.returncode,
                     execution_time_seconds=round(exec_time, 4),
                 )
-            except subprocess.TimeoutExpired:
+            except subprocess.TimeoutExpired as exc:
                 exec_time = time.time() - t0
                 notes_msg = (
                     f"Execution timed out after {timeout} seconds. "
